@@ -1,9 +1,11 @@
 # CoGame
 
 The project goal is to design and implement a Progressive Web Application (PWA) for board game enthusiasts. 
-The app will store users’ games and allow them to create custom indicators related to their games. 
+The app will store users’ games and allow them to create their own game ranking. 
 The primary goal is to support live gameplay by selecting parameters and timing based on game conditions. 
 The product's purpose is to make board game enjoyment more accessible for all users. <p>
+The application will also be integrated with the BGG API to collect various data such as users' 
+gameplay history and available board games. <p>
 
 ## Project structure
 
