@@ -17,7 +17,22 @@ public class Main {
     @Bean
     public RouteLocator routeLocator(
             RouteLocatorBuilder builder,
-            @Value("${gateway.host}") String gateway) {
-        return builder.routes().build();
+            @Value("${gateway.host}") String gateway,
+            @Value("${users.url}") String usersUrl,
+            @Value("${gameplays.url}") String gameplaysUrl) {
+        return builder.routes()
+                .route("users", route -> route
+                        .host(gateway)
+                        .and()
+                        .path("/api/users/{uuid}", "/api/types")
+                        .uri(usersUrl)
+                )
+                .route("gameplays", route -> route
+                        .host(gateway)
+                        .and()
+                        .path("/api/gameplays/{uuid}", "/api/gameplays")
+                        .uri(gameplaysUrl)
+                )
+                .build();
     }
 }
