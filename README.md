@@ -12,7 +12,7 @@ gameplay history and available board games. <p>
 The application consists of the fronted app and the backend services. <p>
 In the future, the project structure will be described in detail <p>
 e.g.
-- `/frontend_app/` - web application which is used as GUI for the application
+- `/client-pwa/` - web application which is used as GUI for the application
 - ...
 
 ## Authors
