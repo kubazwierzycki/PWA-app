@@ -19,7 +19,10 @@ public class Main {
             RouteLocatorBuilder builder,
             @Value("${gateway.host}") String gateway,
             @Value("${users.url}") String usersUrl,
-            @Value("${gameplays.url}") String gameplaysUrl) {
+            @Value("${gameplays.url}") String gameplaysUrl,
+            @Value("${games.url}") String gamesUrl,
+            @Value("${playrooms.url}") String playroomsUrl,
+            @Value("${experience.url}") String experienceUrl) {
         return builder.routes()
                 .route("users", route -> route
                         .host(gateway)
@@ -32,6 +35,24 @@ public class Main {
                         .and()
                         .path("/api/gameplays/{uuid}", "/api/gameplays")
                         .uri(gameplaysUrl)
+                )
+                .route("games", route -> route
+                        .host(gateway)
+                        .and()
+                        .path("/api/games/{uuid}", "/api/games")
+                        .uri(gamesUrl)
+                )
+                .route("playrooms", route -> route
+                        .host(gateway)
+                        .and()
+                        .path("/api/playrooms/{uuid}", "/api/playrooms")
+                        .uri(playroomsUrl)
+                )
+                .route("experience", route -> route
+                        .host(gateway)
+                        .and()
+                        .path("/api/experience/{uuid}", "/api/experience")
+                        .uri(experienceUrl)
                 )
                 .build();
     }
