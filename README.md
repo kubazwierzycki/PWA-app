@@ -10,10 +10,18 @@ gameplay history and available board games. <p>
 ## Project structure
 
 The application consists of the fronted app and the backend services. <p>
-In the future, the project structure will be described in detail <p>
-e.g.
-- `/client-pwa/` - web application which is used as GUI for the application
-- ...
+
+- <b>Frontend:</b>
+  - `/client-pwa/` - web application which is used as GUI for the application
+
+
+- <b>Backend:</b>
+  - `/pwa-experience/` - manages user data related to a specific board game
+  - `/pwa-gameplays/` - stores the gameplay history of registered users
+  - `/pwa-games/` - manages data related to board games
+  - `/pwa-gateway/` - gateway for backend services
+  - `/pwa-playrooms/` - is responsible for the functionality of the playroom
+  - `/pwa-users/` - stores data of registered users
 
 ## Authors
 
