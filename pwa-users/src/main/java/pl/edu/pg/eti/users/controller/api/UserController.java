@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -17,6 +18,7 @@ import pl.edu.pg.eti.users.dto.PostLogin;
 import pl.edu.pg.eti.users.dto.PostUser;
 import pl.edu.pg.eti.users.dto.PutPassword;
 import pl.edu.pg.eti.users.dto.PutUser;
+import pl.edu.pg.eti.users.dto.Token;
 import pl.edu.pg.eti.users.entity.User;
 
 import java.util.UUID;
@@ -69,9 +71,9 @@ public interface UserController {
      * @param request - user details {@link PostUser}
      * @return user session token
      */
-    @PostMapping("/api/users/")
+    @PostMapping("/api/users")
     @ResponseStatus(HttpStatus.CREATED)
-    ResponseEntity<String> postUser (
+    ResponseEntity<Token> postUser (
             @RequestBody PostUser request
     );
 
@@ -82,7 +84,7 @@ public interface UserController {
      */
     @PostMapping("/api/users/login")
     @ResponseStatus(HttpStatus.CREATED)
-    ResponseEntity<String> loginUser (
+    ResponseEntity<Token> loginUser (
             @RequestBody PostLogin request
     );
 
@@ -91,11 +93,12 @@ public interface UserController {
      * @param uuid - user ID
      * @param request - hashed password details
      */
-    @PutMapping("/api/users/{uuid}/password/")
+    @PutMapping("/api/users/{uuid}/password")
     @ResponseStatus(HttpStatus.CREATED)
     void putPassword (
             @PathVariable("uuid") UUID uuid,
-            @RequestBody PutPassword request
+            @RequestBody PutPassword request,
+            @RequestHeader("Authorization") String token
     );
 
     /**

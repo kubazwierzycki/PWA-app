@@ -12,6 +12,7 @@ import pl.edu.pg.eti.users.dto.PostLogin;
 import pl.edu.pg.eti.users.dto.PostUser;
 import pl.edu.pg.eti.users.dto.PutPassword;
 import pl.edu.pg.eti.users.dto.PutUser;
+import pl.edu.pg.eti.users.dto.Token;
 import pl.edu.pg.eti.users.entity.User;
 import pl.edu.pg.eti.users.service.api.UserService;
 
@@ -82,26 +83,105 @@ public class UserDefaultController implements UserController {
 
     @Override
     public void putUser(UUID uuid, PutUser request) {
+        User user = userService.find(uuid).orElse(null);
 
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        else {
+            userService.update(
+                    User.builder()
+                            .uuid(uuid)
+                            .email(request.getEmail())
+                            .username(request.getUsername())
+                            .bggUsername(request.getBggUsername())
+                            .password(user.getPassword())
+                            .token(user.getToken())
+                            .build()
+            );
+        }
     }
 
     @Override
-    public ResponseEntity<String> postUser(PostUser request) {
-        return null;
+    public ResponseEntity<Token> postUser(PostUser request) {
+        if (userService.findByUsername(request.getUsername()).isPresent() ||
+                userService.findByEmail(request.getEmail()).isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+        else {
+            String token = UUID.randomUUID().toString();
+            userService.create(
+                    User.builder()
+                            .uuid(UUID.randomUUID())
+                            .email(request.getEmail())
+                            .username(request.getUsername())
+                            .password(request.getPassword())
+                            .token(token)
+                            .bggUsername(request.getBggUsername())
+                            .build()
+            );
+            return ResponseEntity.ok(Token.builder().token(token).build());
+        }
     }
 
     @Override
-    public ResponseEntity<String> loginUser(PostLogin request) {
-        return null;
+    public ResponseEntity<Token> loginUser(PostLogin request) {
+        User user = userService.findByUsername(request.getUsername()).orElse(null);
+
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        else {
+            if (user.getPassword().equals(request.getPassword())) {
+                String token = UUID.randomUUID().toString();
+                userService.update(
+                        User.builder()
+                                .uuid(user.getUuid())
+                                .email(user.getEmail())
+                                .username(user.getUsername())
+                                .bggUsername(user.getBggUsername())
+                                .password(user.getPassword())
+                                .token(token)
+                                .build()
+                );
+                return ResponseEntity.ok(Token.builder().token(token).build());
+            }
+        }
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
     }
 
     @Override
-    public void putPassword(UUID uuid, PutPassword request) {
+    public void putPassword(UUID uuid, PutPassword request, String token) {
+        User user = userService.find(uuid).orElse(null);
 
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        else if (user.getToken().equals(token) &&
+                user.getPassword().equals(request.getOldPassword())) {
+            userService.update(
+                    User.builder()
+                            .uuid(user.getUuid())
+                            .email(user.getEmail())
+                            .username(user.getUsername())
+                            .bggUsername(user.getBggUsername())
+                            .password(request.getNewPassword())
+                            .token(user.getToken())
+                            .build()
+            );
+            return;
+        }
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
     }
 
     @Override
     public void deleteUser(UUID uuid) {
-
+        userService.find(uuid)
+                .ifPresentOrElse(
+                        user -> userService.delete(uuid),
+                        () -> {
+                            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+                        }
+                );
     }
 }

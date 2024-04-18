@@ -5,10 +5,53 @@ GET localhost:8080/api/users
 GET localhost:8080/api/users?pattern=User
 
 ### GET user with specific ID
-GET localhost:8080/api/users/4f8cb4c7-6540-49c0-a432-6235041b23a5?type=uuid
+GET localhost:8080/api/users/a8755107-ae31-45d4-8622-b3ef6f889b5d?type=uuid
 
 ### GET user with specific username
 GET localhost:8080/api/users/user1?type=username
 
 ### GET user with specific email
 GET localhost:8080/api/users/email1?type=email
+
+### UPDATE user details
+PUT localhost:8080/api/users/a8755107-ae31-45d4-8622-b3ef6f889b5d
+Content-Type: application/json
+
+{
+  "email": "new_email",
+  "username": "new_username",
+  "bggUsername": null
+}
+
+### CREATE a new user
+POST localhost:8080/api/users
+Content-Type: application/json
+
+{
+  "email": "new_email",
+  "username": "new_user1",
+  "password": "password",
+  "bggUsername": null
+}
+
+### LOG IN
+POST localhost:8080/api/users/login
+Content-Type: application/json
+
+{
+  "username": "new_user1",
+  "password": "password"
+}
+
+### PUT password
+PUT localhost:8080/api/users/a8755107-ae31-45d4-8622-b3ef6f889b5d/password
+Authorization: fad9fa4f-647d-4841-b19a-d008317bb52b
+Content-Type: application/json
+
+{
+  "oldPassword": "password",
+  "newPassword": "new_password"
+}
+
+### DELETE user
+DELETE localhost:8080/api/users/a8755107-ae31-45d4-8622-b3ef6f889b5d
