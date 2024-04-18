@@ -10,6 +10,9 @@ import lombok.ToString;
 
 import java.util.UUID;
 
+/**
+ * Used as a GET response for a user representation
+ */
 @Getter
 @Setter
 @AllArgsConstructor(access=AccessLevel.PRIVATE)

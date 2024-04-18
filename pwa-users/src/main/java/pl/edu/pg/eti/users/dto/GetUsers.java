@@ -11,6 +11,9 @@ import lombok.ToString;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Used as a GET response to represent one or more users
+ */
 @Getter
 @Setter
 @AllArgsConstructor(access= AccessLevel.PRIVATE)

@@ -8,6 +8,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+/**
+ * Used as a POST request to create a new user
+ */
 @Getter
 @Builder
 @NoArgsConstructor

@@ -8,6 +8,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+/**
+ * Used as a PUT request to update user password
+ */
 @Getter
 @Builder
 @NoArgsConstructor
