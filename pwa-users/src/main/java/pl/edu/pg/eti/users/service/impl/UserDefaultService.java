@@ -37,7 +37,7 @@ public class UserDefaultService implements UserService {
 
     @Override
     public List<User> findByUsernamePattern(String pattern) {
-        return userRepository.findByUsernameLikeIgnoreCase(pattern);
+        return userRepository.findByUsernameContainingIgnoreCase(pattern);
     }
 
     @Override

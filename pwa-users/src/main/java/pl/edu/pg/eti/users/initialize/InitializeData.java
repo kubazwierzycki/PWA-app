@@ -8,6 +8,9 @@ import pl.edu.pg.eti.users.service.api.UserService;
 
 import java.util.UUID;
 
+/**
+ * Initialize test data
+ */
 @Component
 public class InitializeData implements InitializingBean {
 

@@ -1,0 +1,14 @@
+### GET all users
+GET localhost:8080/api/users
+
+### GET all users which contains pattern (ignore case)
+GET localhost:8080/api/users?pattern=User
+
+### GET user with specific ID
+GET localhost:8080/api/users/4f8cb4c7-6540-49c0-a432-6235041b23a5?type=uuid
+
+### GET user with specific username
+GET localhost:8080/api/users/user1?type=username
+
+### GET user with specific email
+GET localhost:8080/api/users/email1?type=email

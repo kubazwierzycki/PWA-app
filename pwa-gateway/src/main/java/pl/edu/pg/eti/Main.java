@@ -27,7 +27,7 @@ public class Main {
                 .route("users", route -> route
                         .host(gateway)
                         .and()
-                        .path("/api/users/{uuid}", "/api/types")
+                        .path("/api/users/**", "/api/users")
                         .uri(usersUrl)
                 )
                 .route("gameplays", route -> route
