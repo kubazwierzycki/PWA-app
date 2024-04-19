@@ -58,12 +58,14 @@ public interface UserController {
      * PUT request to change user details
      * @param uuid - user ID
      * @param request - user details {@link PutUser}
+     * @param token - authorization token
      */
     @PutMapping("/api/users/{uuid}")
     @ResponseStatus(HttpStatus.CREATED)
     void putUser(
             @PathVariable("uuid") UUID uuid,
-            @RequestBody PutUser request
+            @RequestBody PutUser request,
+            @RequestHeader("Authorization") String token
     );
 
     /**
@@ -92,6 +94,7 @@ public interface UserController {
      * PUT request to change user password
      * @param uuid - user ID
      * @param request - hashed password details
+     * @param token - authorization token
      */
     @PutMapping("/api/users/{uuid}/password")
     @ResponseStatus(HttpStatus.CREATED)
@@ -104,10 +107,12 @@ public interface UserController {
     /**
      * DELETE request to delete user
      * @param uuid - user ID
+     * @param token - authorization token
      */
     @DeleteMapping("/api/users/{uuid}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void deleteUser(
-            @PathVariable("uuid") UUID uuid
+            @PathVariable("uuid") UUID uuid,
+            @RequestHeader("Authorization") String token
     );
 }

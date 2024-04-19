@@ -5,7 +5,7 @@ GET localhost:8080/api/users
 GET localhost:8080/api/users?pattern=User
 
 ### GET user with specific ID
-GET localhost:8080/api/users/a8755107-ae31-45d4-8622-b3ef6f889b5d?type=uuid
+GET localhost:8080/api/users/a8755a07-aea1-45a4-86a2-b3ef6f889bbd?type=uuid
 
 ### GET user with specific username
 GET localhost:8080/api/users/user1?type=username
@@ -14,7 +14,8 @@ GET localhost:8080/api/users/user1?type=username
 GET localhost:8080/api/users/email1?type=email
 
 ### UPDATE user details
-PUT localhost:8080/api/users/a8755107-ae31-45d4-8622-b3ef6f889b5d
+PUT localhost:8080/api/users/a8755a07-aea1-45a4-86a2-b3ef6f889bbd
+Authorization: fad9faaf-64ad-48a1-b1aa-d008317bb5ab
 Content-Type: application/json
 
 {
@@ -44,8 +45,8 @@ Content-Type: application/json
 }
 
 ### PUT password
-PUT localhost:8080/api/users/a8755107-ae31-45d4-8622-b3ef6f889b5d/password
-Authorization: fad9fa4f-647d-4841-b19a-d008317bb52b
+PUT localhost:8080/api/users/a8755a07-aea1-45a4-86a2-b3ef6f889bbd/password
+Authorization: fad9faaf-64ad-48a1-b1aa-d008317bb5ab
 Content-Type: application/json
 
 {
@@ -54,4 +55,5 @@ Content-Type: application/json
 }
 
 ### DELETE user
-DELETE localhost:8080/api/users/a8755107-ae31-45d4-8622-b3ef6f889b5d
+DELETE localhost:8080/api/users/a8755a07-aea1-45a4-86a2-b3ef6f889bbd
+Authorization: fad9faaf-64ad-48a1-b1aa-d008317bb5ab

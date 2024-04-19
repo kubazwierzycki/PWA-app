@@ -15,6 +15,7 @@ import pl.edu.pg.eti.users.dto.PutUser;
 import pl.edu.pg.eti.users.dto.Token;
 import pl.edu.pg.eti.users.entity.User;
 import pl.edu.pg.eti.users.service.api.UserService;
+import pl.edu.pg.eti.users.utils.SecurityProvider;
 
 import java.util.List;
 import java.util.UUID;
@@ -82,13 +83,13 @@ public class UserDefaultController implements UserController {
     }
 
     @Override
-    public void putUser(UUID uuid, PutUser request) {
+    public void putUser(UUID uuid, PutUser request, String token) {
         User user = userService.find(uuid).orElse(null);
 
         if (user == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-        else {
+        else if (user.getToken().equals(token)) {
             userService.update(
                     User.builder()
                             .uuid(uuid)
@@ -99,6 +100,9 @@ public class UserDefaultController implements UserController {
                             .token(user.getToken())
                             .build()
             );
+        }
+        else {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -115,7 +119,7 @@ public class UserDefaultController implements UserController {
                             .uuid(UUID.randomUUID())
                             .email(request.getEmail())
                             .username(request.getUsername())
-                            .password(request.getPassword())
+                            .password(SecurityProvider.calculateSHA256(request.getPassword()))
                             .token(token)
                             .bggUsername(request.getBggUsername())
                             .build()
@@ -132,7 +136,7 @@ public class UserDefaultController implements UserController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
         else {
-            if (user.getPassword().equals(request.getPassword())) {
+            if (user.getPassword().equals(SecurityProvider.calculateSHA256(request.getPassword()))) {
                 String token = UUID.randomUUID().toString();
                 userService.update(
                         User.builder()
@@ -158,14 +162,14 @@ public class UserDefaultController implements UserController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
         else if (user.getToken().equals(token) &&
-                user.getPassword().equals(request.getOldPassword())) {
+                user.getPassword().equals(SecurityProvider.calculateSHA256(request.getOldPassword()))) {
             userService.update(
                     User.builder()
                             .uuid(user.getUuid())
                             .email(user.getEmail())
                             .username(user.getUsername())
                             .bggUsername(user.getBggUsername())
-                            .password(request.getNewPassword())
+                            .password(SecurityProvider.calculateSHA256(request.getNewPassword()))
                             .token(user.getToken())
                             .build()
             );
@@ -175,13 +179,17 @@ public class UserDefaultController implements UserController {
     }
 
     @Override
-    public void deleteUser(UUID uuid) {
-        userService.find(uuid)
-                .ifPresentOrElse(
-                        user -> userService.delete(uuid),
-                        () -> {
-                            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-                        }
-                );
+    public void deleteUser(UUID uuid, String token) {
+        User user = userService.find(uuid).orElse(null);
+
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        else if (user.getToken().equals(token)) {
+            userService.delete(uuid);
+        }
+        else {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
     }
 }

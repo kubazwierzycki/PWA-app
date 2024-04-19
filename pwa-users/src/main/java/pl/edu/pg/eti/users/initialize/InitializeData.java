@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import pl.edu.pg.eti.users.entity.User;
 import pl.edu.pg.eti.users.service.api.UserService;
+import pl.edu.pg.eti.users.utils.SecurityProvider;
 
 import java.util.UUID;
 
@@ -28,7 +29,7 @@ public class InitializeData implements InitializingBean {
                         .uuid(UUID.randomUUID())
                         .email("email1")
                         .username("user1")
-                        .password("password1")
+                        .password(SecurityProvider.calculateSHA256("password1"))
                         .bggUsername("bgg1")
                         .token(null)
                         .build()
@@ -38,7 +39,7 @@ public class InitializeData implements InitializingBean {
                         .uuid(UUID.randomUUID())
                         .email("email2")
                         .username("user2")
-                        .password("password2")
+                        .password(SecurityProvider.calculateSHA256("password2"))
                         .bggUsername("bgg2")
                         .token(null)
                         .build()
@@ -48,7 +49,7 @@ public class InitializeData implements InitializingBean {
                         .uuid(UUID.randomUUID())
                         .email("email3")
                         .username("user3")
-                        .password("password3")
+                        .password(SecurityProvider.calculateSHA256("password3"))
                         .bggUsername("bgg3")
                         .token(null)
                         .build()
