@@ -18,3 +18,21 @@
     align-items: center;
 }
 
+.menuToggle {
+    flex-grow: 0;
+    align-self: center;
+    display: none;
+}
+
+
+@media screen and (max-width: 850px) {
+
+    .menuButtons {
+        display: none;
+    }
+
+    .menuToggle {
+        display: block;
+    }
+
+}
