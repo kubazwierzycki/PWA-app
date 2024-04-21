@@ -57,3 +57,7 @@ Content-Type: application/json
 ### DELETE user
 DELETE localhost:8080/api/users/a8755a07-aea1-45a4-86a2-b3ef6f889bbd
 Authorization: fad9faaf-64ad-48a1-b1aa-d008317bb5ab
+
+### LOG OUT
+POST localhost:8080/api/users/a8755a07-aea1-45a4-86a2-b3ef6f889bbd/logout
+Authorization: fad9faaf-64ad-48a1-b1aa-d008317bb5ab

@@ -89,7 +89,7 @@ public class UserDefaultController implements UserController {
         if (user == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-        else if (user.getToken().equals(token)) {
+        else if (user.getToken().equals(SecurityProvider.calculateSHA256(token))) {
             userService.update(
                     User.builder()
                             .uuid(uuid)
@@ -120,7 +120,7 @@ public class UserDefaultController implements UserController {
                             .email(request.getEmail())
                             .username(request.getUsername())
                             .password(SecurityProvider.calculateSHA256(request.getPassword()))
-                            .token(token)
+                            .token(SecurityProvider.calculateSHA256(token))
                             .bggUsername(request.getBggUsername())
                             .build()
             );
@@ -145,7 +145,7 @@ public class UserDefaultController implements UserController {
                                 .username(user.getUsername())
                                 .bggUsername(user.getBggUsername())
                                 .password(user.getPassword())
-                                .token(token)
+                                .token(SecurityProvider.calculateSHA256(token))
                                 .build()
                 );
                 return ResponseEntity.ok(Token.builder().token(token).build());
@@ -161,7 +161,7 @@ public class UserDefaultController implements UserController {
         if (user == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-        else if (user.getToken().equals(token) &&
+        else if (user.getToken().equals(SecurityProvider.calculateSHA256(token)) &&
                 user.getPassword().equals(SecurityProvider.calculateSHA256(request.getOldPassword()))) {
             userService.update(
                     User.builder()
@@ -185,11 +185,34 @@ public class UserDefaultController implements UserController {
         if (user == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-        else if (user.getToken().equals(token)) {
+        else if (user.getToken().equals(SecurityProvider.calculateSHA256(token))) {
             userService.delete(uuid);
         }
         else {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @Override
+    public void logoutUser(UUID uuid, String token) {
+        User user = userService.find(uuid).orElse(null);
+
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        else if (user.getToken().equals(SecurityProvider.calculateSHA256(token))) {
+            userService.update(
+                    User.builder()
+                            .uuid(user.getUuid())
+                            .email(user.getEmail())
+                            .username(user.getUsername())
+                            .bggUsername(user.getBggUsername())
+                            .password(user.getPassword())
+                            .token(null)
+                            .build()
+            );
+            return;
+        }
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
     }
 }

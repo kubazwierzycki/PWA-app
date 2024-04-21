@@ -115,4 +115,16 @@ public interface UserController {
             @PathVariable("uuid") UUID uuid,
             @RequestHeader("Authorization") String token
     );
+
+    /**
+     * POST request to logout
+     * @param uuid - user ID
+     * @param token - authorization token
+     */
+    @PostMapping("/api/users/{uuid}/logout")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void logoutUser(
+            @PathVariable("uuid") UUID uuid,
+            @RequestHeader("Authorization") String token
+    );
 }
