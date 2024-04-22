@@ -25,6 +25,13 @@
 }
 
 
+
+.drawerContainer {
+    width: 40vw;
+    height: 100%;
+}
+
+
 @media screen and (max-width: 850px) {
 
     .menuButtons {
