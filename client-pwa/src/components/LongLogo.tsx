@@ -1,4 +1,5 @@
 import long_logo from '../assets/logo/long_logo.jpeg'
+import {Link} from "react-router-dom";
 
 
 /**
@@ -10,10 +11,9 @@ const LongLogo = () => {
 
     return (
         <div>
-            <img src={long_logo} alt="CoGame" style={{
-                maxWidth: "200px"
-            }}
-            />
+            <Link to="/">
+                <img src={long_logo} alt="CoGame" style={{maxWidth: "200px"}}/>
+            </Link>
         </div>
     )
 }

@@ -7,8 +7,13 @@
 
 .navbar {
     width: 100%;
+    margin: 0;
 }
 
 .pageContent {
     width: 100%;
+    padding-left: 5%;
+    padding-right: 5%;
+    box-sizing: border-box;
+    margin: 0;
 }

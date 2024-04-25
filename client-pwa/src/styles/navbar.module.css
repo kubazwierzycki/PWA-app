@@ -2,9 +2,12 @@
     width: 100%;
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: center;
     height: fit-content;
     padding: 15px;
+    box-sizing: border-box;
+    position: sticky;
+    top: 0;
 }
 
 .logo {
@@ -12,7 +15,7 @@
 }
 
 .menuButtons {
-    flex-grow: 1;
+    flex-grow: 0;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -33,6 +36,10 @@
 
 
 @media screen and (max-width: 850px) {
+
+    .navbarContainer {
+        justify-content: space-between;
+    }
 
     .menuButtons {
         display: none;
