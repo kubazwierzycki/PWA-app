@@ -4,6 +4,7 @@ import MenuButton from "../components/MenuButton.tsx";
 import {AppBar, Button, Drawer, Toolbar, styled} from "@mui/material";
 import MenuIcon from '@mui/icons-material/Menu';
 import {useState} from "react";
+import menu_structure from "../config/menu_structure.ts";
 
 
 /**
@@ -23,11 +24,11 @@ const Navbar = () => {
                     <div className={styles.navbarContainer}>
                         <LongLogo/>
                         <div className={styles.menuButtons}>
-                            <MenuButton text={"Home"} />
-                            <MenuButton text={"Boardgames"} />
-                            <MenuButton text={"Play"} />
-                            <MenuButton text={"Profile"} />
-                            <MenuButton text={"About"} />
+                            {
+                                menu_structure.map(menu_item =>
+                                    <MenuButton menu_item={menu_item} />
+                                )
+                            }
                         </div>
                         <div className={styles.menuToggle}>
                             <Button onClick={() => setDrawerOpen(!drawerOpen)}>
