@@ -3,6 +3,7 @@ import {Outlet} from "react-router-dom";
 import Navbar from "../sections/Navbar.tsx";
 import {AuthProvider} from "../contexts/AuthContext.tsx";
 import {ThemeModeProvider} from "../contexts/ThemeContext.tsx";
+import Footer from "../sections/Footer.tsx";
 
 const Layout = () => {
 
@@ -11,11 +12,16 @@ const Layout = () => {
         <ThemeModeProvider>
             <AuthProvider>
                 <div className={styles.pageContainer}>
-                    <div className={styles.navbar}>
-                        <Navbar />
+                    <div className={styles.contentWrapper}>
+                        <div className={styles.navbar}>
+                            <Navbar/>
+                        </div>
+                        <div className={styles.pageContent}>
+                            <Outlet/>
+                        </div>
                     </div>
-                    <div className={styles.pageContent}>
-                        <Outlet />
+                    <div className={styles.footerContainer}>
+                        <Footer />
                     </div>
                 </div>
             </AuthProvider>
