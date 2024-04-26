@@ -1,10 +1,11 @@
-import LongLogo from '../components/LongLogo.tsx';
 import styles from '../styles/navbar.module.css'
-import MenuButton from "../components/MenuButton.tsx";
-import {AppBar, Button, Drawer, Toolbar, styled} from "@mui/material";
-import MenuIcon from '@mui/icons-material/Menu';
+import {AppBar, Toolbar, styled, Button} from "@mui/material";
 import {useState} from "react";
-import menu_structure from "../config/menu_structure.ts";
+import DrawerMenu from "./DrawerMenu.tsx";
+import NavMenuButtons from "../components/NavMenuButtons.tsx";
+import LongLogo from "../components/LongLogo.tsx";
+import ColorModeToggle from "../components/ColorModeToggle.tsx";
+import MenuIcon from "@mui/icons-material/Menu";
 
 
 /**
@@ -23,13 +24,10 @@ const Navbar = () => {
                 <Toolbar>
                     <div className={styles.navbarContainer}>
                         <LongLogo/>
-                        <div className={styles.menuButtons}>
-                            {
-                                menu_structure.map(menu_item =>
-                                    <MenuButton menu_item={menu_item} />
-                                )
-                            }
-                        </div>
+                        <NavMenuButtons
+                            vertical={false}
+                        />
+                        <ColorModeToggle />
                         <div className={styles.menuToggle}>
                             <Button onClick={() => setDrawerOpen(!drawerOpen)}>
                                 <MenuIcon />
@@ -39,11 +37,10 @@ const Navbar = () => {
                 </Toolbar>
             </AppBar>
             <Offset/>
-            <Drawer open={drawerOpen} onClose={() => setDrawerOpen(false)}>
-                <div className={styles.drawerContainer}>
-
-                </div>
-            </Drawer>
+            <DrawerMenu
+                drawerOpen={drawerOpen}
+                setDrawerOpen={setDrawerOpen}
+            />
         </nav>
     )
 }

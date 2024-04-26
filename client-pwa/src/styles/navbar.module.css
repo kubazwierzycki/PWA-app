@@ -10,6 +10,15 @@
     top: 0;
 }
 
+.verticalMenu {
+    display: none;
+    justify-content: center;
+}
+
+.horizontalMenu {
+
+}
+
 .logo {
     flex: 0 0 200px;
 }
@@ -37,12 +46,20 @@
 
 @media screen and (max-width: 850px) {
 
+    .verticalMenu {
+        display: flex;
+    }
+
+    .horizontalMenu {
+        display: none;
+    }
+
     .navbarContainer {
         justify-content: space-between;
     }
 
     .menuButtons {
-        display: none;
+        flex-direction: column;
     }
 
     .menuToggle {
