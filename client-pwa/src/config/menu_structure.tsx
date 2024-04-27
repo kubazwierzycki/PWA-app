@@ -1,3 +1,9 @@
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import HomeIcon from '@mui/icons-material/Home';
+import ExtensionIcon from '@mui/icons-material/Extension';
+import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
+import InfoIcon from '@mui/icons-material/Info';
+
 
 interface MenuItem {
     name: string;
@@ -6,7 +12,7 @@ interface MenuItem {
 }
 
 
-const menu_structure: MenuItem[] = [
+export const menu_structure: MenuItem[] = [
     {
         name: "Home",
         link: "/",
@@ -39,15 +45,30 @@ const menu_structure: MenuItem[] = [
         sub: []
     },
     {
-        name: "profile",
+        name: "Profile",
         link: "/profile",
         sub: []
     },
     {
-        name: "about",
+        name: "About",
         link: "/about",
         sub: []
     }
 ]
 
-export default menu_structure;
+export const getMenuItemIcon = (item: string) => {
+    switch (item) {
+        case "Home":
+            return <HomeIcon/>
+        case "Boardgames":
+            return <ExtensionIcon/>
+        case "Profile":
+            return <PersonOutlineIcon/>
+        case "Play":
+            return <PlayArrowIcon/>
+        case "About":
+            return <InfoIcon/>
+        default:
+            return <></>
+    }
+}

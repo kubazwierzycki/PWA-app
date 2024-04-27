@@ -29,6 +29,7 @@ const Navbar = () => {
                             </div>
                             <NavMenuButtons
                                 vertical={false}
+                                setDrawerOpen={setDrawerOpen}
                             />
                         </div>
                         <div className={styles.rightPanel}>
