@@ -23,15 +23,21 @@ const Navbar = () => {
             <AppBar color="default" position="sticky">
                 <Toolbar>
                     <div className={styles.navbarContainer}>
-                        <LongLogo/>
-                        <NavMenuButtons
-                            vertical={false}
-                        />
-                        <ColorModeToggle />
-                        <div className={styles.menuToggle}>
-                            <Button onClick={() => setDrawerOpen(!drawerOpen)}>
-                                <MenuIcon />
-                            </Button>
+                        <div className={styles.centerPanel}>
+                            <div className={styles.logoContainer}>
+                                <LongLogo/>
+                            </div>
+                            <NavMenuButtons
+                                vertical={false}
+                            />
+                        </div>
+                        <div className={styles.rightPanel}>
+                            <ColorModeToggle />
+                            <div className={styles.menuToggle}>
+                                <Button onClick={() => setDrawerOpen(!drawerOpen)}>
+                                    <MenuIcon />
+                                </Button>
+                            </div>
                         </div>
                     </div>
                 </Toolbar>

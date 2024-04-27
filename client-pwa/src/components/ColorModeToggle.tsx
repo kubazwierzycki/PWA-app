@@ -1,4 +1,5 @@
 import {FormControlLabel, styled, Switch} from "@mui/material";
+import {useColorMode} from "../contexts/ThemeContext.tsx";
 
 
 const MaterialUISwitch = styled(Switch)(({ theme }) => ({
@@ -50,10 +51,10 @@ const MaterialUISwitch = styled(Switch)(({ theme }) => ({
 
 const ColorModeToggle = () => {
 
-    //const colorMode = useColorMode();
+    const colorMode = useColorMode();
 
     function handleModeChange() {
-        //colorMode.toggleColorMode();
+        colorMode.toggleColorMode();
     }
 
     return (

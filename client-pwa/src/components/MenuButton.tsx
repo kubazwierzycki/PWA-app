@@ -1,4 +1,4 @@
-import {Button, Menu, MenuItem} from "@mui/material";
+import {Button, Menu, MenuItem, Typography} from "@mui/material";
 import React, {useState} from "react";
 import {useNavigate} from "react-router-dom";
 
@@ -46,8 +46,11 @@ const MenuButton = ({menu_item}: {menu_item: MenuItem}) => {
                 aria-haspopup="true"
                 onClick={hasSubMenu ? handleOpen : handleClick}
                 onMouseOver={hasSubMenu ? handleOpen : undefined}
+                style={{marginLeft: "5px"}}
             >
-                {menu_item.name}
+                <Typography color={"text.primary"}>
+                    {menu_item.name}
+                </Typography>
             </Button>
             {
                 hasSubMenu &&

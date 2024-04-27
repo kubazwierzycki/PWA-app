@@ -24,11 +24,27 @@
     flex: 0 0 200px;
 }
 
+.logoContainer {
+    margin-right: 30px;
+}
+
 .menuButtons {
     flex-grow: 0;
     display: flex;
     flex-direction: row;
     align-items: center;
+}
+
+.centerPanel {
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+    justify-content: center;
+}
+
+.rightPanel {
+    display: flex;
+    flex-direction: row;
 }
 
 .menuToggle {
