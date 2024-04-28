@@ -53,16 +53,32 @@
     display: none;
 }
 
-
-
 .drawerContainer {
     width: fit-content;
     height: 100%;
     padding-left: 20px;
     padding-right: 20px;
     box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-content: center;
 }
 
+.drawerLogo {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.drawerLogo img {
+    height: 60px;
+}
+
+.logoText {
+    margin-left: 15px;
+    font-size: 1.5rem;
+}
 
 @media screen and (max-width: 850px) {
 

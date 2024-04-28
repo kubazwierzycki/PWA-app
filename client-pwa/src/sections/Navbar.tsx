@@ -18,6 +18,10 @@ const Navbar = () => {
 
     const Offset = styled('div')(({ theme }) => theme.mixins.toolbar);
 
+    const closeDrawer = () => {
+        setDrawerOpen(false);
+    }
+
     return (
         <nav>
             <AppBar color="default" position="sticky">
@@ -29,7 +33,7 @@ const Navbar = () => {
                             </div>
                             <NavMenuButtons
                                 vertical={false}
-                                setDrawerOpen={setDrawerOpen}
+                                closeDrawer={closeDrawer}
                             />
                         </div>
                         <div className={styles.rightPanel}>

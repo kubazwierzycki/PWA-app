@@ -5,11 +5,11 @@ import ListItemText from '@mui/material/ListItemText';
 import Collapse from '@mui/material/Collapse';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
-import React, {useState} from "react";
+import {useState} from "react";
 import {getMenuItemIcon, menu_structure} from "../config/menu_structure.tsx";
 import {useNavigate} from "react-router-dom";
 
-const NestedMenu = ({setDrawerOpen}: {setDrawerOpen: React.Dispatch<boolean>}) => {
+const NestedMenu = ({closeDrawer}: {closeDrawer: () => void}) => {
 
     const [expandedItems, setExpandedItems] =
         useState<Map<string, boolean>>(new Map());
@@ -31,7 +31,7 @@ const NestedMenu = ({setDrawerOpen}: {setDrawerOpen: React.Dispatch<boolean>}) =
             // not expandable, use plain link
             navigate(link);
             // close the drawer menu
-            setDrawerOpen(false);
+            closeDrawer();
         }
     };
 
