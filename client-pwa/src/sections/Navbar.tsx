@@ -3,7 +3,7 @@ import {AppBar, Toolbar, styled, Button} from "@mui/material";
 import {ReactNode, useState} from "react";
 import DrawerMenu from "./DrawerMenu.tsx";
 import NavMenuButtons from "../components/NavMenuButtons.tsx";
-import LongLogo from "../components/LongLogo.tsx";
+import LogoText from "../components/LogoText.tsx";
 import ColorModeToggle from "../components/ColorModeToggle.tsx";
 import MenuIcon from "@mui/icons-material/Menu";
 import {useColorMode} from "../contexts/ThemeContext.tsx";
@@ -31,7 +31,7 @@ const Navbar = (): ReactNode => {
                     <div className={styles.navbarContainer}>
                         <div className={styles.centerPanel}>
                             <div className={styles.logoContainer}>
-                                <LongLogo/>
+                                <LogoText/>
                             </div>
                             <NavMenuButtons
                                 vertical={false}

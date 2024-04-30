@@ -1,7 +1,7 @@
 import {Box, Stack, Typography} from "@mui/material";
 import { Fragment } from "react/jsx-runtime";
 import styles from "../styles/footer.module.css"
-import Logo from "../components/Logo.tsx";
+import Logo from "../components/LogoHourglass.tsx";
 import GitHubIcon from '@mui/icons-material/GitHub';
 import {Link} from "react-router-dom";
 import {ReactNode} from "react";

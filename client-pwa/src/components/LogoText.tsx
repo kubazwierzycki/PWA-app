@@ -1,4 +1,4 @@
-import long_logo from '../assets/logo/long_logo.jpeg'
+import logo_text from '../assets/logo/logo_text.png'
 import {Link} from "react-router-dom";
 import {ReactNode} from "react";
 
@@ -7,16 +7,16 @@ import {ReactNode} from "react";
  * Long version of app logo component (with name)
  * @returns {ReactNode}
  */
-const LongLogo = (): ReactNode => {
+const LogoText = (): ReactNode => {
 
 
     return (
         <div>
             <Link to="/">
-                <img src={long_logo} alt="CoGame" style={{maxWidth: "200px"}}/>
+                <img src={logo_text} alt="CoGame" style={{maxWidth: "200px"}}/>
             </Link>
         </div>
     )
 }
 
-export default LongLogo;
+export default LogoText;
