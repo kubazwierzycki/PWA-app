@@ -1,10 +1,11 @@
+import {ReactNode} from "react";
 
 
 /**
  * Info about site page
- * @constructor
+ * @returns {ReactNode}
  */
-const About = () => {
+const About = (): ReactNode => {
 
 
     return (

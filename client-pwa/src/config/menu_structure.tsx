@@ -3,8 +3,16 @@ import HomeIcon from '@mui/icons-material/Home';
 import ExtensionIcon from '@mui/icons-material/Extension';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import InfoIcon from '@mui/icons-material/Info';
+import {ReactNode} from "react";
 
 
+/**
+ * @interface
+ * @name MenuItem
+ * @property {string} name - name displayed on button
+ * @property {string} link - routing link for menu button
+ * @property {MenuItem[]} sub - list of submenu items
+ */
 interface MenuItem {
     name: string;
     link: string;
@@ -12,6 +20,9 @@ interface MenuItem {
 }
 
 
+/**
+ * Configuration object describing menu structure for menu navbar elements
+ */
 export const menu_structure: MenuItem[] = [
     {
         name: "Home",
@@ -56,7 +67,12 @@ export const menu_structure: MenuItem[] = [
     }
 ]
 
-export const getMenuItemIcon = (item: string) => {
+/**
+ * Function mapping menu icons for menu elements name
+ * @param {string} item - name of menu element
+ * @returns {ReactNode}
+ */
+export const getMenuItemIcon = (item: string): ReactNode => {
     switch (item) {
         case "Home":
             return <HomeIcon/>

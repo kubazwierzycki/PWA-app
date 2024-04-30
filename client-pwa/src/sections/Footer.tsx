@@ -4,9 +4,13 @@ import styles from "../styles/footer.module.css"
 import Logo from "../components/Logo.tsx";
 import GitHubIcon from '@mui/icons-material/GitHub';
 import {Link} from "react-router-dom";
+import {ReactNode} from "react";
 
-
-const Footer = () => {
+/**
+ * Layout footer component
+ * @returns {ReactNode}
+ */
+const Footer = (): ReactNode => {
 
 
     return (

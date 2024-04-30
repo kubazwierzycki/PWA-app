@@ -1,10 +1,11 @@
+import { ReactNode } from "react";
 
 
 /**
  * Website homepage
- * @constructor
+ * @returns {ReactNode}
  */
-const Home = () => {
+const Home = (): ReactNode => {
 
 
     return (

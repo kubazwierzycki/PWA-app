@@ -2,13 +2,20 @@ import styles from "../styles/navbar.module.css";
 import {Drawer} from "@mui/material";
 import NavMenuButtons from "../components/NavMenuButtons.tsx";
 import Logo from "../components/Logo.tsx";
+import {ReactNode} from "react";
 
 interface DrawerState {
     drawerOpen: boolean,
     setDrawerOpen: (newState: boolean) => void
 }
 
-const DrawerMenu = ({drawerOpen, setDrawerOpen}: DrawerState) => {
+/**
+ * Side drawer menu component
+ * @param {boolean} drawerOpen - state controlling visibility of drawer menu
+ * @param {function(boolean): void} setDrawerOpen - function changing drawer state
+ * @returns {ReactNode}
+ */
+const DrawerMenu = ({drawerOpen, setDrawerOpen}: DrawerState): ReactNode => {
 
     return (
         <Drawer open={drawerOpen} onClose={() => setDrawerOpen(false)}>

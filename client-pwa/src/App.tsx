@@ -8,8 +8,14 @@ import Play from "./pages/Play.tsx";
 import CollectionPage from "./pages/boardgame/CollectionPage.tsx";
 import RandomGamePage from "./pages/boardgame/RandomGamePage.tsx";
 import BoardGameSearch from "./pages/boardgame/BoardGameSearch.tsx";
+import {ReactNode} from "react";
 
-function App() {
+
+/**
+ * Main app component, controls page routing
+ * @returns {ReactNode}
+ */
+function App(): ReactNode {
 
     return (
         <BrowserRouter>

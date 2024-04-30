@@ -1,12 +1,13 @@
 import long_logo from '../assets/logo/long_logo.jpeg'
 import {Link} from "react-router-dom";
+import {ReactNode} from "react";
 
 
 /**
- * Long version of app logo (with name)
- * @constructor
+ * Long version of app logo component (with name)
+ * @returns {ReactNode}
  */
-const LongLogo = () => {
+const LongLogo = (): ReactNode => {
 
 
     return (

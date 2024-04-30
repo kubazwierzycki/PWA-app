@@ -2,8 +2,17 @@ import styles from "../styles/navbar.module.css";
 import {menu_structure} from "../config/menu_structure.tsx";
 import MenuButton from "./MenuButton.tsx";
 import NestedMenu from "./NestedMenu.tsx";
+import {ReactNode} from "react";
 
-const NavMenuButtons = ({vertical, closeDrawer}: {vertical: boolean, closeDrawer: () => void}) => {
+
+/**
+ * Group of navigation buttons with optional submenus component
+ * Uses config file for menu structure control
+ * @param {boolean} vertical - specifies column (true) or row (false) orientation
+ * @param {function(): void} closeDrawer - callback to close drawer menu if necessary
+ * @returns {ReactNode}
+ */
+const NavMenuButtons = ({vertical, closeDrawer}: {vertical: boolean, closeDrawer: () => void}): ReactNode => {
 
     return (
         <div className={vertical ? styles.verticalMenu : styles.horizontalMenu}>

@@ -1,6 +1,10 @@
+import {ReactNode} from "react";
 
-
-const CollectionPage = () => {
+/**
+ * User game board collection page
+ * @returns {ReactNode}
+ */
+const CollectionPage = (): ReactNode => {
 
 
     return (

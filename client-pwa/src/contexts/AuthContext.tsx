@@ -1,16 +1,14 @@
-import {createContext, ReactElement, useContext} from "react";
+import {createContext, ReactElement, ReactNode, useContext} from "react";
 
 
 const AuthContext = createContext({});
 
 /**
- * Context establishing authorisation mechanisms
- * @param children - elements within context
- * @constructor
+ * Context establishing authorisation logic and access control utility
+ * @param {ReactElement} children - elements within context
+ * @returns {ReactNode}
  */
-export const AuthProvider = ({children}: {children: ReactElement}) => {
-
-    // const navigate = useNavigate();
+export const AuthProvider = ({children}: {children: ReactElement}): ReactNode => {
 
     return (
         <AuthContext.Provider value={{}}>

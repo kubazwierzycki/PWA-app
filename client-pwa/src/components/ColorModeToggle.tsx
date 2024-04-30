@@ -1,7 +1,10 @@
 import {FormControlLabel, styled, Switch} from "@mui/material";
-import {useColorMode} from "../contexts/ThemeContext.tsx";
+import {ReactNode} from "react";
 
 
+/**
+ * Styled toggle switch component
+ */
 const MaterialUISwitch = styled(Switch)(({ theme }) => ({
     width: 62,
     height: 34,
@@ -49,9 +52,14 @@ const MaterialUISwitch = styled(Switch)(({ theme }) => ({
     },
 }));
 
-const ColorModeToggle = () => {
+/**
+ * Dark theme toggle component using theme context
+ * @param colorMode - theme context providing mode toggling function
+ * @returns {ReactNode}
+ */
+const ColorModeToggle = ({colorMode}: {colorMode: {toggleColorMode: () => void}}): ReactNode => {
 
-    const colorMode = useColorMode();
+    //const colorMode = useColorMode();
 
     function handleModeChange() {
         colorMode.toggleColorMode();

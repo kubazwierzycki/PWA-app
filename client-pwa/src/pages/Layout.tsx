@@ -4,8 +4,15 @@ import Navbar from "../sections/Navbar.tsx";
 import {AuthProvider} from "../contexts/AuthContext.tsx";
 import {ThemeModeProvider} from "../contexts/ThemeContext.tsx";
 import Footer from "../sections/Footer.tsx";
+import {ReactNode} from "react";
 
-const Layout = () => {
+
+/**
+ * Main layout common for all pages
+ * Uses color theme and authorisation contexts
+ * @returns {ReactNode}
+ */
+const Layout = (): ReactNode => {
 
 
     return (

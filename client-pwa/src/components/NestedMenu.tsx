@@ -5,17 +5,30 @@ import ListItemText from '@mui/material/ListItemText';
 import Collapse from '@mui/material/Collapse';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
-import {useState} from "react";
+import {ReactNode, useState} from "react";
 import {getMenuItemIcon, menu_structure} from "../config/menu_structure.tsx";
 import {useNavigate} from "react-router-dom";
 
-const NestedMenu = ({closeDrawer}: {closeDrawer: () => void}) => {
+
+/**
+ * Nested vertical drawer menu component
+ * Uses config file for menu structure control
+ * @param {function(): void} closeDrawer - callback to close drawer menu if necessary
+ * @returns {ReactNode}
+ */
+const NestedMenu = ({closeDrawer}: {closeDrawer: () => void}): ReactNode => {
 
     const [expandedItems, setExpandedItems] =
         useState<Map<string, boolean>>(new Map());
 
     const navigate = useNavigate();
 
+    /**
+     * Function to handle nested menu links
+     * @param {string} item - name of menu item element
+     * @param {boolean} expandable - states if menu element has subelements
+     * @param {string} link - routing link of menu element
+     */
     const handleClick = (item: string, expandable: boolean, link: string) => {
         if (expandable) {
             const newExpandedItems = new Map(expandedItems);

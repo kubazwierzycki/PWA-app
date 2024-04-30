@@ -1,6 +1,10 @@
+import {ReactNode} from "react";
 
-
-const RandomGamePage = () => {
+/**
+ * Random board game page
+ * @returns {ReactNode}
+ */
+const RandomGamePage = (): ReactNode => {
 
 
     return (

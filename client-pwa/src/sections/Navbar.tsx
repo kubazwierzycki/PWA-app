@@ -1,19 +1,21 @@
 import styles from '../styles/navbar.module.css'
 import {AppBar, Toolbar, styled, Button} from "@mui/material";
-import {useState} from "react";
+import {ReactNode, useState} from "react";
 import DrawerMenu from "./DrawerMenu.tsx";
 import NavMenuButtons from "../components/NavMenuButtons.tsx";
 import LongLogo from "../components/LongLogo.tsx";
 import ColorModeToggle from "../components/ColorModeToggle.tsx";
 import MenuIcon from "@mui/icons-material/Menu";
+import {useColorMode} from "../contexts/ThemeContext.tsx";
 
 
 /**
  * Top navbar menu component.
- * @constructor
+ * @returns {ReactNode}
  */
-const Navbar = () => {
+const Navbar = (): ReactNode => {
 
+    // state controlling drawer menu visibility
     const [drawerOpen, setDrawerOpen] = useState(false);
 
     const Offset = styled('div')(({ theme }) => theme.mixins.toolbar);
@@ -37,7 +39,7 @@ const Navbar = () => {
                             />
                         </div>
                         <div className={styles.rightPanel}>
-                            <ColorModeToggle />
+                            <ColorModeToggle colorMode={useColorMode()}/>
                             <div className={styles.menuToggle}>
                                 <Button onClick={() => setDrawerOpen(!drawerOpen)}>
                                     <MenuIcon />

@@ -1,6 +1,10 @@
+import {ReactNode} from "react";
 
-
-const Logo = () => {
+/**
+ * Small rectangular version of logo component
+ * @returns {ReactNode}
+ */
+const Logo = (): ReactNode => {
 
 
     return (

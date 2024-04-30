@@ -1,4 +1,4 @@
-import {createContext, ReactElement, useContext, useMemo, useState} from "react";
+import {createContext, ReactElement, ReactNode, useContext, useMemo, useState} from "react";
 import {blue, green, grey, indigo, teal} from "@mui/material/colors";
 import {createTheme, CssBaseline, PaletteMode, ThemeProvider} from "@mui/material";
 
@@ -7,8 +7,17 @@ const ColorModeContext = createContext({
     toggleColorMode: () => {}
 });
 
-export const ThemeModeProvider = ({children}: {children: ReactElement}) => {
+/**
+ * Context for webpage theme and color mode control
+ * @param {ReactElement} children - elements within context
+ * @returns {ReactNode}
+ */
+export const ThemeModeProvider = ({children}: {children: ReactElement}): ReactNode => {
 
+    /**
+     * Returns color theme palette for light/dark mode
+     * @param {PaletteMode} mode - light or dark mode
+     */
     const getDesignTokens = (mode: PaletteMode) => ({
         palette: {
             mode,
@@ -44,7 +53,9 @@ export const ThemeModeProvider = ({children}: {children: ReactElement}) => {
         },
     });
 
-
+    /**
+     * Stores current theme mode
+     */
     const [mode, setMode] = useState('light');
 
     const colorMode = useMemo(

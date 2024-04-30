@@ -1,6 +1,10 @@
+import {ReactNode} from "react";
 
-
-const BoardGameSearch = () => {
+/**
+ * Board game search page
+ * @returns {ReactNode}
+ */
+const BoardGameSearch = (): ReactNode => {
 
 
     return (

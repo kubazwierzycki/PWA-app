@@ -1,10 +1,11 @@
+import {ReactNode} from "react";
 
 
 /**
  * User profile and settings page
- * @constructor
+ * @returns {ReactNode}
  */
-const Profile = () => {
+const Profile = (): ReactNode => {
 
 
     return (
