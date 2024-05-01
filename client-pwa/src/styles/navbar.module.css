@@ -1,0 +1,106 @@
+.navbarContainer {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    height: fit-content;
+    padding: 15px;
+    box-sizing: border-box;
+    position: sticky;
+    top: 0;
+}
+
+.verticalMenu {
+    display: none;
+    justify-content: center;
+}
+
+.horizontalMenu {
+    display: flex;
+    align-items: center;
+}
+
+.logo {
+    flex: 0 0 200px;
+}
+
+.logoContainer {
+    margin-right: 30px;
+}
+
+.menuButtons {
+    flex-grow: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.centerPanel {
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+    justify-content: center;
+}
+
+.rightPanel {
+    display: flex;
+    flex-direction: row;
+}
+
+.menuToggle {
+    flex-grow: 0;
+    align-self: center;
+    display: none;
+}
+
+.drawerContainer {
+    width: fit-content;
+    height: 100%;
+    padding-left: 20px;
+    padding-right: 20px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+}
+
+.drawerLogo {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.drawerLogo img {
+    height: 60px;
+}
+
+.logoText {
+    margin-left: 15px;
+    font-size: 1.5rem;
+}
+
+@media screen and (max-width: 850px) {
+
+    .verticalMenu {
+        display: flex;
+    }
+
+    .horizontalMenu {
+        display: none;
+    }
+
+    .navbarContainer {
+        justify-content: space-between;
+    }
+
+    .menuButtons {
+        flex-direction: column;
+    }
+
+    .menuToggle {
+        display: block;
+    }
+
+}
+

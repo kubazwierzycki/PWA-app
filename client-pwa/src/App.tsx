@@ -1,35 +1,37 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
+import {BrowserRouter, Route, Routes} from 'react-router-dom';
+import Layout from "./pages/Layout.tsx";
+import About from "./pages/About.tsx";
+import Home from "./pages/Home.tsx";
+import Profile from "./pages/Profile.tsx";
+import Play from "./pages/Play.tsx";
+import CollectionPage from "./pages/boardgame/CollectionPage.tsx";
+import RandomGamePage from "./pages/boardgame/RandomGamePage.tsx";
+import BoardGameSearch from "./pages/boardgame/BoardGameSearch.tsx";
+import {ReactNode} from "react";
 
-function App() {
-  const [count, setCount] = useState(0)
 
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+/**
+ * Main app component, controls page routing
+ * @returns {ReactNode}
+ */
+function App(): ReactNode {
+
+    return (
+        <BrowserRouter>
+            <Routes>
+                <Route path="/" element={<Layout />}>
+                    <Route path="/" element={<Home />}></Route>
+                    <Route path="/about" element={<About />}></Route>
+                    <Route path="/profile" element={<Profile />}></Route>
+                    <Route path="/play" element={<Play />}></Route>
+                    <Route path="/boardgames/collection" element={<CollectionPage />}></Route>
+                    <Route path="/boardgames/random" element={<RandomGamePage />}></Route>
+                    <Route path="/boardgames/search" element={<BoardGameSearch />}></Route>
+                </Route>
+            </Routes>
+        </BrowserRouter>
+    )
 }
 
 export default App
