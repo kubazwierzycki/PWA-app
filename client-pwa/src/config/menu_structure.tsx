@@ -3,6 +3,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import ExtensionIcon from '@mui/icons-material/Extension';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import InfoIcon from '@mui/icons-material/Info';
+import KeyIcon from '@mui/icons-material/Key';
 import {ReactNode} from "react";
 
 
@@ -61,6 +62,11 @@ export const menu_structure: MenuItem[] = [
         sub: []
     },
     {
+        name: "Sign In",
+        link: "/signIn",
+        sub: []
+    },
+    {
         name: "About",
         link: "/about",
         sub: []
@@ -82,6 +88,8 @@ export const getMenuItemIcon = (item: string): ReactNode => {
             return <PersonOutlineIcon/>
         case "Play":
             return <PlayArrowIcon/>
+        case "Sign In":
+            return <KeyIcon/>
         case "About":
             return <InfoIcon/>
         default:

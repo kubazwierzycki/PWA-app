@@ -54,7 +54,7 @@ const Footer = (): ReactNode => {
                                 </div>
                                 <div className={styles.infoElement}>
                                     <Typography variant="body1" color="text.primary">
-                                        CoGame@2024
+                                        CoGame &copy; 2024
                                     </Typography>
                                 </div>
                             </div>

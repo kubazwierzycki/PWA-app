@@ -114,9 +114,10 @@ public class UserDefaultController implements UserController {
         }
         else {
             String token = UUID.randomUUID().toString();
+            UUID uuid = UUID.randomUUID();
             userService.create(
                     User.builder()
-                            .uuid(UUID.randomUUID())
+                            .uuid(uuid)
                             .email(request.getEmail())
                             .username(request.getUsername())
                             .password(SecurityProvider.calculateSHA256(request.getPassword()))
@@ -124,7 +125,7 @@ public class UserDefaultController implements UserController {
                             .bggUsername(request.getBggUsername())
                             .build()
             );
-            return ResponseEntity.ok(Token.builder().token(token).build());
+            return ResponseEntity.ok(Token.builder().token(token).uuid(uuid.toString()).build());
         }
     }
 
@@ -148,7 +149,7 @@ public class UserDefaultController implements UserController {
                                 .token(SecurityProvider.calculateSHA256(token))
                                 .build()
                 );
-                return ResponseEntity.ok(Token.builder().token(token).build());
+                return ResponseEntity.ok(Token.builder().token(token).uuid(user.getUuid().toString()).build());
             }
         }
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
