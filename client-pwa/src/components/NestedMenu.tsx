@@ -8,6 +8,7 @@ import ExpandMore from '@mui/icons-material/ExpandMore';
 import {ReactNode, useState} from "react";
 import {getMenuItemIcon, menu_structure} from "../config/menu_structure.tsx";
 import {useNavigate} from "react-router-dom";
+import {useAuth} from "../contexts/AuthContext.tsx";
 
 
 /**
@@ -22,6 +23,8 @@ const NestedMenu = ({closeDrawer}: {closeDrawer: () => void}): ReactNode => {
         useState<Map<string, boolean>>(new Map());
 
     const navigate = useNavigate();
+
+    const {uuid} = useAuth();
 
     /**
      * Function to handle nested menu links
@@ -54,7 +57,8 @@ const NestedMenu = ({closeDrawer}: {closeDrawer: () => void}): ReactNode => {
             component="nav"
         >
             {
-                menu_structure.map(element => (
+                menu_structure.map(element =>
+                    !(element.name === "Sign In" && uuid !== '') ? (
                     <div key={element.name}>
                         <ListItemButton
                             key={element.name}
@@ -92,7 +96,7 @@ const NestedMenu = ({closeDrawer}: {closeDrawer: () => void}): ReactNode => {
                             </Collapse>
                         }
                     </div>
-                ))
+                ) : <></> )
             }
         </List>
     );
