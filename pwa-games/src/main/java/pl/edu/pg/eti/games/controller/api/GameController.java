@@ -19,6 +19,11 @@ import pl.edu.pg.eti.games.entity.Game;
  */
 public interface GameController {
 
+    /**
+     * GET request for all games or games with a specific name pattern
+     * @param pattern (optional) - game name pattern
+     * @return a list of games
+     */
     @GetMapping("/api/games")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
@@ -26,6 +31,12 @@ public interface GameController {
             @RequestParam(value="pattern", required=false) String pattern
     );
 
+    /**
+     * GET request for the game with a specific id/name
+     * @param value - id/name value
+     * @param type - enum: id/name
+     * @return specific game (if exists)
+     */
     @GetMapping("/api/games/{value}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
@@ -34,6 +45,11 @@ public interface GameController {
             @RequestParam("type") String type
     );
 
+    /**
+     * PUT request to create or update game details
+     * @param id - game ID
+     * @param request - game details
+     */
     @PutMapping("/api/games/{id}")
     @ResponseStatus(HttpStatus.CREATED)
     void putGame(
@@ -41,6 +57,10 @@ public interface GameController {
             @RequestBody PutGame request
     );
 
+    /**
+     * DELETE request to delete game
+     * @param id - game ID
+     */
     @DeleteMapping("/api/games/{id}")
     void deleteGame(
             @PathVariable("id") String id

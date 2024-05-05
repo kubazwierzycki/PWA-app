@@ -40,17 +40,39 @@ public class Game implements Serializable {
      * The ranking with the most popular timer settings for the game
      */
     @ElementCollection
-    @OrderBy("position")
+    @OrderBy("popularity DESC")
     private List<TimerSettings> mostPopularTimers;
 
+    /**
+     * Add new timer settings or increase popularity of old one
+     * @param timerSettings - timer details
+     */
+    public void addTimerSettings(TimerSettings timerSettings) {
+
+        if (mostPopularTimers.size() >= 10) {
+            mostPopularTimers = mostPopularTimers.subList(0, 5);
+        }
+
+        if (mostPopularTimers.contains(timerSettings)) {
+            int index = mostPopularTimers.indexOf(timerSettings);
+            timerSettings = mostPopularTimers.get(index);
+            timerSettings.upPopularity();
+            mostPopularTimers.set(index, timerSettings);
+        }
+        else {
+            mostPopularTimers.add(timerSettings);
+        }
+    }
+
     @Embeddable
+    @Getter
     @NoArgsConstructor
     public static class TimerSettings {
 
         /**
-         * Ranking position
+         * Frequency of the settings
          */
-        private int position;
+        private int popularity;
 
         /**
          * If the timer is counted for a round or game
@@ -65,7 +87,7 @@ public class Game implements Serializable {
         private int time;
 
         public TimerSettings(boolean isTimeTurnBased, int time) {
-            this.position = 5;
+            this.popularity = 1;
             this.isTimeTurnBased = isTimeTurnBased;
             this.time = time;
         }
@@ -77,14 +99,8 @@ public class Game implements Serializable {
                     this.time == ((TimerSettings) obj).time;
         }
 
-        public void upPosition() {
-            if (position >= 2) {
-                this.position--;
-            }
-        }
-
-        public void downPosition() {
-            this.position++;
+        public void upPopularity() {
+            this.popularity++;
         }
     }
 }
