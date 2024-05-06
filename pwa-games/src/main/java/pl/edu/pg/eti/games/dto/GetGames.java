@@ -11,7 +11,7 @@ import lombok.ToString;
 import java.util.List;
 
 /**
- * Used as a GET  response to represent one or more games
+ * Used as a GET response to represent one or more games
  */
 @Getter
 @Setter

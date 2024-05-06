@@ -18,9 +18,9 @@ public interface GameService {
     Optional<Game> findById(String id);
 
     /**
-     * Find all games by name
+     * Find a game by name
      * @param name - game name
-     * @return a list of games with a specific name
+     * @return a game with a specific name (if exists)
      */
     Optional<Game> findByName(String name);
 

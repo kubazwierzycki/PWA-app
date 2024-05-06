@@ -65,5 +65,4 @@ public interface GameController {
     void deleteGame(
             @PathVariable("id") String id
     );
-
 }
