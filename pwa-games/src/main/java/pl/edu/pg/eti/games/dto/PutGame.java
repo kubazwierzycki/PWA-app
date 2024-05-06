@@ -16,7 +16,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @EqualsAndHashCode
 public class PutGame {
-    private String id;
     private String name;
     private boolean isTurnBased;
     private int time;

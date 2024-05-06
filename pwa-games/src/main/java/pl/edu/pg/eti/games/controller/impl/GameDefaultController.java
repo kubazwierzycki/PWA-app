@@ -83,10 +83,15 @@ public class GameDefaultController implements GameController {
 
         if (game == null) {
             game = Game.builder()
-                    .id(request.getId())
+                    .id(id)
                     .name(request.getName())
                     .mostPopularTimers(new ArrayList<>())
                     .build();
+        }
+        else {
+            if (!game.getName().equals(request.getName())) {
+                game.setName(request.getName());
+            }
         }
 
         Game.TimerSettings timerSettings = new Game.TimerSettings(request.isTurnBased(), request.getTime());
