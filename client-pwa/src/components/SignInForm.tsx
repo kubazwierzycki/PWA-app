@@ -41,7 +41,7 @@ interface Message {
  * @returns {ReactNode}
  */
 export default function SignInForm(): ReactNode {
-    const [authData, setAuthData] = useState<State>({
+    const [formData, setFormData] = useState<State>({
         username: "",
         password: "",
     });
@@ -52,38 +52,35 @@ export default function SignInForm(): ReactNode {
     });
 
     const navigate = useNavigate();
-    const handleChange =
-        (prop: keyof State) => (event: React.ChangeEvent<HTMLInputElement>) => {
-            setAuthData({ ...authData, [prop]: event.target.value });
-        };
+    const handleChange = (prop: keyof State) => (event: React.ChangeEvent<HTMLInputElement>) => {
+        setFormData({ ...formData, [prop]: event.target.value });
+    };
 
     const [showPassword, setShowPassword] = useState(false);
 
     const handleClickShowPassword = () => setShowPassword((show) => !show);
 
-    const handleMouseDownPassword = (
-        event: React.MouseEvent<HTMLButtonElement>
-    ) => {
+    const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
     };
 
     const handleSignIn = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         let hasError: boolean = false;
-        if (authData.username == "") {
+        if (formData.username == "") {
             hasError = true;
         }
-        if (authData.password == "") {
+        if (formData.password == "") {
             hasError = true;
         }
-        setAuthData({
+        setFormData({
             username: "",
             password: "",
         });
         setShowPassword(false);
         if (!hasError) {
             authorisationService
-                .signIn(authData.username, authData.password)
+                .signIn(formData.username, formData.password)
                 .then((res) => {
                     navigate("/");
                     Cookies.set("token", res.token);
@@ -106,6 +103,12 @@ export default function SignInForm(): ReactNode {
                                 severity: Severity.Error,
                             });
                             break;
+                        case "ERR_NETWORK":
+                            setAlertMessage({
+                                message: "Network error.",
+                                severity: Severity.Error,
+                            });
+                            break;
                     }
                 });
         }
@@ -114,7 +117,7 @@ export default function SignInForm(): ReactNode {
         <Box
             component="form"
             onSubmit={handleSignIn}
-            id="authForm"
+            id="signInForm"
             sx={{
                 display: "flex",
                 flexDirection: "column",
@@ -125,7 +128,7 @@ export default function SignInForm(): ReactNode {
                 p: 2,
             }}
         >
-            {alertMessage.message != "" ? (
+            {alertMessage.message != "" && (
                 <Alert
                     severity={alertMessage.severity}
                     onClose={() =>
@@ -137,38 +140,26 @@ export default function SignInForm(): ReactNode {
                 >
                     {alertMessage.message}
                 </Alert>
-            ) : (
-                false
             )}
-            <FormControl
-                sx={{ m: 1 }}
-                variant="filled"
-                color="primary"
-                required={true}
-            >
-                <InputLabel shrink htmlFor="authFormUsername">
+            <FormControl sx={{ m: 1 }} variant="filled" color="primary" required={true}>
+                <InputLabel shrink htmlFor="signInFormUsername">
                     Username
                 </InputLabel>
                 <OutlinedInput
-                    id="authFormUsername"
+                    id="signInFormUsername"
                     type="text"
-                    value={authData.username}
+                    value={formData.username}
                     onChange={handleChange("username")}
                 />
             </FormControl>
-            <FormControl
-                sx={{ m: 1 }}
-                variant="filled"
-                color="primary"
-                required={true}
-            >
-                <InputLabel shrink htmlFor="authFormPassword">
+            <FormControl sx={{ m: 1 }} variant="filled" color="primary" required={true}>
+                <InputLabel shrink htmlFor="signInFormPassword">
                     Password
                 </InputLabel>
                 <OutlinedInput
-                    id="authFormPassword"
+                    id="signInFormPassword"
                     type={showPassword ? "text" : "password"}
-                    value={authData.password}
+                    value={formData.password}
                     onChange={handleChange("password")}
                     endAdornment={
                         <InputAdornment position="end">
@@ -178,22 +169,13 @@ export default function SignInForm(): ReactNode {
                                 onMouseDown={handleMouseDownPassword}
                                 edge="end"
                             >
-                                {showPassword ? (
-                                    <VisibilityOff />
-                                ) : (
-                                    <Visibility />
-                                )}
+                                {showPassword ? <VisibilityOff /> : <Visibility />}
                             </IconButton>
                         </InputAdornment>
                     }
                 />
             </FormControl>
-            <Button
-                sx={{ m: 1 }}
-                variant="contained"
-                type="submit"
-                id="authFormSubmit"
-            >
+            <Button sx={{ m: 1 }} variant="contained" type="submit" id="signInFormSubmit">
                 Sign in
             </Button>
         </Box>

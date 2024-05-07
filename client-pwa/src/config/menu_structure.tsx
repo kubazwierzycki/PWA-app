@@ -1,11 +1,10 @@
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import HomeIcon from '@mui/icons-material/Home';
-import ExtensionIcon from '@mui/icons-material/Extension';
-import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
-import InfoIcon from '@mui/icons-material/Info';
-import KeyIcon from '@mui/icons-material/Key';
-import {ReactNode} from "react";
-
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import HomeIcon from "@mui/icons-material/Home";
+import ExtensionIcon from "@mui/icons-material/Extension";
+import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
+import InfoIcon from "@mui/icons-material/Info";
+import KeyIcon from "@mui/icons-material/Key";
+import { ReactNode } from "react";
 
 /**
  * @interface
@@ -20,7 +19,6 @@ interface MenuItem {
     sub: MenuItem[];
 }
 
-
 /**
  * Configuration object describing menu structure for menu navbar elements
  */
@@ -28,7 +26,7 @@ export const menu_structure: MenuItem[] = [
     {
         name: "Home",
         link: "/",
-        sub: []
+        sub: [],
     },
     {
         name: "Boardgames",
@@ -37,41 +35,46 @@ export const menu_structure: MenuItem[] = [
             {
                 name: "My collection",
                 link: "/boardgames/collection",
-                sub: []
+                sub: [],
             },
             {
                 name: "Random game",
                 link: "/boardgames/random",
-                sub: []
+                sub: [],
             },
             {
                 name: "Find game",
                 link: "/boardgames/search",
-                sub: []
-            }
-        ]
+                sub: [],
+            },
+        ],
     },
     {
         name: "Play",
         link: "/play",
-        sub: []
+        sub: [],
     },
     {
         name: "Profile",
         link: "/profile",
-        sub: []
+        sub: [],
     },
     {
         name: "Sign In",
         link: "/signIn",
-        sub: []
+        sub: [],
+    },
+    {
+        name: "Sign Up",
+        link: "/signUp",
+        sub: [],
     },
     {
         name: "About",
         link: "/about",
-        sub: []
-    }
-]
+        sub: [],
+    },
+];
 
 /**
  * Function mapping menu icons for menu elements name
@@ -81,18 +84,20 @@ export const menu_structure: MenuItem[] = [
 export const getMenuItemIcon = (item: string): ReactNode => {
     switch (item) {
         case "Home":
-            return <HomeIcon/>
+            return <HomeIcon />;
         case "Boardgames":
-            return <ExtensionIcon/>
+            return <ExtensionIcon />;
         case "Profile":
-            return <PersonOutlineIcon/>
+            return <PersonOutlineIcon />;
         case "Play":
-            return <PlayArrowIcon/>
+            return <PlayArrowIcon />;
         case "Sign In":
-            return <KeyIcon/>
+            return <KeyIcon />;
+        case "Sign Up":
+            return <KeyIcon />;
         case "About":
-            return <InfoIcon/>
+            return <InfoIcon />;
         default:
-            return <></>
+            return <></>;
     }
-}
+};
