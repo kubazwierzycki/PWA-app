@@ -17,4 +17,5 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode
 public class Token {
     private String token;
+    private String uuid;
 }
