@@ -1,0 +1,34 @@
+### GET all games
+GET localhost:8080/api/games
+
+### GET all games which contains pattern (ignore case)
+GET localhost:8080/api/games?pattern=game
+
+### GET game with specific ID
+GET localhost:8080/api/games/1?type=id
+
+### GET game with specific name
+GET localhost:8080/api/games/game 1?type=name
+
+### CREATE a new game
+PUT localhost:8080/api/games/5
+Content-Type: application/json
+
+{
+  "name": "game 5",
+  "isTurnBased": false,
+  "time": 100
+}
+
+### UPDATE game settings
+PUT localhost:8080/api/games/1
+Content-Type: application/json
+
+{
+  "name": "game 1",
+  "isTurnBased": false,
+  "time": 50
+}
+
+### DELETE game
+DELETE localhost:8080/api/games/1
