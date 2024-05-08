@@ -3,7 +3,10 @@ import { ReactNode, useState } from "react";
 import { Box } from "@mui/system";
 import Button from "@mui/material/Button";
 import { Alert, FormControl, InputLabel, OutlinedInput } from "@mui/material";
-
+import authorisationService from "../services/authorization.tsx";
+import { useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
+import { useAuth } from "../contexts/AuthContext.tsx";
 /**
  * Form state.
  */
@@ -31,7 +34,7 @@ interface Message {
  * @returns {ReactNode}
  */
 export default function SignUpForm(): ReactNode {
-    const [formData, setAuthData] = useState<State>({
+    const [formData, setFormData] = useState<State>({
         username: "",
         email: "",
         bgg: "",
@@ -39,17 +42,75 @@ export default function SignUpForm(): ReactNode {
         passwordConfirmation: "",
     });
 
+    const { setToken, setUuid } = useAuth();
+    const navigate = useNavigate();
     const [alertMessage, setAlertMessage] = useState<Message>({
         message: "",
         severity: Severity.Info,
     });
 
     const handleChange = (prop: keyof State) => (event: React.ChangeEvent<HTMLInputElement>) => {
-        setAuthData({ ...formData, [prop]: event.target.value });
+        setFormData({ ...formData, [prop]: event.target.value });
+    };
+
+    const validateForm = (): boolean => {
+        const fD = formData;
+        const hasError: boolean = true;
+        if (fD.password !== fD.passwordConfirmation) {
+            setAlertMessage({
+                message: "Password and password confirmation do not match.",
+                severity: Severity.Warning,
+            });
+            return hasError;
+        }
+        return !hasError;
     };
 
     const handleSignUp = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+        const fD = formData;
+        const hasError: boolean = validateForm();
+        setFormData({
+            username: "",
+            email: "",
+            bgg: "",
+            password: "",
+            passwordConfirmation: "",
+        });
+        if (!hasError) {
+            authorisationService
+                .singUp(fD.email, fD.username, fD.password, fD.bgg)
+                .then((res) => {
+                    navigate("/");
+                    Cookies.set("token", res.token);
+                    Cookies.set("uuid", res.uuid);
+                    setToken(res.token);
+                    setUuid(res.uuid);
+                })
+                .catch((err) => {
+                    console.log(err);
+                    switch (err.code) {
+                        case "ERR_BAD_REQUEST":
+                            setAlertMessage({
+                                message: "Username or e-mail address is already in use.",
+                                severity: Severity.Warning,
+                            });
+                            break;
+                        case "ERR_BAD_RESPONSE":
+                            setAlertMessage({
+                                message: "Internal server error.",
+                                severity: Severity.Error,
+                            });
+                            break;
+                        case "ERR_NETWORK":
+                            setAlertMessage({
+                                message: "Network error.",
+                                severity: Severity.Error,
+                            });
+                            break;
+                    }
+                });
+        }
     };
     return (
         <Box
@@ -119,6 +180,7 @@ export default function SignUpForm(): ReactNode {
                 <OutlinedInput
                     id="signUpFormPassword"
                     value={formData.password}
+                    type="password"
                     onChange={handleChange("password")}
                 />
             </FormControl>
@@ -129,6 +191,7 @@ export default function SignUpForm(): ReactNode {
                 <OutlinedInput
                     id="signUpFormPasswordConfirmation"
                     value={formData.passwordConfirmation}
+                    type="password"
                     onChange={handleChange("passwordConfirmation")}
                 />
             </FormControl>
