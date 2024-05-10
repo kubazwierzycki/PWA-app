@@ -4,6 +4,7 @@ import Navbar from "../sections/Navbar.tsx";
 import {ThemeModeProvider} from "../contexts/ThemeContext.tsx";
 import Footer from "../sections/Footer.tsx";
 import {ReactNode} from "react";
+import {NavContextProvider} from "../contexts/NavbarContext.tsx";
 
 
 /**
@@ -19,7 +20,9 @@ const Layout = (): ReactNode => {
                 <div className={styles.pageContainer}>
                     <div className={styles.contentWrapper}>
                         <div className={styles.navbar}>
-                            <Navbar/>
+                            <NavContextProvider>
+                                <Navbar/>
+                            </NavContextProvider>
                         </div>
                         <div className={styles.pageContent}>
                             <Outlet/>

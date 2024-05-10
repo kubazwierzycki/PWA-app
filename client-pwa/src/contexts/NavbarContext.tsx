@@ -1,4 +1,4 @@
-import {
+import React, {
     createContext,
     Dispatch,
     ReactElement,
@@ -13,8 +13,9 @@ type NavbarContextType = {
     setDrawerOpen: Dispatch<SetStateAction<boolean>>;
     userPopupOpen: boolean;
     setUserPopupOpen: Dispatch<SetStateAction<boolean>>;
-    anchorEl: Element | null;
-    setAnchorEl: Dispatch<SetStateAction<Element | null>>;
+    anchorEl: HTMLButtonElement | null;
+    setAnchorEl: Dispatch<SetStateAction<HTMLButtonElement | null>>;
+    handlePopoverClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
     handlePopoverClose: () => void;
 }
 
@@ -33,7 +34,11 @@ export const NavContextProvider = ({children}: {children: ReactElement}): ReactN
     // state controlling user interface popup visibility
     const [userPopupOpen, setUserPopupOpen] = useState(false);
 
-    const [anchorEl, setAnchorEl] = useState<Element | null>(null);
+    const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+
+    const handlePopoverClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
 
     const handlePopoverClose = () => {
         setUserPopupOpen(false);
@@ -48,6 +53,7 @@ export const NavContextProvider = ({children}: {children: ReactElement}): ReactN
             setUserPopupOpen,
             anchorEl,
             setAnchorEl,
+            handlePopoverClick,
             handlePopoverClose
         }}>
             {children}

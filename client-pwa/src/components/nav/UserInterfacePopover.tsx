@@ -1,7 +1,7 @@
 import { Popover } from "@mui/material";
 
 interface UserInterfacePopoverProps {
-    anchorEl: Element | null,
+    anchorEl: HTMLButtonElement | null,
     open: boolean,
     handleClose: () => void
 }

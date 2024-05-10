@@ -9,7 +9,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import {useColorMode} from "../contexts/ThemeContext.tsx";
 import LogoutButton from '../components/controls/buttons/SignOutButton.tsx';
 import UserAvatar from "../components/nav/UserAvatar.tsx";
-import {NavContextProvider, useNavContext} from "../contexts/NavbarContext.tsx";
+import {useNavContext} from "../contexts/NavbarContext.tsx";
 import UserInterfacePopover from "../components/nav/UserInterfacePopover.tsx";
 
 
@@ -20,57 +20,56 @@ import UserInterfacePopover from "../components/nav/UserInterfacePopover.tsx";
 const Navbar = (): ReactNode => {
 
     const {drawerOpen, setDrawerOpen} = useNavContext();
+    const {anchorEl, userPopupOpen, setUserPopupOpen, handlePopoverClose} = useNavContext();
 
     const Offset = styled('div')(({ theme }) => theme.mixins.toolbar);
 
-    const closeDrawer = () => {
-        setDrawerOpen(false);
+    const handleDrawerClick = () => {
+        setDrawerOpen(!drawerOpen);
     }
 
     return (
-        <NavContextProvider>
-            <nav>
-                <AppBar color="default" position="sticky">
-                    <Toolbar>
-                        <div className={styles.navbarContainer}>
-                            <div className={styles.centerPanel}>
-                                <div className={styles.logoContainer}>
-                                    <LogoText/>
-                                </div>
-                                <NavMenuButtons
-                                    vertical={false}
-                                    closeDrawer={closeDrawer}
+        <nav>
+            <AppBar color="default" position="sticky">
+                <Toolbar>
+                    <div className={styles.navbarContainer}>
+                        <div className={styles.centerPanel}>
+                            <div className={styles.logoContainer}>
+                                <LogoText/>
+                            </div>
+                            <NavMenuButtons
+                                vertical={false}
+                                closeDrawer={() => setDrawerOpen(false)}
+                            />
+                        </div>
+                        <div>
+                            <LogoutButton/>
+                        </div>
+                        <div className={styles.rightPanel}>
+                            <ColorModeToggle colorMode={useColorMode()}/>
+                            <div>
+                                <UserAvatar onClick={() => setUserPopupOpen(true)}/>
+                                <UserInterfacePopover
+                                    anchorEl={anchorEl}
+                                    open={userPopupOpen}
+                                    handleClose={handlePopoverClose}
                                 />
                             </div>
-                            <div>
-                                <LogoutButton/>
-                            </div>
-                            <div className={styles.rightPanel}>
-                                <ColorModeToggle colorMode={useColorMode()}/>
-                                <div>
-                                    <UserAvatar onClick={() => alert("click")}/>
-                                    <UserInterfacePopover
-                                        anchorEl={useNavContext().anchorEl}
-                                        open={useNavContext().userPopupOpen}
-                                        handleClose={useNavContext().handlePopoverClose}
-                                    />
-                                </div>
-                                <div className={styles.menuToggle}>
-                                    <Button onClick={() => setDrawerOpen(!drawerOpen)}>
-                                        <MenuIcon/>
-                                    </Button>
-                                </div>
+                            <div className={styles.menuToggle}>
+                                <Button onClick={handleDrawerClick}>
+                                    <MenuIcon/>
+                                </Button>
                             </div>
                         </div>
-                    </Toolbar>
-                </AppBar>
-                <Offset/>
-                <DrawerMenu
-                    drawerOpen={drawerOpen}
-                    setDrawerOpen={setDrawerOpen}
-                />
-            </nav>
-        </NavContextProvider>
+                    </div>
+                </Toolbar>
+            </AppBar>
+            <Offset/>
+            <DrawerMenu
+                drawerOpen={drawerOpen}
+                setDrawerOpen={setDrawerOpen}
+            />
+        </nav>
     )
 }
 
