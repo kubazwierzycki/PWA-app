@@ -20,12 +20,17 @@ import UserInterfacePopover from "../components/nav/UserInterfacePopover.tsx";
 const Navbar = (): ReactNode => {
 
     const {drawerOpen, setDrawerOpen} = useNavContext();
-    const {anchorEl, userPopupOpen, setUserPopupOpen, handlePopoverClose} = useNavContext();
+    const {anchorEl, setAnchorEl, userPopupOpen, setUserPopupOpen, handlePopoverClose} = useNavContext();
 
     const Offset = styled('div')(({ theme }) => theme.mixins.toolbar);
 
     const handleDrawerClick = () => {
         setDrawerOpen(!drawerOpen);
+    }
+
+    const handlePopoverOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setUserPopupOpen(true);
+        setAnchorEl(event.currentTarget);
     }
 
     return (
@@ -48,7 +53,7 @@ const Navbar = (): ReactNode => {
                         <div className={styles.rightPanel}>
                             <ColorModeToggle colorMode={useColorMode()}/>
                             <div>
-                                <UserAvatar onClick={() => setUserPopupOpen(true)}/>
+                                <UserAvatar onClick={handlePopoverOpen}/>
                                 <UserInterfacePopover
                                     anchorEl={anchorEl}
                                     open={userPopupOpen}
