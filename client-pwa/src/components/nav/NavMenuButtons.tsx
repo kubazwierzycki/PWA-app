@@ -1,9 +1,9 @@
-import styles from "../styles/navbar.module.css";
-import { menu_structure } from "../config/menu_structure.tsx";
-import MenuButton from "./MenuButton.tsx";
+import styles from "../../styles/navbar.module.css";
+import { menu_structure } from "../../config/menu_structure.tsx";
+import MenuButton from "../controls/buttons/MenuButton.tsx";
 import NestedMenu from "./NestedMenu.tsx";
 import { ReactNode } from "react";
-import { useAuth } from "../contexts/AuthContext.tsx";
+import { useAuth } from "../../contexts/AuthContext.tsx";
 
 /**
  * Group of navigation buttons with optional submenus component

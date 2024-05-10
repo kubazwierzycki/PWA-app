@@ -6,9 +6,9 @@ import Collapse from "@mui/material/Collapse";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import { ReactNode, useState } from "react";
-import { getMenuItemIcon, menu_structure } from "../config/menu_structure.tsx";
+import { getMenuItemIcon, menu_structure } from "../../config/menu_structure.tsx";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext.tsx";
+import { useAuth } from "../../contexts/AuthContext.tsx";
 
 /**
  * Nested vertical drawer menu component

@@ -2,12 +2,12 @@ import styles from '../styles/navbar.module.css'
 import {AppBar, Toolbar, styled, Button} from "@mui/material";
 import {ReactNode, useState} from "react";
 import DrawerMenu from "./DrawerMenu.tsx";
-import NavMenuButtons from "../components/NavMenuButtons.tsx";
-import LogoText from "../components/LogoText.tsx";
-import ColorModeToggle from "../components/ColorModeToggle.tsx";
+import NavMenuButtons from "../components/nav/NavMenuButtons.tsx";
+import LogoText from "../components/logo/LogoText.tsx";
+import ColorModeToggle from "../components/controls/ColorModeToggle.tsx";
 import MenuIcon from "@mui/icons-material/Menu";
 import {useColorMode} from "../contexts/ThemeContext.tsx";
-import LogoutButton from '../components/SignOutButton.tsx';
+import LogoutButton from '../components/controls/buttons/SignOutButton.tsx';
 
 
 /**

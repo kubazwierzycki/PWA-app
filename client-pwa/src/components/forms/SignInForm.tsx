@@ -12,10 +12,10 @@ import {
 } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import authorisationService from "../services/authorization.tsx";
+import authorisationService from "../../services/authorization.tsx";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
-import { useAuth } from "../contexts/AuthContext.tsx";
+import { useAuth } from "../../contexts/AuthContext.tsx";
 
 /**
  * Form state.

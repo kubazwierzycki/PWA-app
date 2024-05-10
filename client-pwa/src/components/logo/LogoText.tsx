@@ -1,4 +1,4 @@
-import logo_text from '../assets/logo/logo_text.png'
+import logo_text from '../../assets/logo/logo_text.png'
 import {Link} from "react-router-dom";
 import {ReactNode} from "react";
 
