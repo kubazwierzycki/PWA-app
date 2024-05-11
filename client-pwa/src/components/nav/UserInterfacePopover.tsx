@@ -1,4 +1,9 @@
-import { Popover } from "@mui/material";
+import {Popover, Typography} from "@mui/material";
+import UserCard from "./UserCard.tsx";
+import {useAuth} from "../../contexts/AuthContext.tsx";
+import MenuButton from "../controls/buttons/MenuButton.tsx";
+import {getMenuItemByName} from "../../config/menu_structure.tsx";
+import styles from "../../styles/userPopover.module.css"
 
 interface UserInterfacePopoverProps {
     anchorEl: HTMLButtonElement | null,
@@ -9,6 +14,21 @@ interface UserInterfacePopoverProps {
 
 const UserInterfacePopover = ({anchorEl, open, handleClose}: UserInterfacePopoverProps) => {
 
+    const {uuid} = useAuth();
+
+    const AnonInterface = () => (
+        <div className={styles.notLoggedContainer}>
+            <MenuButton menu_item={getMenuItemByName("Sign In")!}/>
+            <Typography>Don't have an account yet?</Typography>
+            <MenuButton menu_item={getMenuItemByName("Sign Up")!}/>
+        </div>
+    )
+
+    const LoggedInterface = () => (
+        <div>
+            <UserCard />
+        </div>
+    )
 
     return (
         <div>
@@ -25,7 +45,9 @@ const UserInterfacePopover = ({anchorEl, open, handleClose}: UserInterfacePopove
                     horizontal: 'right',
                 }}
             >
-                User Interface
+                {
+                    uuid === '' ? <AnonInterface/> : <LoggedInterface/>
+                }
             </Popover>
         </div>
     )

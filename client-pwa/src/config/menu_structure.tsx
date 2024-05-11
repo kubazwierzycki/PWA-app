@@ -101,3 +101,11 @@ export const getMenuItemIcon = (item: string): ReactNode => {
             return <></>;
     }
 };
+
+
+export const getMenuItemByName = (name: string) : MenuItem | null => {
+    for (let menu_item of menu_structure) {
+        if (menu_item.name === name) return menu_item;
+    }
+    return null;
+}
