@@ -3,7 +3,6 @@ import { menu_structure } from "../../config/menu_structure.tsx";
 import MenuButton from "../controls/buttons/MenuButton.tsx";
 import NestedMenu from "./NestedMenu.tsx";
 import { ReactNode } from "react";
-import { useAuth } from "../../contexts/AuthContext.tsx";
 
 /**
  * Group of navigation buttons with optional submenus component
@@ -19,7 +18,9 @@ const NavMenuButtons = ({
     vertical: boolean;
     closeDrawer: () => void;
 }): ReactNode => {
-    const { uuid } = useAuth();
+
+    // array of menu items not present in top menu navbar
+    const topNavExcluded: string[] = ["Sign In", "Sign Up", "Profile"];
 
     return (
         <div className={vertical ? styles.verticalMenu : styles.horizontalMenu}>
@@ -29,8 +30,7 @@ const NavMenuButtons = ({
                 ) : (
                     menu_structure.map((menu_item) =>
                         !(
-                            uuid !== "" &&
-                            (menu_item.name === "Sign In" || menu_item.name === "Sign Up")
+                            topNavExcluded.includes(menu_item.name)
                         ) ? (
                             <MenuButton menu_item={menu_item} key={menu_item.name} />
                         ) : (
