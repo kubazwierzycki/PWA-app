@@ -6,6 +6,7 @@ import {getMenuItemByName} from "../../config/menu_structure.tsx";
 import styles from "../../styles/userPopover.module.css"
 import SignOutButton from "../controls/buttons/SignOutButton.tsx";
 import {useNavContext} from "../../contexts/NavbarContext.tsx";
+import {ReactNode} from "react";
 
 interface UserInterfacePopoverProps {
     anchorEl: HTMLButtonElement | null,
@@ -13,8 +14,14 @@ interface UserInterfacePopoverProps {
     handleClose: () => void
 }
 
-
-const UserInterfacePopover = ({anchorEl, open, handleClose}: UserInterfacePopoverProps) => {
+/**
+ * Popover component providing access to log in/out actions and other user related pages
+ * @param anchorEl {HTMLButtonElement | null} - element to which popover should be anchored
+ * @param open {boolean} - state controlling whether popover is open or closed
+ * @param handleClose {function() => void} - callback function to close the popover
+ * @returns {ReactNode}
+ */
+const UserInterfacePopover = ({anchorEl, open, handleClose}: UserInterfacePopoverProps): ReactNode => {
 
     const {uuid} = useAuth();
 

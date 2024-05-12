@@ -1,8 +1,14 @@
 import {Avatar, Card, Chip, Stack, Typography} from "@mui/material";
+import {ReactNode} from "react";
 
 
-const UserCard = () => {
+/**
+ * Component presenting user account info
+ * @returns {ReactNode}
+ */
+const UserCard = (): ReactNode => {
 
+    // TODO: getting actual account info from context when ready
 
     return (
         <div>

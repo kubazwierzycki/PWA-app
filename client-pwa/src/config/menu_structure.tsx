@@ -102,7 +102,12 @@ export const getMenuItemIcon = (item: string): ReactNode => {
     }
 };
 
-
+/**
+ * Function returning menu item from menu_structure config by its name
+ * Assumes two layers of menu structure
+ * @param name {string} - name of menu item to look for
+ * @returns {MenuItem | null} returns null if not present
+ */
 export const getMenuItemByName = (name: string) : MenuItem | null => {
     for (let menu_item of menu_structure) {
         if (menu_item.name === name)
