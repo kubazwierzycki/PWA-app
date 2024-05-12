@@ -1,8 +1,26 @@
 .notLoggedContainer {
     padding: 20px;
+    width: fit-content;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-content: center;
     box-sizing: border-box;
+}
+
+.loggedContainer {
+    padding: 20px;
+    width: fit-content;
+    box-sizing: border-box;
+}
+
+.userCard {
+
+}
+
+.menuButtons {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }

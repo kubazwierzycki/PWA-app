@@ -33,7 +33,7 @@ export const menu_structure: MenuItem[] = [
         link: "/boardgames",
         sub: [
             {
-                name: "My collection",
+                name: "Collections",
                 link: "/boardgames/collection",
                 sub: [],
             },
@@ -105,7 +105,12 @@ export const getMenuItemIcon = (item: string): ReactNode => {
 
 export const getMenuItemByName = (name: string) : MenuItem | null => {
     for (let menu_item of menu_structure) {
-        if (menu_item.name === name) return menu_item;
+        if (menu_item.name === name)
+            return menu_item;
+        for (let sub_item of menu_item.sub) {
+            if (sub_item.name === name)
+                return sub_item;
+        }
     }
     return null;
 }

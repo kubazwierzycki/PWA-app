@@ -10,12 +10,12 @@ const UserCard = () => {
                 <Stack direction="row" alignItems="center" spacing={1} useFlexGap>
                     <Avatar variant="rounded" src="avatar.jpg" />
                         <Stack direction="column" alignItems="center"  useFlexGap>
-                            <Typography fontWeight="semiBold" color="text.primary">{"user name"}</Typography>
                             <Chip
                                 size="small"
                                 color={'default'}
-                                label={"login"}
+                                label={"user_login"}
                             />
+                            <Typography fontWeight="semiBold" color="text.primary">{"user_email"}</Typography>
                         </Stack>
                 </Stack>
             </Card>

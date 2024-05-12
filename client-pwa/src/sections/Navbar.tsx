@@ -7,7 +7,6 @@ import LogoText from "../components/logo/LogoText.tsx";
 import ColorModeToggle from "../components/controls/ColorModeToggle.tsx";
 import MenuIcon from "@mui/icons-material/Menu";
 import {useColorMode} from "../contexts/ThemeContext.tsx";
-import LogoutButton from '../components/controls/buttons/SignOutButton.tsx';
 import UserAvatar from "../components/nav/UserAvatar.tsx";
 import {useNavContext} from "../contexts/NavbarContext.tsx";
 import UserInterfacePopover from "../components/nav/UserInterfacePopover.tsx";
@@ -46,9 +45,6 @@ const Navbar = (): ReactNode => {
                                 vertical={false}
                                 closeDrawer={() => setDrawerOpen(false)}
                             />
-                        </div>
-                        <div>
-                            <LogoutButton/>
                         </div>
                         <div className={styles.rightPanel}>
                             <ColorModeToggle colorMode={useColorMode()}/>
