@@ -1,7 +1,7 @@
 import styles from "../styles/navbar.module.css";
 import {Drawer} from "@mui/material";
-import NavMenuButtons from "../components/NavMenuButtons.tsx";
-import Logo from "../components/LogoHourglass.tsx";
+import NavMenuButtons from "../components/nav/NavMenuButtons.tsx";
+import Logo from "../components/logo/LogoHourglass.tsx";
 import {ReactNode} from "react";
 
 interface DrawerState {

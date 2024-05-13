@@ -1,7 +1,7 @@
-import {useAuth} from "../contexts/AuthContext.tsx"
+import {useAuth} from "../../../contexts/AuthContext.tsx"
 import Cookies from 'js-cookie';
 import { useNavigate } from "react-router-dom";
-import authorizationService from '../services/authorization.tsx';
+import authorizationService from '../../../services/authorization.tsx';
 import Button from "@mui/material/Button";
 import { ReactNode } from "react";
 

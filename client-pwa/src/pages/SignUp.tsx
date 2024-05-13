@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import SignUpForm from "../components/SignUpForm.tsx";
+import SignUpForm from "../components/forms/SignUpForm.tsx";
 
 /**
  * SignUp page

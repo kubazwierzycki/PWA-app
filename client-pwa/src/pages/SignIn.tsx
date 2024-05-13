@@ -1,5 +1,5 @@
 import {ReactNode} from "react";
-import SignInForm from "../components/SignInForm.tsx";
+import SignInForm from "../components/forms/SignInForm.tsx";
 
 
 /**

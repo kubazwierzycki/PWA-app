@@ -1,13 +1,15 @@
 import styles from '../styles/navbar.module.css'
 import {AppBar, Toolbar, styled, Button} from "@mui/material";
-import {ReactNode, useState} from "react";
+import {ReactNode} from "react";
 import DrawerMenu from "./DrawerMenu.tsx";
-import NavMenuButtons from "../components/NavMenuButtons.tsx";
-import LogoText from "../components/LogoText.tsx";
-import ColorModeToggle from "../components/ColorModeToggle.tsx";
+import NavMenuButtons from "../components/nav/NavMenuButtons.tsx";
+import LogoText from "../components/logo/LogoText.tsx";
+import ColorModeToggle from "../components/controls/ColorModeToggle.tsx";
 import MenuIcon from "@mui/icons-material/Menu";
 import {useColorMode} from "../contexts/ThemeContext.tsx";
-import LogoutButton from '../components/SignOutButton.tsx';
+import UserAvatar from "../components/nav/UserAvatar.tsx";
+import {useNavContext} from "../contexts/NavbarContext.tsx";
+import UserInterfacePopover from "../components/nav/UserInterfacePopover.tsx";
 
 
 /**
@@ -16,13 +18,18 @@ import LogoutButton from '../components/SignOutButton.tsx';
  */
 const Navbar = (): ReactNode => {
 
-    // state controlling drawer menu visibility
-    const [drawerOpen, setDrawerOpen] = useState(false);
+    const {drawerOpen, setDrawerOpen} = useNavContext();
+    const {anchorEl, setAnchorEl, userPopupOpen, setUserPopupOpen, handlePopoverClose} = useNavContext();
 
     const Offset = styled('div')(({ theme }) => theme.mixins.toolbar);
 
-    const closeDrawer = () => {
-        setDrawerOpen(false);
+    const handleDrawerClick = () => {
+        setDrawerOpen(!drawerOpen);
+    }
+
+    const handlePopoverOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setUserPopupOpen(true);
+        setAnchorEl(event.currentTarget);
     }
 
     return (
@@ -36,17 +43,22 @@ const Navbar = (): ReactNode => {
                             </div>
                             <NavMenuButtons
                                 vertical={false}
-                                closeDrawer={closeDrawer}
+                                closeDrawer={() => setDrawerOpen(false)}
                             />
-                        </div>
-                        <div>
-                           <LogoutButton/>
                         </div>
                         <div className={styles.rightPanel}>
                             <ColorModeToggle colorMode={useColorMode()}/>
+                            <div>
+                                <UserAvatar onClick={handlePopoverOpen}/>
+                                <UserInterfacePopover
+                                    anchorEl={anchorEl}
+                                    open={userPopupOpen}
+                                    handleClose={handlePopoverClose}
+                                />
+                            </div>
                             <div className={styles.menuToggle}>
-                                <Button onClick={() => setDrawerOpen(!drawerOpen)}>
-                                    <MenuIcon />
+                                <Button onClick={handleDrawerClick}>
+                                    <MenuIcon/>
                                 </Button>
                             </div>
                         </div>

@@ -1,4 +1,4 @@
-import logo_hourglass from '../assets/logo/logo_hourglass.png'
+import logo_hourglass from '../../assets/logo/logo_hourglass.png'
 import {ReactNode} from "react";
 
 /**
