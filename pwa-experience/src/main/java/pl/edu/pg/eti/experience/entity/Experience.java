@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import pl.edu.pg.eti.games.entity.Game;
 import pl.edu.pg.eti.users.entity.User;
 
@@ -20,6 +21,7 @@ import java.util.UUID;
  * The entity represents the game statistics associated with a user
  */
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
