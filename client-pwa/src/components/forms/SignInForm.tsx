@@ -70,22 +70,20 @@ export default function SignInForm(): ReactNode {
             message: "",
             severity: Severity.Info,
         });
-        let hasError: boolean = false;
+        let isValid: boolean = false;
         const fD = formData;
-        if (fD.username == "") {
-            const regexp = new RegExp("\\b[a-zA-Z][\\w\\d]{3,19}\\b"); //"\b[a-zA-Z][\\w\\d]{4,20}\b
-            const hasValidCharacters = regexp.test(fD.username);
-            hasError = !hasValidCharacters;
-        }
+        const regexp = new RegExp("^[a-zA-Z][\\w\\d]{3,19}$");
+        const hasValidCharacters = regexp.test(fD.username);
+        isValid = hasValidCharacters;
         if (fD.password.length < 6) {
-            hasError = true;
+            isValid = false;
         }
         setFormData({
             username: "",
             password: "",
         });
         setShowPassword(false);
-        if (!hasError) {
+        if (isValid) {
             authorisationService
                 .signIn(fD.username, fD.password)
                 .then((res) => {

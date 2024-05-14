@@ -55,71 +55,60 @@ export default function SignUpForm(): ReactNode {
 
     const validateUsername = (username: string, type: string): boolean => {
         const usernameLength = username.length;
-        let hasError: boolean = false;
-        if (type === "BGG" && username === "") {
-            hasError = false;
-            return hasError;
-        }
         if (usernameLength < 4) {
             setAlertMessage({
                 message: `${type} must be at least 4 characters long.`,
                 severity: Severity.Warning,
             });
-            hasError = true;
-            return hasError;
+            return false;
         }
         if (usernameLength > 20) {
             setAlertMessage({
                 message: `${type} must be no more than 20 characters long.`,
                 severity: Severity.Warning,
             });
-            hasError = true;
-            return hasError;
+            return false;
         }
-        const regexp = new RegExp("\\b[a-zA-Z][\\w\\d]{3,19}\\b"); //"\b[a-zA-Z][\\w\\d]{4,20}\b
+        const regexp = new RegExp("^[a-zA-Z][\\w\\d]{3,19}$");
         const hasValidCharacters = regexp.test(username);
-        console.log(hasValidCharacters);
+        console.log("hasValidCharacters: ", hasValidCharacters, username);
         if (!hasValidCharacters) {
             setAlertMessage({
                 message: `${type} must start with a letter, and may contain only letters, numbers and underscores (_).`,
                 severity: Severity.Warning,
             });
-            hasError = true;
-            return hasError;
+            return false;
         }
-        return hasError;
+
+        return true;
     };
 
     const validatePassword = (password: string, passwordConfirmation: string): boolean => {
-        let hasError: boolean = false;
         if (password.length < 6) {
             setAlertMessage({
                 message: "Password must be at least  6 characters long.",
                 severity: Severity.Warning,
             });
-            hasError = true;
-            return hasError;
+            return false;
         }
         if (password !== passwordConfirmation) {
             setAlertMessage({
                 message: "Password and password confirmation do not match.",
                 severity: Severity.Warning,
             });
-            hasError = true;
-            return hasError;
+            return false;
         }
-        return hasError;
+        return true;
     };
 
     const validateForm = (): boolean => {
         const fD = formData;
-        let hasError: boolean = true;
 
-        hasError =
-            validateUsername(fD.username, "Username") ||
-            validateUsername(fD.bgg, "BGG") ||
+        const isValid =
+            validateUsername(fD.username, "Username") &&
+            (fD.bgg === "" || validateUsername(fD.bgg, "BGG")) &&
             validatePassword(fD.password, fD.passwordConfirmation);
-        return hasError;
+        return isValid;
     };
 
     const handleSignUp = (event: React.FormEvent<HTMLFormElement>) => {
@@ -129,16 +118,9 @@ export default function SignUpForm(): ReactNode {
             severity: Severity.Info,
         });
         const fD = formData;
-        const hasError: boolean = validateForm();
-        console.log("hasError: ", hasError);
-        setFormData({
-            username: "",
-            email: "",
-            bgg: "",
-            password: "",
-            passwordConfirmation: "",
-        });
-        if (!hasError) {
+        const isValid: boolean = validateForm();
+
+        if (isValid) {
             authorisationService
                 .singUp(fD.email, fD.username, fD.password, fD.bgg)
                 .then((res) => {
