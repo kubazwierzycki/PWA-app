@@ -140,6 +140,7 @@ export default function SignInForm(): ReactNode {
         >
             {alertMessage.message != "" && (
                 <Alert
+                    aria-label="formAlert"
                     severity={alertMessage.severity}
                     onClose={() =>
                         setAlertMessage({
