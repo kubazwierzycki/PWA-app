@@ -66,11 +66,18 @@ export default function SignInForm(): ReactNode {
 
     const handleSignIn = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+        setAlertMessage({
+            message: "",
+            severity: Severity.Info,
+        });
         let hasError: boolean = false;
-        if (formData.username == "") {
-            hasError = true;
+        const fD = formData;
+        if (fD.username == "") {
+            const regexp = new RegExp("\\b[a-zA-Z][\\w\\d]{3,19}\\b"); //"\b[a-zA-Z][\\w\\d]{4,20}\b
+            const hasValidCharacters = regexp.test(fD.username);
+            hasError = !hasValidCharacters;
         }
-        if (formData.password == "") {
+        if (fD.password.length < 6) {
             hasError = true;
         }
         setFormData({
@@ -80,7 +87,7 @@ export default function SignInForm(): ReactNode {
         setShowPassword(false);
         if (!hasError) {
             authorisationService
-                .signIn(formData.username, formData.password)
+                .signIn(fD.username, fD.password)
                 .then((res) => {
                     navigate("/");
                     Cookies.set("token", res.token);
@@ -111,6 +118,11 @@ export default function SignInForm(): ReactNode {
                             break;
                     }
                 });
+        } else {
+            setAlertMessage({
+                message: "Incorrect username or password.",
+                severity: Severity.Warning,
+            });
         }
     };
     return (

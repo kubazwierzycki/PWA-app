@@ -49,7 +49,7 @@ const singUp = (email: string, username: string, password: string, bggUsername: 
             email: email,
             username: username,
             password: password,
-            bggUsername: bggUsername,
+            bggUsername: bggUsername !== "" ? bggUsername : null,
         },
     });
 

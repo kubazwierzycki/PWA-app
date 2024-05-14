@@ -53,23 +53,83 @@ export default function SignUpForm(): ReactNode {
         setFormData({ ...formData, [prop]: event.target.value });
     };
 
-    const validateForm = (): boolean => {
-        const fD = formData;
-        const hasError: boolean = true;
-        if (fD.password !== fD.passwordConfirmation) {
+    const validateUsername = (username: string, type: string): boolean => {
+        const usernameLength = username.length;
+        let hasError: boolean = false;
+        if (type === "BGG" && username === "") {
+            hasError = false;
+            return hasError;
+        }
+        if (usernameLength < 4) {
+            setAlertMessage({
+                message: `${type} must be at least 4 characters long.`,
+                severity: Severity.Warning,
+            });
+            hasError = true;
+            return hasError;
+        }
+        if (usernameLength > 20) {
+            setAlertMessage({
+                message: `${type} must be no more than 20 characters long.`,
+                severity: Severity.Warning,
+            });
+            hasError = true;
+            return hasError;
+        }
+        const regexp = new RegExp("\\b[a-zA-Z][\\w\\d]{3,19}\\b"); //"\b[a-zA-Z][\\w\\d]{4,20}\b
+        const hasValidCharacters = regexp.test(username);
+        if (!hasValidCharacters) {
+            setAlertMessage({
+                message: `${type} must start with a letter, and may contain only letters, numbers and underscores (_).`,
+                severity: Severity.Warning,
+            });
+            hasError = true;
+            return hasError;
+        }
+        return hasError;
+    };
+
+    const validatePassword = (password: string, passwordConfirmation: string): boolean => {
+        let hasError: boolean = false;
+        if (password.length < 6) {
+            setAlertMessage({
+                message: "Password must be at least  6 characters long.",
+                severity: Severity.Warning,
+            });
+            hasError = true;
+            return hasError;
+        }
+        if (password !== passwordConfirmation) {
             setAlertMessage({
                 message: "Password and password confirmation do not match.",
                 severity: Severity.Warning,
             });
+            hasError = true;
             return hasError;
         }
-        return !hasError;
+        return hasError;
+    };
+
+    const validateForm = (): boolean => {
+        const fD = formData;
+        let hasError: boolean = true;
+
+        hasError =
+            validateUsername(fD.username, "Username") ||
+            validateUsername(fD.bgg, "BGG") ||
+            validatePassword(fD.password, fD.passwordConfirmation);
+        return hasError;
     };
 
     const handleSignUp = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+        setAlertMessage({
+            message: "",
+            severity: Severity.Info,
+        });
         const fD = formData;
         const hasError: boolean = validateForm();
+        console.log("hasError: ", hasError);
         setFormData({
             username: "",
             email: "",
@@ -157,14 +217,14 @@ export default function SignUpForm(): ReactNode {
                 </InputLabel>
                 <OutlinedInput
                     id="signUpFormEmail"
-                    type="text"
+                    type="email"
                     value={formData.email}
                     onChange={handleChange("email")}
                 />
             </FormControl>
             <FormControl sx={{ m: 1 }} variant="filled" color="primary">
                 <InputLabel shrink htmlFor="signUpFormBGG">
-                    BGG Username
+                    BGG Username (Not required)
                 </InputLabel>
                 <OutlinedInput
                     id="signUpFormBGG"
