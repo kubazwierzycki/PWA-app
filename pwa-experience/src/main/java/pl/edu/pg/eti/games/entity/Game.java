@@ -9,7 +9,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
 import pl.edu.pg.eti.experience.entity.Experience;
 
@@ -20,7 +19,6 @@ import java.util.List;
  * The entity represents a game with default settings
  */
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
