@@ -3,10 +3,10 @@ import { ReactNode, useState } from "react";
 import { Box } from "@mui/system";
 import Button from "@mui/material/Button";
 import { Alert, FormControl, InputLabel, OutlinedInput } from "@mui/material";
-import authorisationService from "../services/authorization.tsx";
+import authorisationService from "../../services/authorization.tsx";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
-import { useAuth } from "../contexts/AuthContext.tsx";
+import { useAuth } from "../../contexts/AuthContext.tsx";
 /**
  * Form state.
  */
@@ -78,6 +78,7 @@ export default function SignUpForm(): ReactNode {
         }
         const regexp = new RegExp("\\b[a-zA-Z][\\w\\d]{3,19}\\b"); //"\b[a-zA-Z][\\w\\d]{4,20}\b
         const hasValidCharacters = regexp.test(username);
+        console.log(hasValidCharacters);
         if (!hasValidCharacters) {
             setAlertMessage({
                 message: `${type} must start with a letter, and may contain only letters, numbers and underscores (_).`,
