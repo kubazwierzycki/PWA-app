@@ -3,7 +3,7 @@ import { ReactNode, useState } from "react";
 import { Box } from "@mui/system";
 import Button from "@mui/material/Button";
 import { Alert, FormControl, InputLabel, OutlinedInput } from "@mui/material";
-import authorisationService from "../../services/authorization.tsx";
+import authorisationService from "../../services/authorization.ts";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { useAuth } from "../../contexts/AuthContext.tsx";
@@ -49,9 +49,10 @@ export default function SignUpForm(): ReactNode {
         severity: Severity.Info,
     });
 
-    const handleChange = (prop: keyof State) => (event: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData({ ...formData, [prop]: event.target.value });
-    };
+    const handleChange =
+        (prop: keyof State) => (event: React.ChangeEvent<HTMLInputElement>) => {
+            setFormData({ ...formData, [prop]: event.target.value });
+        };
 
     const validateUsername = (username: string, type: string): boolean => {
         const usernameLength = username.length;
@@ -83,7 +84,10 @@ export default function SignUpForm(): ReactNode {
         return true;
     };
 
-    const validatePassword = (password: string, passwordConfirmation: string): boolean => {
+    const validatePassword = (
+        password: string,
+        passwordConfirmation: string
+    ): boolean => {
         if (password.length < 6) {
             setAlertMessage({
                 message: "Password must be at least  6 characters long.",
@@ -106,7 +110,7 @@ export default function SignUpForm(): ReactNode {
 
         const isValid =
             validateUsername(fD.username, "Username") &&
-            (fD.bgg === "" || validateUsername(fD.bgg, "BGG")) &&
+            (fD.bgg === "" || validateUsername(fD.bgg, "BGG Username")) &&
             validatePassword(fD.password, fD.passwordConfirmation);
         return isValid;
     };
@@ -122,7 +126,7 @@ export default function SignUpForm(): ReactNode {
 
         if (isValid) {
             authorisationService
-                .singUp(fD.email, fD.username, fD.password, fD.bgg)
+                .signUp(fD.email, fD.username, fD.password, fD.bgg)
                 .then((res) => {
                     navigate("/");
                     Cookies.set("token", res.token);
@@ -135,7 +139,8 @@ export default function SignUpForm(): ReactNode {
                     switch (err.code) {
                         case "ERR_BAD_REQUEST":
                             setAlertMessage({
-                                message: "Username or e-mail address is already in use.",
+                                message:
+                                    "Username or e-mail address is already in use.",
                                 severity: Severity.Warning,
                             });
                             break;
@@ -183,7 +188,12 @@ export default function SignUpForm(): ReactNode {
                     {alertMessage.message}
                 </Alert>
             )}
-            <FormControl sx={{ m: 1 }} variant="filled" color="primary" required={true}>
+            <FormControl
+                sx={{ m: 1 }}
+                variant="filled"
+                color="primary"
+                required={true}
+            >
                 <InputLabel shrink htmlFor="signUpFormUsername">
                     Username
                 </InputLabel>
@@ -194,7 +204,12 @@ export default function SignUpForm(): ReactNode {
                     onChange={handleChange("username")}
                 />
             </FormControl>
-            <FormControl sx={{ m: 1 }} variant="filled" color="primary" required={true}>
+            <FormControl
+                sx={{ m: 1 }}
+                variant="filled"
+                color="primary"
+                required={true}
+            >
                 <InputLabel shrink htmlFor="signUpFormEmail">
                     E-mail
                 </InputLabel>
@@ -216,7 +231,12 @@ export default function SignUpForm(): ReactNode {
                     onChange={handleChange("bgg")}
                 />
             </FormControl>
-            <FormControl sx={{ m: 1 }} variant="filled" color="primary" required={true}>
+            <FormControl
+                sx={{ m: 1 }}
+                variant="filled"
+                color="primary"
+                required={true}
+            >
                 <InputLabel shrink htmlFor="signUpFormPassword">
                     Password
                 </InputLabel>
@@ -227,7 +247,12 @@ export default function SignUpForm(): ReactNode {
                     onChange={handleChange("password")}
                 />
             </FormControl>
-            <FormControl sx={{ m: 1 }} variant="filled" color="primary" required={true}>
+            <FormControl
+                sx={{ m: 1 }}
+                variant="filled"
+                color="primary"
+                required={true}
+            >
                 <InputLabel shrink htmlFor="signUpFormPasswordConfirmation">
                     Password confirmation
                 </InputLabel>
@@ -238,7 +263,12 @@ export default function SignUpForm(): ReactNode {
                     onChange={handleChange("passwordConfirmation")}
                 />
             </FormControl>
-            <Button sx={{ m: 1 }} variant="contained" type="submit" id="signUpFormSubmit">
+            <Button
+                sx={{ m: 1 }}
+                variant="contained"
+                type="submit"
+                id="signUpFormSubmit"
+            >
                 Sign up
             </Button>
         </Box>

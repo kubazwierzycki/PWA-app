@@ -37,7 +37,12 @@ const signOut = (token: string, uuid: string) => {
     return request.then((response) => response.data);
 };
 
-const singUp = (email: string, username: string, password: string, bggUsername: string) => {
+const signUp = (
+    email: string,
+    username: string,
+    password: string,
+    bggUsername: string
+) => {
     const request = axios({
         method: "post",
         url: `${baseUrl}`,
@@ -56,4 +61,4 @@ const singUp = (email: string, username: string, password: string, bggUsername: 
     return request.then((response) => response.data);
 };
 
-export default { signIn, signOut, singUp };
+export default { signIn, signOut, signUp };

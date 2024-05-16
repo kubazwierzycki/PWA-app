@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import authorisationService from "../../services/authorization.tsx";
+import authorisationService from "../../services/authorization.ts";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { useAuth } from "../../contexts/AuthContext.tsx";
@@ -52,15 +52,18 @@ export default function SignInForm(): ReactNode {
     });
 
     const navigate = useNavigate();
-    const handleChange = (prop: keyof State) => (event: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData({ ...formData, [prop]: event.target.value });
-    };
+    const handleChange =
+        (prop: keyof State) => (event: React.ChangeEvent<HTMLInputElement>) => {
+            setFormData({ ...formData, [prop]: event.target.value });
+        };
 
     const [showPassword, setShowPassword] = useState(false);
 
     const handleClickShowPassword = () => setShowPassword((show) => !show);
 
-    const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const handleMouseDownPassword = (
+        event: React.MouseEvent<HTMLButtonElement>
+    ) => {
         event.preventDefault();
     };
 
@@ -152,7 +155,12 @@ export default function SignInForm(): ReactNode {
                     {alertMessage.message}
                 </Alert>
             )}
-            <FormControl sx={{ m: 1 }} variant="filled" color="primary" required={true}>
+            <FormControl
+                sx={{ m: 1 }}
+                variant="filled"
+                color="primary"
+                required={true}
+            >
                 <InputLabel shrink htmlFor="signInFormUsername">
                     Username
                 </InputLabel>
@@ -163,7 +171,12 @@ export default function SignInForm(): ReactNode {
                     onChange={handleChange("username")}
                 />
             </FormControl>
-            <FormControl sx={{ m: 1 }} variant="filled" color="primary" required={true}>
+            <FormControl
+                sx={{ m: 1 }}
+                variant="filled"
+                color="primary"
+                required={true}
+            >
                 <InputLabel shrink htmlFor="signInFormPassword">
                     Password
                 </InputLabel>
@@ -180,13 +193,22 @@ export default function SignInForm(): ReactNode {
                                 onMouseDown={handleMouseDownPassword}
                                 edge="end"
                             >
-                                {showPassword ? <VisibilityOff /> : <Visibility />}
+                                {showPassword ? (
+                                    <VisibilityOff />
+                                ) : (
+                                    <Visibility />
+                                )}
                             </IconButton>
                         </InputAdornment>
                     }
                 />
             </FormControl>
-            <Button sx={{ m: 1 }} variant="contained" type="submit" id="signInFormSubmit">
+            <Button
+                sx={{ m: 1 }}
+                variant="contained"
+                type="submit"
+                id="signInFormSubmit"
+            >
                 Sign in
             </Button>
         </Box>

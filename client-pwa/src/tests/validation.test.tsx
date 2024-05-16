@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 import "@testing-library/jest-dom";
 import { BrowserRouter } from "react-router-dom";
-import SingInForm from "../components/forms/SignInForm";
+import SignInForm from "../components/forms/SignInForm";
 
 describe("SignInForm validation", () => {
     it("it should display alert after using incorrect username and password", async () => {
@@ -11,7 +11,7 @@ describe("SignInForm validation", () => {
         const user = userEvent.setup();
         render(
             <BrowserRouter>
-                <SingInForm />
+                <SignInForm />
             </BrowserRouter>
         );
 
@@ -22,6 +22,8 @@ describe("SignInForm validation", () => {
         await user.type(passwordInput, "a");
         await user.click(submitButton);
 
-        expect(screen.getByText("Incorrect username or password.")).toBeInTheDocument();
+        expect(
+            screen.getByText("Incorrect username or password.")
+        ).toBeInTheDocument();
     });
 });
