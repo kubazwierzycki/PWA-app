@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import authorisationService from "../../services/authorization.tsx";
+import authorisationService from "../../services/authorization.ts";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { useAuth } from "../../contexts/AuthContext.tsx";
@@ -52,35 +52,43 @@ export default function SignInForm(): ReactNode {
     });
 
     const navigate = useNavigate();
-    const handleChange = (prop: keyof State) => (event: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData({ ...formData, [prop]: event.target.value });
-    };
+    const handleChange =
+        (prop: keyof State) => (event: React.ChangeEvent<HTMLInputElement>) => {
+            setFormData({ ...formData, [prop]: event.target.value });
+        };
 
     const [showPassword, setShowPassword] = useState(false);
 
     const handleClickShowPassword = () => setShowPassword((show) => !show);
 
-    const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const handleMouseDownPassword = (
+        event: React.MouseEvent<HTMLButtonElement>
+    ) => {
         event.preventDefault();
     };
 
     const handleSignIn = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        let hasError: boolean = false;
-        if (formData.username == "") {
-            hasError = true;
-        }
-        if (formData.password == "") {
-            hasError = true;
+        setAlertMessage({
+            message: "",
+            severity: Severity.Info,
+        });
+        let isValid: boolean = false;
+        const fD = formData;
+        const regexp = new RegExp("^[a-zA-Z][\\w\\d]{3,19}$");
+        const hasValidCharacters = regexp.test(fD.username);
+        isValid = hasValidCharacters;
+        if (fD.password.length < 6) {
+            isValid = false;
         }
         setFormData({
             username: "",
             password: "",
         });
         setShowPassword(false);
-        if (!hasError) {
+        if (isValid) {
             authorisationService
-                .signIn(formData.username, formData.password)
+                .signIn(fD.username, fD.password)
                 .then((res) => {
                     navigate("/");
                     Cookies.set("token", res.token);
@@ -111,6 +119,11 @@ export default function SignInForm(): ReactNode {
                             break;
                     }
                 });
+        } else {
+            setAlertMessage({
+                message: "Incorrect username or password.",
+                severity: Severity.Warning,
+            });
         }
     };
     return (
@@ -130,6 +143,7 @@ export default function SignInForm(): ReactNode {
         >
             {alertMessage.message != "" && (
                 <Alert
+                    aria-label="formAlert"
                     severity={alertMessage.severity}
                     onClose={() =>
                         setAlertMessage({
@@ -141,7 +155,12 @@ export default function SignInForm(): ReactNode {
                     {alertMessage.message}
                 </Alert>
             )}
-            <FormControl sx={{ m: 1 }} variant="filled" color="primary" required={true}>
+            <FormControl
+                sx={{ m: 1 }}
+                variant="filled"
+                color="primary"
+                required={true}
+            >
                 <InputLabel shrink htmlFor="signInFormUsername">
                     Username
                 </InputLabel>
@@ -152,7 +171,12 @@ export default function SignInForm(): ReactNode {
                     onChange={handleChange("username")}
                 />
             </FormControl>
-            <FormControl sx={{ m: 1 }} variant="filled" color="primary" required={true}>
+            <FormControl
+                sx={{ m: 1 }}
+                variant="filled"
+                color="primary"
+                required={true}
+            >
                 <InputLabel shrink htmlFor="signInFormPassword">
                     Password
                 </InputLabel>
@@ -169,13 +193,22 @@ export default function SignInForm(): ReactNode {
                                 onMouseDown={handleMouseDownPassword}
                                 edge="end"
                             >
-                                {showPassword ? <VisibilityOff /> : <Visibility />}
+                                {showPassword ? (
+                                    <VisibilityOff />
+                                ) : (
+                                    <Visibility />
+                                )}
                             </IconButton>
                         </InputAdornment>
                     }
                 />
             </FormControl>
-            <Button sx={{ m: 1 }} variant="contained" type="submit" id="signInFormSubmit">
+            <Button
+                sx={{ m: 1 }}
+                variant="contained"
+                type="submit"
+                id="signInFormSubmit"
+            >
                 Sign in
             </Button>
         </Box>
