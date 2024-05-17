@@ -64,7 +64,7 @@
 }
 
 .expanded .description {
-    opacity: 0;
+    display: none;
 }
 
 .expandedContent {

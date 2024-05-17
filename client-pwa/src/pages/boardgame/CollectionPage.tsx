@@ -5,13 +5,15 @@ import BoardGameTile from "../../components/BoardGameTile.tsx";
 import {Pagination} from "@mui/material";
 import axios from "axios";
 import {parseXml} from "../../utils/XMLToJSON.ts";
+import {clearCharEntities, getShortDescription} from "../../utils/DescriptionParser.ts";
 
 interface NameType {
     "#text": string
 }
 
 interface BoardGameDetails {
-    description: string
+    description: string,
+    shortDescription: string
 }
 
 interface BoardGameItem {
@@ -31,10 +33,12 @@ const CollectionPage = (): ReactNode => {
 
     const [games, setGames] = useState<BoardGameItem[]>([]);
 
+    const baseApiAddress: string = 'https://boardgamegeek.com/xmlapi2';
+
     useEffect(() => {
         const request  = axios({
             method: 'get',
-            url: `https://boardgamegeek.com/xmlapi2/collection?username=${username}`,
+            url: `${baseApiAddress}/collection?username=${username}`,
         })
         request.then(response => {
             let data: BoardGameItem[] = parseXml(response.data).items.item;
@@ -43,10 +47,15 @@ const CollectionPage = (): ReactNode => {
                 // get board game details
                 const request  = axios({
                     method: 'get',
-                    url: `https://boardgamegeek.com/xmlapi2/thing?id=${game["@_objectid"]}`,
+                    url: `${baseApiAddress}/thing?id=${game["@_objectid"]}`,
                 })
                 request.then(details => {
                     data[i]["details"] = parseXml(details.data).items.item;
+                    // correct description
+                    const correctedDescription = clearCharEntities(data[i]["details"].description);
+                    data[i]["details"].description = correctedDescription;
+                    // short description
+                    data[i]["details"]["shortDescription"] = getShortDescription(correctedDescription);
                 })
             }
             setGames(data)

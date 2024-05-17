@@ -10,7 +10,8 @@ interface NameType {
 }
 
 interface BoardGameDetails {
-    description: string
+    description: string,
+    shortDescription: string
 }
 
 interface BoardGameData {
@@ -23,9 +24,11 @@ const BoardGameTile = ({data}: {data: BoardGameData}) => {
     const [expanded, setExpanded] = useState(false);
 
     const [description, setDescription] = useState("");
+    const [shortDescription, setShortDescription] = useState("");
 
     useEffect(() => {
-        setDescription(data.details.description)
+        setDescription(data.details.description);
+        setShortDescription(data.details.shortDescription);
     }, [data.details]);
 
     const toggleExpanded = () => {
@@ -49,7 +52,7 @@ const BoardGameTile = ({data}: {data: BoardGameData}) => {
                                 </b>
                             </div>
                             <div className={styles.description}>
-                                {description}
+                                {shortDescription}
                             </div>
                         </div>
                         <div className={styles.rating}>
