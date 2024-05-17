@@ -17,7 +17,7 @@ const BoardGameTile = () => {
     return (
         <div>
             <Paper>
-                <div className={`${styles.wrapper} ${expanded ? styles.expanded : ''}`}>
+                <div className={`${styles.wrapper} ${expanded ? styles.expanded : ''}`} onClick={toggleExpanded}>
                     <div className={styles.container}>
                         <div className={styles.thumbnail}>
                             <img alt="thumbnail" src={test_thumbnail}/>
@@ -36,7 +36,7 @@ const BoardGameTile = () => {
                             <StarIcon fontSize="medium"/>
                         </div>
                         <div className={styles.expand}>
-                            <ExpandMoreIcon fontSize="large" cursor={"pointer"} onClick={toggleExpanded}/>
+                            <ExpandMoreIcon fontSize="large"/>
                         </div>
                     </div>
                     <div className={styles.expandedContent} style={{display: expanded ? "block" : "none"}}>

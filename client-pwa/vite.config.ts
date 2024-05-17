@@ -14,5 +14,8 @@ export default defineConfig({
         // workbox settings
       }
     })
-  ]
+  ],
+  optimizeDeps: {
+    include: ["xml2js", "glob", "fs-extra", "graceful-fs"]
+  }
 })

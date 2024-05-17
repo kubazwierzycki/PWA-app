@@ -1,14 +1,7 @@
-import xml2js from 'xml2js';
+import {XMLParser} from "fast-xml-parser";
 
-export function xmlToJson(xml: string): Promise<any> {
-    return new Promise((resolve, reject) => {
-        const parser = new xml2js.Parser();
-        parser.parseString(xml, (err: any, result: any) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(result);
-            }
-        });
-    });
+
+export function parseXml(xml: string): any {
+    const parser = new XMLParser();
+    return parser.parse(xml);
 }
