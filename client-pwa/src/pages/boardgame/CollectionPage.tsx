@@ -6,9 +6,18 @@ import {Pagination} from "@mui/material";
 import axios from "axios";
 import {parseXml} from "../../utils/XMLToJSON.ts";
 
+interface NameType {
+    "#text": string
+}
 
-interface BoardGame {
-    name: string;
+interface BoardGameDetails {
+    description: string
+}
+
+interface BoardGameItem {
+    name: NameType,
+    "@_objectid": string,
+    details: BoardGameDetails
 }
 
 /**
@@ -17,16 +26,31 @@ interface BoardGame {
  */
 const CollectionPage = (): ReactNode => {
 
+    // FOR TESTING
     const username: string = "bhr_79";
 
-    const [games, setGames] = useState<BoardGame[]>([]);
+    const [games, setGames] = useState<BoardGameItem[]>([]);
 
     useEffect(() => {
         const request  = axios({
             method: 'get',
             url: `https://boardgamegeek.com/xmlapi2/collection?username=${username}`,
         })
-        request.then(response => setGames(parseXml(response.data).items.item))
+        request.then(response => {
+            let data: BoardGameItem[] = parseXml(response.data).items.item;
+            for (let i=0; i<data.length; i++) {
+                let game = data[i];
+                // get board game details
+                const request  = axios({
+                    method: 'get',
+                    url: `https://boardgamegeek.com/xmlapi2/thing?id=${game["@_objectid"]}`,
+                })
+                request.then(details => {
+                    data[i]["details"] = parseXml(details.data).items.item;
+                })
+            }
+            setGames(data)
+        })
     }, []);
 
     return (
@@ -35,10 +59,9 @@ const CollectionPage = (): ReactNode => {
                 <CollectionToggle />
             </div>
             <div className={styles.body}>
-                <BoardGameTile />
                 {
                     games.map(game => (
-                        <div>{game.name}</div>
+                        <BoardGameTile data={game} key={game.name["#text"]}/>
                     ))
                 }
             </div>

@@ -3,16 +3,36 @@ import styles from "../styles/boardGameTile.module.css"
 import test_thumbnail from "../assets/test_thumbnail.webp"
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import StarIcon from '@mui/icons-material/Star';
-import {useState} from "react";
+import {useEffect, useState} from "react";
 
+interface NameType {
+    "#text": string
+}
 
-const BoardGameTile = () => {
+interface BoardGameDetails {
+    description: string
+}
+
+interface BoardGameData {
+    name: NameType,
+    details: BoardGameDetails
+}
+
+const BoardGameTile = ({data}: {data: BoardGameData}) => {
 
     const [expanded, setExpanded] = useState(false);
+
+    const [description, setDescription] = useState("");
+
+    useEffect(() => {
+        setDescription(data.details.description)
+    }, [data.details]);
 
     const toggleExpanded = () => {
         setExpanded(!expanded);
     }
+
+    console.log(data);
 
     return (
         <div>
@@ -24,11 +44,12 @@ const BoardGameTile = () => {
                         </div>
                         <div className={styles.text}>
                             <div className={styles.title}>
-                                <b>Game title</b>
+                                <b>
+                                    {data.name["#text"]}
+                                </b>
                             </div>
-                            <div className={styles.description}>Short game description describing game shortly to
-                                describe the game so that it is described, as it makes it more descriptive and allows
-                                better description of the described game, which we want to describe
+                            <div className={styles.description}>
+                                {description}
                             </div>
                         </div>
                         <div className={styles.rating}>
@@ -41,16 +62,7 @@ const BoardGameTile = () => {
                     </div>
                     <div className={styles.expandedContent} style={{display: expanded ? "block" : "none"}}>
                         <hr/>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean at lacinia ex. Donec quis
-                        gravida magna. Suspendisse eu ex sit amet ligula varius ullamcorper eget auctor ante. Nam
-                        efficitur vehicula velit et pretium. Nunc vel justo imperdiet, blandit lacus eget, elementum
-                        nulla. Pellentesque a massa est. Nullam aliquam nisi eu laoreet egestas. In hac habitasse platea
-                        dictumst. Donec imperdiet orci non tortor volutpat, sit amet luctus velit scelerisque.
-                        Vestibulum non cursus orci.
-                        Sed ut lacinia urna. Duis imperdiet neque vel faucibus rhoncus. In eu dictum dui. Duis pretium
-                        dui quis tortor iaculis mattis. In a aliquam elit. Curabitur dignissim blandit velit at mollis.
-                        Maecenas neque nisi, imperdiet sed tellus non, consectetur aliquet lectus. Nam imperdiet semper
-                        lacus in pellentesque.
+                        {description}
                     </div>
                 </div>
             </Paper>

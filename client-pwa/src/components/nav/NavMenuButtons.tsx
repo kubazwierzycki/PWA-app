@@ -34,7 +34,7 @@ const NavMenuButtons = ({
                         ) ? (
                             <MenuButton menu_item={menu_item} key={menu_item.name} />
                         ) : (
-                            <></>
+                            <div key={menu_item.name}></div>
                         )
                     )
                 )}
