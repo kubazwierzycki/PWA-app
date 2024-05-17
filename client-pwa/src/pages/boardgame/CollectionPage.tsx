@@ -1,6 +1,7 @@
 import {ReactNode} from "react";
 import CollectionToggle from "../../components/CollectionToggle.tsx";
 import styles from "../../styles/collections.module.css"
+import BoardGameTile from "../../components/BoardGameTile.tsx";
 
 /**
  * User game board collection page
@@ -16,7 +17,10 @@ const CollectionPage = (): ReactNode => {
                 <CollectionToggle />
             </div>
             <div className={styles.body}>
-
+                <BoardGameTile />
+                <BoardGameTile />
+                <BoardGameTile />
+                <BoardGameTile />
             </div>
         </div>
     )

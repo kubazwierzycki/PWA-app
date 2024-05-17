@@ -1,0 +1,43 @@
+.container {
+    width: 90%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.thumbnail {
+    height: 90%;
+}
+
+.text {
+    height: 90%;
+    display: flex;
+    flex-direction: column;
+    padding-left: 5%;
+    padding-right: 5%;
+    box-sizing: border-box;
+}
+
+.rating {
+    height: 90%;
+    font-size: 2em;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.expand {
+    height: 90%;
+}
+
+.title {
+    width: 100%;
+    font-size: 1.5em;
+    text-align: center;
+    padding-bottom: 5px;
+}
+
+.description {
+    width: 100%;
+}
