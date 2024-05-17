@@ -1,10 +1,5 @@
 import * as React from 'react';
 import { styled } from '@mui/material/styles';
-import FormatBoldIcon from '@mui/icons-material/FormatBold';
-import FormatItalicIcon from '@mui/icons-material/FormatItalic';
-import FormatUnderlinedIcon from '@mui/icons-material/FormatUnderlined';
-import FormatColorFillIcon from '@mui/icons-material/FormatColorFill';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import ToggleButton from '@mui/material/ToggleButton';
@@ -12,6 +7,12 @@ import ToggleButtonGroup, {
     toggleButtonGroupClasses,
 } from '@mui/material/ToggleButtonGroup';
 import styles from '../styles/collections.module.css'
+import {useState} from "react";
+import NumbersIcon from '@mui/icons-material/Numbers';
+import SortByAlphaIcon from '@mui/icons-material/SortByAlpha';
+import {Button} from "@mui/material";
+import FilterAltIcon from '@mui/icons-material/FilterAlt';
+import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 
 const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
     [`& .${toggleButtonGroupClasses.grouped}`]: {
@@ -29,23 +30,24 @@ const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
         },
 }));
 
-export default function CollectionToggle() {
-    const [alignment, setAlignment] = React.useState('owned');
-    const [formats, setFormats] = React.useState(() => ['italic']);
+const CollectionToggle = () => {
 
-    const handleFormat = (
+    const [type, setType] = useState('owned');
+    const [ordering, setOrdering] = useState('ranking');
+
+    const handleType = (
         _event: React.MouseEvent<HTMLElement>,
-        newFormats: string[],
+        newType: string
     ) => {
-        setFormats(newFormats);
+        setType(newType);
     };
 
-    const handleAlignment = (
+    const handleOrdering = (
         _event: React.MouseEvent<HTMLElement>,
-        newAlignment: string,
+        newOrdering: string
     ) => {
-        setAlignment(newAlignment);
-    };
+        setOrdering(newOrdering);
+    }
 
     return (
         <div className={styles.collectionsToggle}>
@@ -59,9 +61,9 @@ export default function CollectionToggle() {
             >
                 <StyledToggleButtonGroup
                     size="small"
-                    value={alignment}
+                    value={type}
                     exclusive
-                    onChange={handleAlignment}
+                    onChange={handleType}
                     aria-label="possesion-state"
                 >
                     <ToggleButton value="owned" aria-label="owned">
@@ -74,25 +76,32 @@ export default function CollectionToggle() {
                 <Divider flexItem orientation="vertical" sx={{ mx: 0.5, my: 1 }} />
                 <StyledToggleButtonGroup
                     size="small"
-                    value={formats}
-                    onChange={handleFormat}
-                    aria-label="text formatting"
+                    value={ordering}
+                    exclusive
+                    onChange={handleOrdering}
+                    aria-label="ordering-state"
                 >
-                    <ToggleButton value="bold" aria-label="bold">
-                        <FormatBoldIcon />
+                    <ToggleButton value="ranking" aria-label="ranking">
+                        <NumbersIcon />
+                        By ranking
                     </ToggleButton>
-                    <ToggleButton value="italic" aria-label="italic">
-                        <FormatItalicIcon />
-                    </ToggleButton>
-                    <ToggleButton value="underlined" aria-label="underlined">
-                        <FormatUnderlinedIcon />
-                    </ToggleButton>
-                    <ToggleButton value="color" aria-label="color" disabled>
-                        <FormatColorFillIcon />
-                        <ArrowDropDownIcon />
+                    <ToggleButton value="alphabetical" aria-label="alphabetical">
+                        <SortByAlphaIcon />
+                        Alphabetical
                     </ToggleButton>
                 </StyledToggleButtonGroup>
+                <Divider flexItem orientation="vertical" sx={{ mx: 0.5, my: 1 }} />
+                <Button style={{textTransform:"none"}}>
+                    <FilterAltIcon />
+                    Filter
+                </Button>
+                <Button style={{textTransform:"none"}}>
+                    Update ranking
+                    <ArrowRightIcon />
+                </Button>
             </Paper>
         </div>
     );
 }
+
+export default CollectionToggle;
