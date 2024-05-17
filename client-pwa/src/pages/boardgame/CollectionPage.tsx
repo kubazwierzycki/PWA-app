@@ -2,6 +2,7 @@ import {ReactNode} from "react";
 import CollectionToggle from "../../components/CollectionToggle.tsx";
 import styles from "../../styles/collections.module.css"
 import BoardGameTile from "../../components/BoardGameTile.tsx";
+import {Pagination} from "@mui/material";
 
 /**
  * User game board collection page
@@ -21,6 +22,9 @@ const CollectionPage = (): ReactNode => {
                 <BoardGameTile />
                 <BoardGameTile />
                 <BoardGameTile />
+            </div>
+            <div className={styles.pagination}>
+                <Pagination count={10} shape="rounded" />
             </div>
         </div>
     )
