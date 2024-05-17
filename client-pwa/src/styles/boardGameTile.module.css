@@ -1,9 +1,12 @@
+.wrapper {
+    margin-bottom: 20px;
+}
+
 .container {
     width: 95%;
     display: flex;
     flex-direction: row;
     align-items: center;
-    margin-bottom: 20px;
     margin-left: auto;
     margin-right: auto;
     padding-top: 10px;
@@ -42,8 +45,36 @@
     font-size: 1.5em;
     text-align: center;
     padding-bottom: 5px;
+    transition: font-size 0.3s ease, transform 0.3s ease;
 }
 
 .description {
     width: 100%;
+    font-size: 14px;
+    transition: opacity 0.3s ease;
+}
+
+
+
+
+.expanded .title {
+    font-size: 2em;
+    transform: translateY(20px);
+}
+
+.expanded .description {
+    opacity: 0;
+}
+
+.expandedContent {
+    padding: 20px;
+    box-sizing: border-box;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.expanded .expandedContent {
+    display: block;
+    opacity: 1;
 }
