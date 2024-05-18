@@ -39,7 +39,7 @@ public class Experience implements Serializable {
      * An associated user
      */
     @ManyToOne
-    @JoinColumn(name="user")
+    @JoinColumn(name="user_id")
     private User user;
 
     /**
@@ -75,5 +75,10 @@ public class Experience implements Serializable {
      * Average rating (1-10) of plays
      */
     private double avgRating;
+
+    /**
+     * How many times player rated the game
+     */
+    private int numberOfVotes;
 
 }
