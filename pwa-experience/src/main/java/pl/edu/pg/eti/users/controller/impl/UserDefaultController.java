@@ -25,18 +25,13 @@ public class UserDefaultController implements UserController {
     public void putUser(UUID uuid, PutUser request) {
         User user = userService.find(uuid).orElse(null);
 
-        if (user == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
-        else {
-            userService.update(
-                    User.builder()
-                            .uuid(uuid)
-                            .username(request.getUsername())
-                            .bggUsername(request.getBggUsername())
-                            .build()
-            );
-        }
+        userService.update(
+                User.builder()
+                        .uuid(uuid)
+                        .username(request.getUsername())
+                        .bggUsername(request.getBggUsername())
+                        .build()
+        );
     }
 
     @Override
