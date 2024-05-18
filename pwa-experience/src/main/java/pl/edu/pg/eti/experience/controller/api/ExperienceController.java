@@ -18,11 +18,21 @@ import pl.edu.pg.eti.experience.entity.Experience;
  */
 public interface ExperienceController {
 
+    /**
+     * GET request for all statistics
+     * @return list of all statistics
+     */
     @GetMapping("/api/experience")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     GetExperiences getAllExperiences();
 
+    /**
+     * GET request for user's or game's statistics
+     * @param value - user UUID / game ID
+     * @param type - enum user/game
+     * @return list of statistics
+     */
     @GetMapping("/api/experience/{value}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
@@ -31,6 +41,12 @@ public interface ExperienceController {
             @RequestParam("type") String type
     );
 
+    /**
+     * GET request for statistic related to specific user and game
+     * @param userUUID - user UUID
+     * @param gameID - game ID
+     * @return specific statistic (if exists)
+     */
     @GetMapping("api/experience/{userUUID}/{gameID}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
@@ -39,6 +55,14 @@ public interface ExperienceController {
             @PathVariable("gameID") String gameID
     );
 
+    /**
+     * PUT request to create or update statistics
+     * (increment number of plays and update dates)
+     * @param userUUID - user UUID
+     * @param gameID - game ID
+     * @param win (optional) - 1 if player won
+     * @param rating (optional) - 1-10 play rating
+     */
     @PutMapping("api/experience/{userUUID}/{gameID}")
     @ResponseStatus(HttpStatus.CREATED)
     void putExperience(
@@ -48,6 +72,16 @@ public interface ExperienceController {
             @RequestParam(value="rating", required=false) String rating
     );
 
+    /**
+     * PATCH request to update statistics
+     * (update a statistic only with param values -
+     * dont update number of plays or play dates,
+     * should be used after the above PUT request)
+     * @param userUUID - user UUID
+     * @param gameID - game ID
+     * @param win (optional) - 1 if player won
+     * @param rating (optional) - 1-10 play rating
+     */
     @PatchMapping("api/experience/{userUUID}/{gameID}")
     @ResponseStatus(HttpStatus.CREATED)
     void updateExperience(
@@ -57,6 +91,10 @@ public interface ExperienceController {
             @RequestParam(value="rating", required=false) String rating
     );
 
+    /**
+     * DELETE request to delete statistic
+     * @param uuid - statistic UUID
+     */
     @DeleteMapping("api/experience/{uuid}")
     void deleteExperience(
             @PathVariable("uuid") String uuid
