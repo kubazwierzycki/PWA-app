@@ -13,13 +13,21 @@ interface NameType {
 
 interface BoardGameDetails {
     description: string,
-    shortDescription: string
+    shortDescription: string,
+    statistics: {ratings: BoardGameStats}
+}
+
+interface BoardGameStats {
+    usersRated: string,
+    average: {"@_value": string},
+    owned: string
 }
 
 interface BoardGameItem {
     name: NameType,
     "@_objectid": string,
-    details: BoardGameDetails
+    details: BoardGameDetails,
+    thumbnail: string
 }
 
 /**
@@ -47,7 +55,7 @@ const CollectionPage = (): ReactNode => {
                 // get board game details
                 const request  = axios({
                     method: 'get',
-                    url: `${baseApiAddress}/thing?id=${game["@_objectid"]}`,
+                    url: `${baseApiAddress}/thing?id=${game["@_objectid"]}&stats=1`,
                 })
                 request.then(details => {
                     data[i]["details"] = parseXml(details.data).items.item;
@@ -56,6 +64,7 @@ const CollectionPage = (): ReactNode => {
                     data[i]["details"].description = correctedDescription;
                     // short description
                     data[i]["details"]["shortDescription"] = getShortDescription(correctedDescription);
+                    console.log(data[i].details.statistics.ratings.average["@_value"])
                 })
             }
             setGames(data)
