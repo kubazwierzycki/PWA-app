@@ -4,9 +4,11 @@ import { Box } from "@mui/system";
 import Button from "@mui/material/Button";
 import { Alert, FormControl, InputLabel, OutlinedInput } from "@mui/material";
 import authorisationService from "../../services/authorization.ts";
+import bggService from "../../services/bgg.ts";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { useAuth } from "../../contexts/AuthContext.tsx";
+import axios from "axios";
 /**
  * Form state.
  */
@@ -84,6 +86,25 @@ export default function SignUpForm(): ReactNode {
         return true;
     };
 
+    const isBggUser = async (bggUsername: string): Promise<boolean> => {
+        let bggUserId = "";
+        try {
+            const res = await bggService.getUserByUsername(bggUsername);
+            bggUserId = bggService.getUserIdFromResponse(res);
+            console.log("bggId:", bggUserId);
+        } catch (err) {
+            if (axios.isAxiosError(err)) {
+                if (err.code === "ERR_NETWORK")
+                    setAlertMessage({
+                        message:
+                            "The BGG user with the specified username cannot be found.",
+                        severity: Severity.Warning,
+                    });
+            }
+        }
+        return bggUserId !== "";
+    };
+
     const validatePassword = (
         password: string,
         passwordConfirmation: string
@@ -105,24 +126,26 @@ export default function SignUpForm(): ReactNode {
         return true;
     };
 
-    const validateForm = (): boolean => {
+    const validateForm = async (): Promise<boolean> => {
         const fD = formData;
 
         const isValid =
             validateUsername(fD.username, "Username") &&
             (fD.bgg === "" || validateUsername(fD.bgg, "BGG Username")) &&
+            (fD.bgg === "" || (await isBggUser(fD.bgg))) &&
             validatePassword(fD.password, fD.passwordConfirmation);
+        console.log("isValid", isValid);
         return isValid;
     };
 
-    const handleSignUp = (event: React.FormEvent<HTMLFormElement>) => {
+    const handleSignUp = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         setAlertMessage({
             message: "",
             severity: Severity.Info,
         });
         const fD = formData;
-        const isValid: boolean = validateForm();
+        const isValid: boolean = await validateForm();
 
         if (isValid) {
             authorisationService
