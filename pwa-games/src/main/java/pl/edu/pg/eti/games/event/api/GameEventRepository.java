@@ -16,7 +16,7 @@ public interface GameEventRepository {
 
     /**
      * Remove game data from other services
-     * @param id - user UUID
+     * @param id - game ID
      */
     void delete(String id);
 
