@@ -1,6 +1,5 @@
 import Paper from "@mui/material/Paper";
 import styles from "../styles/boardGameTile.module.css"
-import test_thumbnail from "../assets/test_thumbnail.webp"
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import StarIcon from '@mui/icons-material/Star';
 import {useEffect, useState} from "react";
@@ -16,7 +15,8 @@ interface BoardGameDetails {
 
 interface BoardGameData {
     name: NameType,
-    details: BoardGameDetails
+    details: BoardGameDetails,
+    thumbnail: string
 }
 
 const BoardGameTile = ({data}: {data: BoardGameData}) => {
@@ -43,7 +43,7 @@ const BoardGameTile = ({data}: {data: BoardGameData}) => {
                 <div className={`${styles.wrapper} ${expanded ? styles.expanded : ''}`} onClick={toggleExpanded}>
                     <div className={styles.container}>
                         <div className={styles.thumbnail}>
-                            <img alt="thumbnail" src={test_thumbnail}/>
+                            <img alt="thumbnail" src={data.thumbnail}/>
                         </div>
                         <div className={styles.text}>
                             <div className={styles.title}>
