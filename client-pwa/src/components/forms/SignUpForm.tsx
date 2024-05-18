@@ -148,17 +148,20 @@ export default function SignUpForm(): ReactNode {
         const isValid: boolean = await validateForm();
 
         if (isValid) {
-            authorisationService
-                .signUp(fD.email, fD.username, fD.password, fD.bgg)
-                .then((res) => {
-                    navigate("/");
-                    Cookies.set("token", res.token);
-                    Cookies.set("uuid", res.uuid);
-                    setToken(res.token);
-                    setUuid(res.uuid);
-                })
-                .catch((err) => {
-                    console.log(err);
+            try {
+                const res = await authorisationService.signUp(
+                    fD.email,
+                    fD.username,
+                    fD.password,
+                    fD.bgg
+                );
+                Cookies.set("token", res.token);
+                Cookies.set("uuid", res.uuid);
+                setToken(res.token);
+                setUuid(res.uuid);
+                navigate("/");
+            } catch (err) {
+                if (axios.isAxiosError(err)) {
                     switch (err.code) {
                         case "ERR_BAD_REQUEST":
                             setAlertMessage({
@@ -179,8 +182,19 @@ export default function SignUpForm(): ReactNode {
                                 severity: Severity.Error,
                             });
                             break;
+                        default:
+                            setAlertMessage({
+                                message: "Unknown error.",
+                                severity: Severity.Error,
+                            });
                     }
-                });
+                } else {
+                    setAlertMessage({
+                        message: "Unknown error.",
+                        severity: Severity.Error,
+                    });
+                }
+            }
         }
     };
     return (

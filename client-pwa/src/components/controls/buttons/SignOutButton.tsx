@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import authorizationService from "../../../services/authorization.ts";
 import Button from "@mui/material/Button";
 import { ReactNode } from "react";
+import axios from "axios";
 
 /**
  * Component with sign out logic.
@@ -13,23 +14,24 @@ const SignOutButton = (): ReactNode => {
     const { setToken, uuid, setUuid } = useAuth();
     const navigate = useNavigate();
 
-    const handleSignOut = () => {
+    const handleSignOut = async () => {
         setUuid("");
         const token = Cookies.get("token");
         if (token) {
-            authorizationService
-                .signOut(token, uuid)
-                .then((res) => {
-                    console.log(res);
-                })
-                .catch((err) => {
+            try {
+                const res = await authorizationService.signOut(token, uuid);
+                console.log(res);
+            } catch (err) {
+                if (axios.isAxiosError(err)) {
                     console.log(err);
-                });
-            Cookies.remove("token");
-            Cookies.remove("uuid");
-            setToken("");
-            setUuid("");
-            navigate("/");
+                }
+            } finally {
+                Cookies.remove("token");
+                Cookies.remove("uuid");
+                setToken("");
+                setUuid("");
+                navigate("/");
+            }
         } else {
             alert("Token do not exist");
         }

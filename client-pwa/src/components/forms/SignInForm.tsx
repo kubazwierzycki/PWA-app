@@ -16,6 +16,7 @@ import authorisationService from "../../services/authorization.ts";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { useAuth } from "../../contexts/AuthContext.tsx";
+import axios from "axios";
 
 /**
  * Form state.
@@ -67,37 +68,43 @@ export default function SignInForm(): ReactNode {
         event.preventDefault();
     };
 
-    const handleSignIn = (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
+    const validateForm = (username: string, password: string): boolean => {
+        const regexp = new RegExp("^[a-zA-Z][\\w\\d]{3,19}$");
+        const hasValidCharacters = regexp.test(username);
+        return hasValidCharacters && password.length > 6;
+    };
+
+    const resetFormData = () => {
         setAlertMessage({
             message: "",
             severity: Severity.Info,
         });
-        let isValid: boolean = false;
-        const fD = formData;
-        const regexp = new RegExp("^[a-zA-Z][\\w\\d]{3,19}$");
-        const hasValidCharacters = regexp.test(fD.username);
-        isValid = hasValidCharacters;
-        if (fD.password.length < 6) {
-            isValid = false;
-        }
         setFormData({
             username: "",
             password: "",
         });
         setShowPassword(false);
+    };
+
+    const handleSignIn = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        resetFormData();
+        const fD = formData;
+        const isValid = validateForm(fD.username, fD.password);
+
         if (isValid) {
-            authorisationService
-                .signIn(fD.username, fD.password)
-                .then((res) => {
-                    navigate("/");
-                    Cookies.set("token", res.token);
-                    Cookies.set("uuid", res.uuid);
-                    setToken(res.token);
-                    setUuid(res.uuid);
-                })
-                .catch((err) => {
-                    console.log(err);
+            try {
+                const res = await authorisationService.signIn(
+                    fD.username,
+                    fD.password
+                );
+                Cookies.set("token", res.token);
+                Cookies.set("uuid", res.uuid);
+                setToken(res.token);
+                setUuid(res.uuid);
+                navigate("/");
+            } catch (err) {
+                if (axios.isAxiosError(err)) {
                     switch (err.code) {
                         case "ERR_BAD_REQUEST":
                             setAlertMessage({
@@ -117,8 +124,20 @@ export default function SignInForm(): ReactNode {
                                 severity: Severity.Error,
                             });
                             break;
+                        default:
+                            setAlertMessage({
+                                message: "Unknown error.",
+                                severity: Severity.Error,
+                            });
+                            break;
                     }
-                });
+                } else {
+                    setAlertMessage({
+                        message: "Unknown error.",
+                        severity: Severity.Error,
+                    });
+                }
+            }
         } else {
             setAlertMessage({
                 message: "Incorrect username or password.",
