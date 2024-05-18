@@ -75,7 +75,7 @@ public interface ExperienceController {
     /**
      * PATCH request to update statistics
      * (update a statistic only with param values -
-     * dont update number of plays or play dates,
+     * don't update number of plays or play dates,
      * should be used after the above PUT request)
      * @param userUUID - user UUID
      * @param gameID - game ID
