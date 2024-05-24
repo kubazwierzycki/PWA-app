@@ -1,4 +1,4 @@
-import {ReactNode, useEffect, useState} from "react";
+import {ChangeEvent, ReactNode, useEffect, useState} from "react";
 import CollectionToggle from "../../components/CollectionToggle.tsx";
 import styles from "../../styles/collections.module.css"
 import BoardGameTile from "../../components/BoardGameTile.tsx";
@@ -46,6 +46,11 @@ const CollectionPage = (): ReactNode => {
 
     const baseApiAddress: string = 'https://boardgamegeek.com/xmlapi2';
 
+    // pagination
+    const [paginationLen, setPaginationLen] = useState(1);
+    const [page, setPage] = useState(1);
+    const perPage: number = 10; // number of board games displayed per page
+
     // Configure axios to retry up to 3 times with a 2-second delay between retries
     axiosRetry(axios, {
         retries: 5,
@@ -59,7 +64,13 @@ const CollectionPage = (): ReactNode => {
                 const collectionResponse = await axios.get(`${baseApiAddress}/collection?username=${username}`);
 
                 if (collectionResponse.status === 200) {
-                    const gamesData = parseXml(collectionResponse.data).items.item;
+                    const parsedData = parseXml(collectionResponse.data);
+                    const gamesData = parsedData.items.item;
+
+                    // check number of items
+                    const totalItems = parsedData.items["@_totalitems"];
+                    // calculate number of pagination pages required
+                    setPaginationLen(Math.ceil(totalItems / perPage));
 
                     for (let i = 0; i < gamesData.length; i++) {
                         const game = gamesData[i];
@@ -97,7 +108,14 @@ const CollectionPage = (): ReactNode => {
                 }
             </div>
             <div className={styles.pagination}>
-                <Pagination count={10} shape="rounded" />
+                <Pagination
+                    count={paginationLen}
+                    page={page}
+                    shape="rounded"
+                    onChange={(_event: ChangeEvent<unknown>, page: number) => {
+                        setPage(page);
+                    }}
+                />
             </div>
         </div>
     )
