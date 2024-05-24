@@ -6,6 +6,7 @@ import {Pagination} from "@mui/material";
 import axios from "axios";
 import {parseXml} from "../../utils/XMLToJSON.ts";
 import {clearCharEntities, getShortDescription} from "../../utils/DescriptionParser.ts";
+import axiosRetry from "axios-retry";
 
 interface NameType {
     "#text": string
@@ -37,38 +38,50 @@ interface BoardGameItem {
 const CollectionPage = (): ReactNode => {
 
     // FOR TESTING
+    // bhr_79
+    // Aldie
     const username: string = "bhr_79";
 
     const [games, setGames] = useState<BoardGameItem[]>([]);
 
     const baseApiAddress: string = 'https://boardgamegeek.com/xmlapi2';
 
+    // Configure axios to retry up to 3 times with a 2-second delay between retries
+    axiosRetry(axios, {
+        retries: 5,
+        retryDelay: (retryCount: number) => retryCount * 1000, // 1 second delay
+        retryCondition: (error) => error.response?.status === 202, // retry only for 202 status
+    });
+
     useEffect(() => {
-        const request  = axios({
-            method: 'get',
-            url: `${baseApiAddress}/collection?username=${username}`,
-        })
-        request.then(response => {
-            let data: BoardGameItem[] = parseXml(response.data).items.item;
-            for (let i=0; i<data.length; i++) {
-                let game = data[i];
-                // get board game details
-                const request  = axios({
-                    method: 'get',
-                    url: `${baseApiAddress}/thing?id=${game["@_objectid"]}&stats=1`,
-                })
-                request.then(details => {
-                    data[i]["details"] = parseXml(details.data).items.item;
-                    // correct description
-                    const correctedDescription = clearCharEntities(data[i]["details"].description);
-                    data[i]["details"].description = correctedDescription;
-                    // short description
-                    data[i]["details"]["shortDescription"] = getShortDescription(correctedDescription);
-                    console.log(data[i].details.statistics.ratings.average["@_value"])
-                })
+        const fetchData = async () => {
+            try {
+                const collectionResponse = await axios.get(`${baseApiAddress}/collection?username=${username}`);
+
+                if (collectionResponse.status === 200) {
+                    const gamesData = parseXml(collectionResponse.data).items.item;
+
+                    for (let i = 0; i < gamesData.length; i++) {
+                        const game = gamesData[i];
+                        const detailsResponse = await axios.get(`${baseApiAddress}/thing?id=${game["@_objectid"]}&stats=1`);
+                        const gameDetails = parseXml(detailsResponse.data).items.item;
+
+                        // Correct description and create short description
+                        const correctedDescription = clearCharEntities(gameDetails.description);
+                        gameDetails.description = correctedDescription;
+                        gameDetails.shortDescription = getShortDescription(correctedDescription);
+
+                        gamesData[i].details = gameDetails;
+                    }
+
+                    setGames(gamesData);
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
             }
-            setGames(data)
-        })
+        };
+
+        fetchData().then();
     }, []);
 
     return (
