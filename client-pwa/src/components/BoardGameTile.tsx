@@ -14,7 +14,8 @@ interface NameType {
 interface BoardGameDetails {
     description: string,
     shortDescription: string,
-    statistics: {ratings: BoardGameStats}
+    statistics: {ratings: BoardGameStats},
+    thumbnail: string
 }
 
 interface BoardGameStats {
@@ -25,8 +26,7 @@ interface BoardGameStats {
 
 interface BoardGameData {
     name: NameType,
-    details: BoardGameDetails,
-    thumbnail: string
+    details: BoardGameDetails
 }
 
 
@@ -76,7 +76,7 @@ const BoardGameTile = ({data}: {data: BoardGameData}) => {
                 <div className={`${styles.wrapper} ${expanded ? styles.expanded : ''}`} onClick={toggleExpanded}>
                     <div className={styles.container}>
                         <div className={styles.thumbnail}>
-                            <img alt="thumbnail" src={data.thumbnail}/>
+                            <img alt="thumbnail" src={data.details.thumbnail}/>
                         </div>
                         <div className={styles.text}>
                             <div className={styles.title}>

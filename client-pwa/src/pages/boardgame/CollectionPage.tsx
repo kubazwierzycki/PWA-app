@@ -15,7 +15,8 @@ interface NameType {
 interface BoardGameDetails {
     description: string,
     shortDescription: string,
-    statistics: {ratings: BoardGameStats}
+    statistics: {ratings: BoardGameStats},
+    thumbnail: string
 }
 
 interface BoardGameStats {
@@ -28,7 +29,11 @@ interface BoardGameItem {
     name: NameType,
     "@_objectid": string,
     details: BoardGameDetails,
-    thumbnail: string
+}
+
+interface BoardGameStub {
+    name: NameType,
+    "@_objectid": string
 }
 
 /**
@@ -40,16 +45,81 @@ const CollectionPage = (): ReactNode => {
     // FOR TESTING
     // bhr_79
     // Aldie
-    const username: string = "bhr_79";
-
-    const [games, setGames] = useState<BoardGameItem[]>([]);
+    // Sagrilarus
+    const username: string = "Sagrilarus";
 
     const baseApiAddress: string = 'https://boardgamegeek.com/xmlapi2';
 
-    // pagination
-    const [paginationLen, setPaginationLen] = useState(1);
-    const [page, setPage] = useState(1);
+    const [games, setGames] = useState<BoardGameStub[]>([]);
+    const [shownGames, setShownGames] = useState<BoardGameItem[]>([]);
+    const [numGames, setNumberGames] = useState(0);
+    const [currentPage, setCurrentPage] = useState(1);
     const perPage: number = 10; // number of board games displayed per page
+
+    const getPaginationLen = () => Math.ceil(numGames / perPage);
+
+    const fetchDetails = async () => {
+
+        if (games.length === 0) return;
+
+        // get list of required games
+        const ids: string[] = [];
+        let start = (currentPage - 1) * perPage;
+        // add ids to list
+        for (let i = start; i < start + perPage && i < games.length; i++) {
+            ids.push(games[i]["@_objectid"]);
+        }
+
+        const idsList = ids.join(",");
+        const url = `${baseApiAddress}/thing?id=${idsList}&stats=1`;
+        const detailsResponse = await axios.get(url);
+        const gameDetails = parseXml(detailsResponse.data).items.item;
+
+        for (let i = 0; i < gameDetails.length; i++) {
+
+            let details = gameDetails[i];
+
+            // Correct description and create short description
+            const correctedDescription = clearCharEntities(details.description);
+            details.description = correctedDescription;
+            details.shortDescription = getShortDescription(correctedDescription);
+
+            gameDetails[i] = details;
+        }
+
+        let counter = -1;
+        const chosenGames: BoardGameItem[] = games.slice(start, start + perPage).map(stub => {
+            counter++;
+            return {
+                name: stub.name,
+                "@_objectid": stub["@_objectid"],
+                details: gameDetails[counter]
+            };
+        });
+
+        setShownGames(chosenGames);
+    }
+
+    const fetchGames = async () => {
+        try {
+            const collectionResponse = await axios.get(`${baseApiAddress}/collection?username=${username}`);
+
+            if (collectionResponse.status === 200) {
+                const parsedData = parseXml(collectionResponse.data);
+                const gamesData = parsedData.items.item;
+
+                // check number of items
+                const totalItems = parsedData.items["@_totalitems"];
+                setNumberGames(totalItems);
+
+                // TODO: sort games here
+
+                setGames(gamesData);
+            }
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    };
 
     // Configure axios to retry up to 3 times with a 2-second delay between retries
     axiosRetry(axios, {
@@ -58,42 +128,15 @@ const CollectionPage = (): ReactNode => {
         retryCondition: (error) => error.response?.status === 202, // retry only for 202 status
     });
 
+    // update games list effect
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const collectionResponse = await axios.get(`${baseApiAddress}/collection?username=${username}`);
-
-                if (collectionResponse.status === 200) {
-                    const parsedData = parseXml(collectionResponse.data);
-                    const gamesData = parsedData.items.item;
-
-                    // check number of items
-                    const totalItems = parsedData.items["@_totalitems"];
-                    // calculate number of pagination pages required
-                    setPaginationLen(Math.ceil(totalItems / perPage));
-
-                    for (let i = 0; i < gamesData.length; i++) {
-                        const game = gamesData[i];
-                        const detailsResponse = await axios.get(`${baseApiAddress}/thing?id=${game["@_objectid"]}&stats=1`);
-                        const gameDetails = parseXml(detailsResponse.data).items.item;
-
-                        // Correct description and create short description
-                        const correctedDescription = clearCharEntities(gameDetails.description);
-                        gameDetails.description = correctedDescription;
-                        gameDetails.shortDescription = getShortDescription(correctedDescription);
-
-                        gamesData[i].details = gameDetails;
-                    }
-
-                    setGames(gamesData);
-                }
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-        };
-
-        fetchData().then();
+        fetchGames().then();
     }, []);
+
+    // update shownGames effect
+    useEffect(() => {
+        fetchDetails().then();
+    }, [games, currentPage]);
 
     return (
         <div className={styles.container}>
@@ -102,18 +145,18 @@ const CollectionPage = (): ReactNode => {
             </div>
             <div className={styles.body}>
                 {
-                    games.map(game => (
+                    shownGames.map(game => (
                         <BoardGameTile data={game} key={game.name["#text"]}/>
                     ))
                 }
             </div>
             <div className={styles.pagination}>
                 <Pagination
-                    count={paginationLen}
-                    page={page}
+                    count={getPaginationLen()}
+                    page={currentPage}
                     shape="rounded"
                     onChange={(_event: ChangeEvent<unknown>, page: number) => {
-                        setPage(page);
+                        setCurrentPage(page);
                     }}
                 />
             </div>
