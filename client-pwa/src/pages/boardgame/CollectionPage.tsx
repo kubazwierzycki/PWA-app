@@ -16,13 +16,19 @@ interface BoardGameDetails {
     description: string,
     shortDescription: string,
     statistics: {ratings: BoardGameStats},
-    thumbnail: string
+    thumbnail: string,
+    yearpublished: {"@_value": string},
+    minplayers: {"@_value": string},
+    maxplayers: {"@_value": string},
+    minage: {"@_value": string},
+    playingtime: {"@_value": string}
 }
 
 interface BoardGameStats {
     usersRated: string,
     average: {"@_value": string},
-    owned: string
+    owned: string,
+    ranks: {rank: [{"@_value": string}]}
 }
 
 interface BoardGameItem {

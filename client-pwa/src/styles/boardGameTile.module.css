@@ -80,3 +80,30 @@
     display: block;
     opacity: 1;
 }
+
+.infoCards {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.card {
+    margin: 15px;
+    padding: 15px 20px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.card > div {
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+.pageLinkContainer {
+    display: flex;
+    justify-content: right;
+    padding: 0 5%;
+}
