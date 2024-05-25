@@ -20,7 +20,6 @@ Content-Type: application/json
 
 {
   "email": "new_email",
-  "username": "new_username",
   "bggUsername": null
 }
 

@@ -58,6 +58,7 @@ public interface UserController {
      * PUT request to change user details
      * @param uuid - user ID
      * @param request - user details {@link PutUser}
+     * @param option (optional) - enum: email/bgg
      * @param token - authorization token
      */
     @PutMapping("/api/users/{uuid}")
@@ -65,6 +66,7 @@ public interface UserController {
     void putUser(
             @PathVariable("uuid") UUID uuid,
             @RequestBody PutUser request,
+            @RequestParam(value="option", required=false) String option,
             @RequestHeader("Authorization") String token
     );
 

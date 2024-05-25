@@ -21,7 +21,5 @@ public class PutUser {
     @ToString.Exclude
     private String email;
 
-    private String username;
-
     private String bggUsername;
 }
