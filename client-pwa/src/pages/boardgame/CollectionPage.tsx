@@ -113,9 +113,18 @@ const CollectionPage = (): ReactNode => {
     const fetchGames = async () => {
         try {
 
+            let urlParams: string = "&";
+            let parameters: string[] = [];
+            if (type === "owned") {
+                parameters.push("own=1");
+            }
+            else { // "played"
+                parameters.push("played=1");
+            }
+            // TODO: other params from filters
+            urlParams += parameters.join("&");
 
-
-            let url = `${baseApiAddress}/collection?username=${username}&own=1`;
+            let url = `${baseApiAddress}/collection?username=${username}${urlParams}`;
             const collectionResponse = await axios.get(url);
 
             if (collectionResponse.status === 200) {
