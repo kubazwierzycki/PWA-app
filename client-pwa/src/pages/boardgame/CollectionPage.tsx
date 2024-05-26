@@ -7,6 +7,7 @@ import axios from "axios";
 import {parseXml} from "../../utils/XMLToJSON.ts";
 import {clearCharEntities, getShortDescription} from "../../utils/DescriptionParser.ts";
 import axiosRetry from "axios-retry";
+import {useCollectionViewContext} from "../../contexts/CollectionViewContext.tsx";
 
 interface NameType {
     "#text": string
@@ -64,6 +65,9 @@ const CollectionPage = (): ReactNode => {
 
     const getPaginationLen = () => Math.ceil(numGames / perPage);
 
+    // view toggle state from context
+    const {type} = useCollectionViewContext();
+
     const fetchDetails = async () => {
 
         if (games.length === 0) return;
@@ -108,7 +112,11 @@ const CollectionPage = (): ReactNode => {
 
     const fetchGames = async () => {
         try {
-            const collectionResponse = await axios.get(`${baseApiAddress}/collection?username=${username}`);
+
+
+
+            let url = `${baseApiAddress}/collection?username=${username}&own=1`;
+            const collectionResponse = await axios.get(url);
 
             if (collectionResponse.status === 200) {
                 const parsedData = parseXml(collectionResponse.data);
@@ -137,7 +145,7 @@ const CollectionPage = (): ReactNode => {
     // update games list effect
     useEffect(() => {
         fetchGames().then();
-    }, []);
+    }, [type]);
 
     // update shownGames effect
     useEffect(() => {

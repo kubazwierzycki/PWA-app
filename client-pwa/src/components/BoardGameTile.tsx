@@ -59,7 +59,7 @@ const BoardGameTile = ({data}: {data: BoardGameData}) => {
         let ratingNum = parseFloat(rating);
         rating = ratingNum.toFixed(2);
         setRating(rating);
-        let rank = data?.details?.statistics?.ratings?.ranks?.rank[0]["@_value"];
+        let rank = data?.details?.statistics?.ratings?.ranks?.rank[0]?.["@_value"] || "Not ranked";
         setRank(rank);
     }, [data.details]);
 

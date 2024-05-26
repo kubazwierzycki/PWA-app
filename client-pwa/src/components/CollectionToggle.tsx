@@ -7,12 +7,12 @@ import ToggleButtonGroup, {
     toggleButtonGroupClasses,
 } from '@mui/material/ToggleButtonGroup';
 import styles from '../styles/collections.module.css'
-import {useState} from "react";
 import NumbersIcon from '@mui/icons-material/Numbers';
 import SortByAlphaIcon from '@mui/icons-material/SortByAlpha';
 import {Button} from "@mui/material";
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
+import {useCollectionViewContext} from "../contexts/CollectionViewContext.tsx";
 
 const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
     [`& .${toggleButtonGroupClasses.grouped}`]: {
@@ -32,8 +32,7 @@ const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
 
 const CollectionToggle = () => {
 
-    const [type, setType] = useState('owned');
-    const [ordering, setOrdering] = useState('ranking');
+    const {type, setType, ordering, setOrdering} = useCollectionViewContext();
 
     const handleType = (
         _event: React.MouseEvent<HTMLElement>,
