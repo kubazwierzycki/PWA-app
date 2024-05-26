@@ -13,6 +13,7 @@ import {Button} from "@mui/material";
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import {useCollectionViewContext} from "../contexts/CollectionViewContext.tsx";
+import FiltersPicker from "./forms/FiltersPicker.tsx";
 
 const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
     [`& .${toggleButtonGroupClasses.grouped}`]: {
@@ -93,6 +94,7 @@ const CollectionToggle = () => {
                 <Button style={{textTransform:"none"}}>
                     <FilterAltIcon />
                     Filter
+                    <FiltersPicker anchorEl={null} />
                 </Button>
                 <Button style={{textTransform:"none"}}>
                     Update ranking
