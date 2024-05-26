@@ -39,7 +39,7 @@ public class Main {
                 .route("games", route -> route
                         .host(gateway)
                         .and()
-                        .path("/api/games/{uuid}", "/api/games")
+                        .path("/api/games/**", "/api/games")
                         .uri(gamesUrl)
                 )
                 .route("playrooms", route -> route
@@ -51,7 +51,7 @@ public class Main {
                 .route("experience", route -> route
                         .host(gateway)
                         .and()
-                        .path("/api/experience/{uuid}", "/api/experience")
+                        .path("/api/experience/**", "/api/experience")
                         .uri(experienceUrl)
                 )
                 .build();

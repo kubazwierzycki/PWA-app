@@ -2,7 +2,9 @@ package pl.edu.pg.eti.users.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import pl.edu.pg.eti.users.dto.PutUser;
 import pl.edu.pg.eti.users.entity.User;
+import pl.edu.pg.eti.users.event.api.UserEventRepository;
 import pl.edu.pg.eti.users.repository.api.UserRepository;
 import pl.edu.pg.eti.users.service.api.UserService;
 
@@ -14,10 +16,12 @@ import java.util.UUID;
 public class UserDefaultService implements UserService {
 
     private final UserRepository userRepository;
+    private final UserEventRepository userEventRepository;
 
     @Autowired
-    public UserDefaultService(UserRepository userRepository) {
+    public UserDefaultService(UserRepository userRepository, UserEventRepository userEventRepository) {
         this.userRepository = userRepository;
+        this.userEventRepository = userEventRepository;
     }
 
     @Override
@@ -48,15 +52,26 @@ public class UserDefaultService implements UserService {
     @Override
     public void create(User user) {
         userRepository.save(user);
+        userEventRepository.create(user.getUuid(),
+                PutUser.builder()
+                        .username(user.getUsername())
+                        .bggUsername(user.getBggUsername())
+                        .build());
     }
 
     @Override
     public void update(User user) {
         userRepository.save(user);
+        userEventRepository.create(user.getUuid(),
+                PutUser.builder()
+                        .username(user.getUsername())
+                        .bggUsername(user.getBggUsername())
+                        .build());
     }
 
     @Override
     public void delete(UUID uuid) {
         userRepository.findById(uuid).ifPresent(userRepository::delete);
+        userEventRepository.delete(uuid);
     }
 }
