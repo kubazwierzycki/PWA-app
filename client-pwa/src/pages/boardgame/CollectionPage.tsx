@@ -66,7 +66,7 @@ const CollectionPage = (): ReactNode => {
     const getPaginationLen = () => Math.ceil(numGames / perPage);
 
     // view toggle state from context
-    const {type} = useCollectionViewContext();
+    const {type, ordering} = useCollectionViewContext();
 
     const fetchDetails = async () => {
 
@@ -135,7 +135,20 @@ const CollectionPage = (): ReactNode => {
                 const totalItems = parsedData.items["@_totalitems"];
                 setNumberGames(totalItems);
 
-                // TODO: sort games here
+                console.log(gamesData)
+
+                // sorting games according to ordering
+                if (ordering === "ranking") {
+                    // TODO: sorting by ranking from backend, makes sense after full ranking functionality present
+                }
+                else { // alphabetical
+                    // sort with name comparator
+                    gamesData.sort((a: BoardGameStub, b: BoardGameStub) => {
+                        const nameA = a.name["#text"];
+                        const nameB = b.name["#text"];
+                        return nameA.localeCompare(nameB);
+                    })
+                }
 
                 setGames(gamesData);
             }
@@ -154,7 +167,7 @@ const CollectionPage = (): ReactNode => {
     // update games list effect
     useEffect(() => {
         fetchGames().then();
-    }, [type]);
+    }, [type, ordering]);
 
     // update shownGames effect
     useEffect(() => {
