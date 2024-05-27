@@ -17,7 +17,14 @@ import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { useAuth } from "../../contexts/AuthContext.tsx";
 import axios from "axios";
-
+import {
+    Severity,
+    Message,
+    ValidationResult,
+    UsernameType,
+    validatePassword,
+    validateUsername,
+} from "./formHelpers.ts";
 /**
  * Form state.
  */
@@ -26,17 +33,6 @@ interface State {
     password: string;
 }
 
-enum Severity {
-    Error = "error",
-    Info = "info",
-    Success = "success",
-    Warning = "warning",
-}
-
-interface Message {
-    message: string;
-    severity: Severity;
-}
 /**
  * Component with sign in logic.
  * @returns {ReactNode}
@@ -46,13 +42,16 @@ export default function SignInForm(): ReactNode {
         username: "",
         password: "",
     });
+
     const { setToken, setUuid } = useAuth();
+
     const [alertMessage, setAlertMessage] = useState<Message>({
         message: "",
         severity: Severity.Info,
     });
 
     const navigate = useNavigate();
+
     const handleChange =
         (prop: keyof State) => (event: React.ChangeEvent<HTMLInputElement>) => {
             setFormData({ ...formData, [prop]: event.target.value });
@@ -68,10 +67,25 @@ export default function SignInForm(): ReactNode {
         event.preventDefault();
     };
 
-    const validateForm = (username: string, password: string): boolean => {
-        const regexp = new RegExp("^[a-zA-Z][\\w\\d]{3,19}$");
-        const hasValidCharacters = regexp.test(username);
-        return hasValidCharacters && password.length > 6;
+    const validateForm = (): ValidationResult => {
+        const fD = formData;
+        const vUsername: ValidationResult = validateUsername(
+            fD.username,
+            UsernameType.CoGame
+        );
+        if (vUsername !== ValidationResult.Success) {
+            return vUsername;
+        }
+
+        const vPassword: ValidationResult = validatePassword(
+            fD.password,
+            fD.password
+        );
+        if (vPassword !== ValidationResult.Success) {
+            return vPassword;
+        }
+
+        return ValidationResult.Success;
     };
 
     const resetFormData = () => {
@@ -90,9 +104,9 @@ export default function SignInForm(): ReactNode {
         event.preventDefault();
         resetFormData();
         const fD = formData;
-        const isValid = validateForm(fD.username, fD.password);
+        const vResult: ValidationResult = validateForm();
 
-        if (isValid) {
+        if (vResult == ValidationResult.Success) {
             try {
                 const res = await authorisationService.signIn(
                     fD.username,
