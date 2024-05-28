@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
-import UserDetailUpdateForm from "../components/forms/UserDetailUpdateForm";
+import UserDetailsUpdateForm from "../components/forms/UserDetailsUpdateForm";
+import UserDetails from "../components/UserDetails";
 
 /**
  * User profile and settings page
@@ -9,7 +10,8 @@ const Profile = (): ReactNode => {
     return (
         <div>
             Profile
-            <UserDetailUpdateForm></UserDetailUpdateForm>
+            <UserDetails></UserDetails>
+            <UserDetailsUpdateForm></UserDetailsUpdateForm>
         </div>
     );
 };
