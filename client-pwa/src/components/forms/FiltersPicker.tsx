@@ -1,9 +1,12 @@
 import {ReactNode} from "react";
 import {Button, Checkbox, FormControlLabel, FormGroup, Popover, Slider} from "@mui/material";
 import styles from "../../styles/collections.module.css"
+import {useCollectionViewContext} from "../../contexts/CollectionViewContext.tsx";
 
 
-const FiltersPicker = ({anchorEl}: {anchorEl: HTMLButtonElement | null}): ReactNode => {
+const FiltersPicker = ({anchorEl}: {anchorEl: HTMLElement | null}): ReactNode => {
+
+    const {filtersOpen, setFiltersOpen} = useCollectionViewContext();
 
     const marks = [
         {
@@ -17,7 +20,19 @@ const FiltersPicker = ({anchorEl}: {anchorEl: HTMLButtonElement | null}): ReactN
     ];
 
     return (
-        <Popover open={true} anchorEl={anchorEl}>
+        <Popover
+            open={filtersOpen}
+            anchorEl={anchorEl}
+            onClose={() => setFiltersOpen(false)}
+            anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'center',
+            }}
+            transformOrigin={{
+                vertical: 'top',
+                horizontal: 'center'
+            }}
+        >
             <div className={styles.filters}>
                 <FormGroup>
                     <FormControlLabel control={<Checkbox />} label={

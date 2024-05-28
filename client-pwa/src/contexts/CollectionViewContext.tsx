@@ -12,7 +12,11 @@ type CollectionContextType = {
     type: string,
     setType: Dispatch<SetStateAction<string>>,
     ordering: string,
-    setOrdering: Dispatch<SetStateAction<string>>
+    setOrdering: Dispatch<SetStateAction<string>>,
+    filtersOpen: boolean,
+    setFiltersOpen: Dispatch<SetStateAction<boolean>>,
+    filtersAnchorEl: HTMLElement | null,
+    setFiltersAnchorEl: Dispatch<SetStateAction<HTMLElement | null>>
 }
 
 const CollectionViewContext = createContext<CollectionContextType>({} as CollectionContextType);
@@ -27,12 +31,20 @@ export const CollectionContextProvider = ({children}: {children: ReactElement}):
     const [type, setType] = useState('owned');
     const [ordering, setOrdering] = useState('ranking');
 
+    // filters popover
+    const [filtersOpen, setFiltersOpen] = useState(false);
+    const [filtersAnchorEl, setFiltersAnchorEl] = useState<HTMLElement | null>(null);
+
     return (
         <CollectionViewContext.Provider value={{
             type,
             setType,
             ordering,
-            setOrdering
+            setOrdering,
+            filtersOpen,
+            setFiltersOpen,
+            filtersAnchorEl,
+            setFiltersAnchorEl
         }}>
             {children}
         </CollectionViewContext.Provider>

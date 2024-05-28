@@ -33,7 +33,16 @@ const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
 
 const CollectionToggle = () => {
 
-    const {type, setType, ordering, setOrdering} = useCollectionViewContext();
+    const {
+        type,
+        setType,
+        ordering,
+        setOrdering,
+        filtersOpen,
+        setFiltersOpen,
+        filtersAnchorEl,
+        setFiltersAnchorEl
+    } = useCollectionViewContext();
 
     const handleType = (
         _event: React.MouseEvent<HTMLElement>,
@@ -47,6 +56,11 @@ const CollectionToggle = () => {
         newOrdering: string
     ) => {
         setOrdering(newOrdering);
+    }
+
+    const handleFilterClick = (event: React.MouseEvent<HTMLElement>) => {
+        setFiltersOpen(!filtersOpen)
+        setFiltersAnchorEl(event.currentTarget);
     }
 
     return (
@@ -91,10 +105,10 @@ const CollectionToggle = () => {
                     </ToggleButton>
                 </StyledToggleButtonGroup>
                 <Divider flexItem orientation="vertical" sx={{ mx: 0.5, my: 1 }} />
-                <Button style={{textTransform:"none"}}>
+                <Button style={{textTransform:"none"}} onClick={handleFilterClick}>
                     <FilterAltIcon />
                     Filter
-                    <FiltersPicker anchorEl={null} />
+                    <FiltersPicker anchorEl={filtersAnchorEl} />
                 </Button>
                 <Button style={{textTransform:"none"}}>
                     Update ranking
