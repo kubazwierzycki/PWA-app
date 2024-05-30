@@ -43,6 +43,12 @@ interface BoardGameStub {
     "@_objectid": string
 }
 
+interface FiltersState {
+    rated: boolean;
+    commented: boolean;
+    minRating: boolean;
+}
+
 /**
  * User game board collection page
  * @returns {ReactNode}
@@ -67,7 +73,12 @@ const CollectionPage = (): ReactNode => {
     const getPaginationLen = () => Math.ceil(numGames / perPage);
 
     // view toggle state from context
-    const {type, ordering} = useCollectionViewContext();
+    const {
+        type,
+        ordering,
+        filtersState,
+        minRating
+    } = useCollectionViewContext();
 
     const fetchDetails = async () => {
 
@@ -128,7 +139,25 @@ const CollectionPage = (): ReactNode => {
             else { // "played"
                 parameters.push("played=1");
             }
-            // TODO: other params from filters
+            // popover filters
+            for (const filter in filtersState) {
+                if (filtersState.hasOwnProperty(filter)) {
+                    if (filtersState[filter as keyof FiltersState]) {
+                        switch (filter) {
+                            case "rated":
+                                parameters.push(`${filter}=1`);
+                                break;
+                            case "commented":
+                                parameters.push("comment=1");
+                                break;
+                            case "minRating":
+                                parameters.push(`minbggrating=${minRating}`);
+                                break;
+                        }
+                    }
+                }
+            }
+
             urlParams += parameters.join("&");
 
             let url = `${baseApiAddress}/collection?username=${username}${urlParams}`;
@@ -141,6 +170,12 @@ const CollectionPage = (): ReactNode => {
                 const totalItems: number = parsedData.items["@_totalitems"];
                 setNumberGames(totalItems);
 
+                if (totalItems == 0) {
+                    setGames([]);
+                    setShownGames([]);
+                    return;
+                }
+
                 let gamesData = [];
 
                 // wrap in array if only one item present
@@ -150,7 +185,6 @@ const CollectionPage = (): ReactNode => {
                 else {
                     gamesData = parsedData.items.item;
                 }
-
 
                 // sorting games according to ordering
                 if (ordering === "ranking") {
@@ -182,7 +216,7 @@ const CollectionPage = (): ReactNode => {
     // update games list effect
     useEffect(() => {
         fetchGames().then();
-    }, [type, ordering]);
+    }, [type, ordering, filtersState, minRating]);
 
     // update shownGames effect
     useEffect(() => {

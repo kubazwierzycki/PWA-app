@@ -16,7 +16,17 @@ type CollectionContextType = {
     filtersOpen: boolean,
     setFiltersOpen: Dispatch<SetStateAction<boolean>>,
     filtersAnchorEl: HTMLElement | null,
-    setFiltersAnchorEl: Dispatch<SetStateAction<HTMLElement | null>>
+    setFiltersAnchorEl: Dispatch<SetStateAction<HTMLElement | null>>,
+    filtersState: FiltersState,
+    setFiltersState: Dispatch<SetStateAction<FiltersState>>,
+    minRating: number,
+    setMinRating: Dispatch<SetStateAction<number>>
+}
+
+interface FiltersState {
+    rated: boolean;
+    commented: boolean;
+    minRating: boolean;
 }
 
 const CollectionViewContext = createContext<CollectionContextType>({} as CollectionContextType);
@@ -35,6 +45,14 @@ export const CollectionContextProvider = ({children}: {children: ReactElement}):
     const [filtersOpen, setFiltersOpen] = useState(false);
     const [filtersAnchorEl, setFiltersAnchorEl] = useState<HTMLElement | null>(null);
 
+    // filters state
+    const [filtersState, setFiltersState] = useState<FiltersState>({
+        rated: false,
+        commented: false,
+        minRating: false,
+    });
+    const [minRating, setMinRating] = useState(5);
+
     return (
         <CollectionViewContext.Provider value={{
             type,
@@ -44,7 +62,11 @@ export const CollectionContextProvider = ({children}: {children: ReactElement}):
             filtersOpen,
             setFiltersOpen,
             filtersAnchorEl,
-            setFiltersAnchorEl
+            setFiltersAnchorEl,
+            filtersState,
+            setFiltersState,
+            minRating,
+            setMinRating
         }}>
             {children}
         </CollectionViewContext.Provider>

@@ -107,7 +107,7 @@ const CollectionToggle = () => {
                 <Divider flexItem orientation="vertical" sx={{ mx: 0.5, my: 1 }} />
                 <Button style={{textTransform:"none"}} onClick={handleFilterClick}>
                     <FilterAltIcon />
-                    Filter
+                        Filter
                     <FiltersPicker anchorEl={filtersAnchorEl} />
                 </Button>
                 <Button style={{textTransform:"none"}}>
