@@ -15,6 +15,7 @@ import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import {useCollectionViewContext} from "../contexts/CollectionViewContext.tsx";
 import FiltersPicker from "./forms/FiltersPicker.tsx";
 import {ReactNode} from "react";
+import {Link} from "react-router-dom";
 
 const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
     [`& .${toggleButtonGroupClasses.grouped}`]: {
@@ -78,6 +79,7 @@ const CollectionToggle = (): ReactNode => {
                     display: 'flex',
                     border: (theme) => `1px solid ${theme.palette.divider}`,
                     flexWrap: 'wrap',
+                    alignItems: 'center'
                 }}
             >
                 <StyledToggleButtonGroup
@@ -117,10 +119,12 @@ const CollectionToggle = (): ReactNode => {
                         Filter
                     <FiltersPicker anchorEl={filtersAnchorEl} />
                 </Button>
-                <Button style={{textTransform:"none"}}>
-                    Update ranking
-                    <ArrowRightIcon />
-                </Button>
+                <Link to="/boardgames/compare">
+                    <Button style={{textTransform:"none"}}>
+                        Update ranking
+                        <ArrowRightIcon />
+                    </Button>
+                </Link>
             </Paper>
         </div>
     );
