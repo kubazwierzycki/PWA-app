@@ -14,6 +14,7 @@ import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import {useCollectionViewContext} from "../contexts/CollectionViewContext.tsx";
 import FiltersPicker from "./forms/FiltersPicker.tsx";
+import {ReactNode} from "react";
 
 const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
     [`& .${toggleButtonGroupClasses.grouped}`]: {
@@ -31,7 +32,13 @@ const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
         },
 }));
 
-const CollectionToggle = () => {
+
+/**
+ * Collection view control component for {@link CollectionPage}
+ * Uses {@link CollectionViewContext} that controls state
+ * @returns ReactNode
+ */
+const CollectionToggle = (): ReactNode => {
 
     const {
         type,

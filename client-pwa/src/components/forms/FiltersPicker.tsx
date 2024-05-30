@@ -9,6 +9,12 @@ interface FiltersState {
     minRating: boolean;
 }
 
+/**
+ * Popover component enabling BGG collection filters control
+ * Uses {@link CollectionViewContext} that controls state
+ * @param {HTMLElement | null} anchorEl - anchor element for popover positioning
+ * @return ReactNode
+ */
 const FiltersPicker = ({anchorEl}: {anchorEl: HTMLElement | null}): ReactNode => {
 
     const {

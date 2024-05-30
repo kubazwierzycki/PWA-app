@@ -51,6 +51,8 @@ interface FiltersState {
 
 /**
  * User game board collection page
+ * Uses {@link CollectionViewContext} that controls view state
+ * Supports pagination and view control with {@link CollectionToggle}
  * @returns {ReactNode}
  */
 const CollectionPage = (): ReactNode => {

@@ -29,10 +29,12 @@ interface FiltersState {
     minRating: boolean;
 }
 
-const CollectionViewContext = createContext<CollectionContextType>({} as CollectionContextType);
+export const CollectionViewContext = createContext<CollectionContextType>({} as CollectionContextType);
 
 /**
- * Context controlling state of collection page view toggles
+ * Context controlling state of collection page view toggles and filters
+ * Controls type of collection, ordering and filters for {@link CollectionPage},
+ * {@link CollectionToggle}, {@link FiltersPicker}
  * @param {ReactElement} children - elements within context
  * @returns {ReactNode}
  */

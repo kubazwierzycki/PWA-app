@@ -4,7 +4,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import StarIcon from '@mui/icons-material/Star';
 import StarOutlineIcon from '@mui/icons-material/StarOutline';
 import StarHalfIcon from '@mui/icons-material/StarHalf';
-import {useEffect, useState} from "react";
+import {ReactNode, useEffect, useState} from "react";
 import {getRatingColor} from "../utils/RatingUtil.ts";
 import {Button, Card, Stack, Typography} from "@mui/material";
 import PersonIcon from '@mui/icons-material/Person';
@@ -43,7 +43,13 @@ interface BoardGameData {
 }
 
 
-const BoardGameTile = ({data}: {data: BoardGameData}) => {
+/**
+ * Component presenting short information about single board game
+ * Expandable for more details
+ * @param {BoardGameData} data - fetched data for presented board game (with details)
+ * @returns ReactNode
+ */
+const BoardGameTile = ({data}: {data: BoardGameData}): ReactNode => {
 
     const [expanded, setExpanded] = useState(false);
 
