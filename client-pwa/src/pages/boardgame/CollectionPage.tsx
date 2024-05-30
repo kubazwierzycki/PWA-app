@@ -52,8 +52,9 @@ const CollectionPage = (): ReactNode => {
     // FOR TESTING
     // bhr_79
     // Aldie
-    // Sagrilarus
-    const username: string = "Sagrilarus";
+    // goluch
+    // To be replaced with BGG username logic
+    const username: string = "goluch";
 
     const baseApiAddress: string = 'https://boardgamegeek.com/xmlapi2';
 
@@ -82,8 +83,14 @@ const CollectionPage = (): ReactNode => {
 
         const idsList = ids.join(",");
         const url = `${baseApiAddress}/thing?id=${idsList}&stats=1`;
+
         const detailsResponse = await axios.get(url);
-        const gameDetails = parseXml(detailsResponse.data).items.item;
+        let gameDetails = parseXml(detailsResponse.data).items.item;
+
+        // special case when only one item present
+        if (!Array.isArray(gameDetails)) {
+            gameDetails = [gameDetails];
+        }
 
         for (let i = 0; i < gameDetails.length; i++) {
 
@@ -129,13 +136,21 @@ const CollectionPage = (): ReactNode => {
 
             if (collectionResponse.status === 200) {
                 const parsedData = parseXml(collectionResponse.data);
-                const gamesData = parsedData.items.item;
 
                 // check number of items
-                const totalItems = parsedData.items["@_totalitems"];
+                const totalItems: number = parsedData.items["@_totalitems"];
                 setNumberGames(totalItems);
 
-                console.log(gamesData)
+                let gamesData = [];
+
+                // wrap in array if only one item present
+                if (totalItems == 1) {
+                    gamesData.push(parsedData.items.item);
+                }
+                else {
+                    gamesData = parsedData.items.item;
+                }
+
 
                 // sorting games according to ordering
                 if (ordering === "ranking") {
