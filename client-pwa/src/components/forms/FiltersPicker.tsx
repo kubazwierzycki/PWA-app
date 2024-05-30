@@ -21,9 +21,9 @@ const FiltersPicker = ({anchorEl}: {anchorEl: HTMLElement | null}): ReactNode =>
 
     // popover filters state
     const [currentFiltersState, setCurrentFiltersState] = useState<FiltersState>({
-        rated: false,
-        commented: false,
-        minRating: false,
+        rated: filtersState.rated,
+        commented: filtersState.commented,
+        minRating: filtersState.minRating,
     });
     const [sliderValue, setSliderValue] = useState(5);
 
@@ -47,7 +47,11 @@ const FiltersPicker = ({anchorEl}: {anchorEl: HTMLElement | null}): ReactNode =>
     };
 
     const handleApply = () => {
-        setFiltersState(currentFiltersState);
+        setFiltersState({
+            rated: currentFiltersState.rated,
+            commented: currentFiltersState.commented,
+            minRating: currentFiltersState.minRating,
+        });
         setFiltersOpen(false);
         setMinRating(sliderValue);
     }
@@ -58,11 +62,20 @@ const FiltersPicker = ({anchorEl}: {anchorEl: HTMLElement | null}): ReactNode =>
         }
     };
 
+    const handlePopoverClose = () => {
+        setFiltersOpen(false);
+        setCurrentFiltersState({
+            rated: filtersState.rated,
+            commented: filtersState.commented,
+            minRating: filtersState.minRating
+        });
+    }
+
     return (
         <Popover
             open={filtersOpen}
             anchorEl={anchorEl}
-            onClose={() => setFiltersOpen(false)}
+            onClose={handlePopoverClose}
             anchorOrigin={{
                 vertical: 'bottom',
                 horizontal: 'center',
@@ -72,11 +85,11 @@ const FiltersPicker = ({anchorEl}: {anchorEl: HTMLElement | null}): ReactNode =>
                 horizontal: 'center'
             }}
         >
-            <div className={styles.filters}>
+            <div className={styles.filters} onClick={e => e.stopPropagation()}>
                 <FormGroup>
                     <FormControlLabel
                         control={
-                            <Checkbox  checked={filtersState.rated} onChange={handleCheckboxChange}/>
+                            <Checkbox  checked={currentFiltersState.rated} onChange={handleCheckboxChange}/>
                         }
                         label={
                             <div style={{width:"180px", textAlign:"center"}}>
@@ -87,7 +100,7 @@ const FiltersPicker = ({anchorEl}: {anchorEl: HTMLElement | null}): ReactNode =>
                     />
                     <FormControlLabel
                         control={
-                            <Checkbox checked={filtersState.commented} onChange={handleCheckboxChange}/>
+                            <Checkbox checked={currentFiltersState.commented} onChange={handleCheckboxChange}/>
                         }
                         label={
                             <div style={{width:"180px", textAlign:"center"}}>
@@ -98,7 +111,7 @@ const FiltersPicker = ({anchorEl}: {anchorEl: HTMLElement | null}): ReactNode =>
                     />
                     <FormControlLabel
                         control={
-                            <Checkbox  checked={filtersState.minRating} onChange={handleCheckboxChange}/>
+                            <Checkbox  checked={currentFiltersState.minRating} onChange={handleCheckboxChange}/>
                         }
                         label={
                             <FormControlLabel
