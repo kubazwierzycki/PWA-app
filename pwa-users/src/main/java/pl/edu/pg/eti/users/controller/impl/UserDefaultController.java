@@ -83,19 +83,27 @@ public class UserDefaultController implements UserController {
     }
 
     @Override
-    public void putUser(UUID uuid, PutUser request, String token) {
+    public void putUser(UUID uuid, PutUser request, String option, String token) {
         User user = userService.find(uuid).orElse(null);
 
         if (user == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
         else if (user.getToken().equals(SecurityProvider.calculateSHA256(token))) {
+            String bggUsername = request.getBggUsername();
+            String email = request.getEmail();
+            if ("bgg".equals(option)) {
+                email = user.getEmail();
+            }
+            else if ("email".equals(option)) {
+                bggUsername = user.getBggUsername();
+            }
             userService.update(
                     User.builder()
                             .uuid(uuid)
-                            .email(request.getEmail())
-                            .username(request.getUsername())
-                            .bggUsername(request.getBggUsername())
+                            .email(email)
+                            .username(user.getUsername())
+                            .bggUsername(bggUsername)
                             .password(user.getPassword())
                             .token(user.getToken())
                             .build()

@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 /**
  * Used as a PUT request to update user data
@@ -18,8 +17,7 @@ import lombok.ToString;
 @EqualsAndHashCode
 public class PutUser {
 
-    @ToString.Exclude
-    private String email;
+    private String username;
 
     private String bggUsername;
 }
