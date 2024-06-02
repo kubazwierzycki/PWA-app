@@ -107,8 +107,13 @@
     }
 
     .cardContainer {
-        width: 80%;
-        height: 30vh;
+        width: 100%;
+        max-height: 40vh;
         align-content: space-between;
+    }
+
+    .vs {
+        width: 100%;
+        height: fit-content;
     }
 }

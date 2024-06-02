@@ -17,7 +17,7 @@ const ComparingGamesPage = () => {
     return (
         <div className={styles.container}>
             <div className={styles.header}>
-                <Typography variant="h4">
+                <Typography variant="h4" sx={{fontSize: "1.5em"}}>
                     Choose better game:
                 </Typography>
             </div>
@@ -47,6 +47,9 @@ const ComparingGamesPage = () => {
                 </div>
             </div>
             <div className={styles.next}>
+                <Button variant="contained" sx={{marginRight: "20px"}}>
+                    Finish and Save
+                </Button>
                 <Button variant="outlined">
                     Next pair
                 </Button>
