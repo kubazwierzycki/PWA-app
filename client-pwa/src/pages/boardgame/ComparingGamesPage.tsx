@@ -2,6 +2,7 @@ import styles from "../../styles/comparing.module.css"
 import {Button, Typography} from "@mui/material";
 import BoardGameCard from "../../components/BoardGameCard.tsx";
 import {useState} from "react";
+import image from "../../assets/test_thumbnail.webp" // testing only
 
 
 const ComparingGamesPage = () => {
@@ -22,7 +23,13 @@ const ComparingGamesPage = () => {
             </div>
             <div className={styles.wrapper}>
                 <div className={styles.cardContainer} onClick={() => handleCardClick(1)}>
-                    <BoardGameCard chosen={chosen} val={1} />
+                    <BoardGameCard
+                        chosen={chosen}
+                        val={1}
+                        thumbnail={image}
+                        title={"Die Macher"}
+                        text={""}
+                    />
                 </div>
                 <div className={styles.vs}>
                     <Typography variant="h5">
@@ -30,7 +37,13 @@ const ComparingGamesPage = () => {
                     </Typography>
                 </div>
                 <div className={styles.cardContainer}  onClick={() => handleCardClick(2)}>
-                    <BoardGameCard chosen={chosen} val={2} />
+                    <BoardGameCard
+                        chosen={chosen}
+                        val={2}
+                        thumbnail={image}
+                        title={"Die Macher"}
+                        text={""}
+                    />
                 </div>
             </div>
             <div className={styles.next}>
