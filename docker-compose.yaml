@@ -1,0 +1,36 @@
+services:
+  pwa-gateway:
+    build:
+      context: ./pwa-gateway
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      USERS_URL: "http://pwa-users:8081"
+      GAMEPLAYS_URL: "http://pwa-gameplays:8082"
+      GAMES_URL: "http://pwa-games:8083"
+      PLAYROOMS_URL: "http://pwa-playrooms:8084"
+      EXPERIENCE_URL: "http://pwa-experience:8085"
+    ports:
+      - "8080:8080"
+    
+  pwa-users:
+    build:
+      context: ./pwa-users
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      EXPERIENCE_URL: "http://pwa-experience:8085"
+   
+  pwa-games:
+    build:
+      context: ./pwa-games
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      EXPERIENCE_URL: "http://pwa-experience:8085"
+  
+  pwa-experience:
+    build:
+      context: ./pwa-experience
+      dockerfile: Dockerfile
+    restart: always
