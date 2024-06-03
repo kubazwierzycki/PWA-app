@@ -25,6 +25,7 @@ interface State {
     username: string;
     email: string;
     bggUsername: string;
+    bggId: string;
     password: string;
     passwordConfirmation: string;
 }
@@ -38,11 +39,12 @@ export default function SignUpForm(): ReactNode {
         username: "",
         email: "",
         bggUsername: "",
+        bggId: "",
         password: "",
         passwordConfirmation: "",
     });
 
-    const { setToken, setUuid } = useAuth();
+    const { setToken, setUuid, setUser } = useAuth();
     const navigate = useNavigate();
     const [alertMessage, setAlertMessage] = useState<Message>({
         message: "",
@@ -73,9 +75,11 @@ export default function SignUpForm(): ReactNode {
             if (vBggUsername !== ValidationResult.Success) {
                 return vBggUsername;
             }
-            const vBggUserId: string = await getBggUserId(fD.bggUsername);
-            if (vBggUserId === "") {
+            const vBggId: string = await getBggUserId(fD.bggUsername);
+            if (vBggId === "") {
                 return ValidationResult.BggUserNotFound;
+            } else {
+                fD.bggId = vBggId;
             }
         }
 
@@ -111,6 +115,12 @@ export default function SignUpForm(): ReactNode {
                 Cookies.set("uuid", res.uuid);
                 setToken(res.token);
                 setUuid(res.uuid);
+                setUser({
+                    username: fD.username,
+                    bggUsername: fD.bggUsername,
+                    bggId: fD.bggId,
+                    email: fD.email,
+                });
                 navigate("/");
             } catch (err) {
                 if (axios.isAxiosError(err)) {
