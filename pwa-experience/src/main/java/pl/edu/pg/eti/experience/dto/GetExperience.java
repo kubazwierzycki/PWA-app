@@ -22,7 +22,9 @@ import java.util.UUID;
 @ToString
 public class GetExperience {
     private UUID uuid;
+    private UUID userUuid;
     private String username;
+    private String gameId;
     private String game;
     private int numberOfPlays;
     private int numberOfWins;

@@ -29,7 +29,9 @@ public class GetExperiences {
     @ToString
     public static class Experience {
         private UUID uuid;
+        private UUID userUuid;
         private String username;
+        private String gameId;
         private String game;
         private int numberOfPlays;
     }

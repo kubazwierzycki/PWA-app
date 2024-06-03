@@ -18,6 +18,8 @@ import lombok.ToString;
 @EqualsAndHashCode
 public class PutUser {
 
+    private String username;
+
     @ToString.Exclude
     private String email;
 
