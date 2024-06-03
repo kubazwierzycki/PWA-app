@@ -1,0 +1,109 @@
+.wrapper {
+    margin-bottom: 20px;
+}
+
+.container {
+    width: 95%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-left: auto;
+    margin-right: auto;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    height: fit-content;
+    cursor: pointer;
+}
+
+.thumbnail {
+    height: 90%;
+}
+
+.text {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding-left: 5%;
+    padding-right: 5%;
+    box-sizing: border-box;
+    flex: 1;
+}
+
+.rating {
+    height: 90%;
+    font-size: 2em;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.expand {
+    height: 90%;
+    justify-self: right;
+}
+
+.title {
+    width: 100%;
+    font-size: 1.5em;
+    text-align: center;
+    padding-bottom: 5px;
+    transition: font-size 0.3s ease, transform 0.3s ease;
+}
+
+.description {
+    width: 100%;
+    font-size: 14px;
+    transition: opacity 0.3s ease;
+}
+
+
+
+
+.expanded .title {
+    font-size: 2em;
+    transform: translateY(20px);
+}
+
+.expanded .description {
+    display: none;
+}
+
+.expandedContent {
+    padding: 20px;
+    box-sizing: border-box;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.expanded .expandedContent {
+    display: block;
+    opacity: 1;
+}
+
+.infoCards {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.card {
+    margin: 15px;
+    padding: 15px 20px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.card > div {
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+.pageLinkContainer {
+    display: flex;
+    justify-content: right;
+    padding: 0 5%;
+}

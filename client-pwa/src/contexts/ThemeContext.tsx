@@ -26,7 +26,7 @@ export const ThemeModeProvider = ({children}: {children: ReactElement}): ReactNo
                     // palette values for light mode
                     primary: blue,
                     secondary: green,
-                    divider: blue[200],
+                    divider: blue[100],
                     background: {
                         default: '#fff',
                         paper: 'rgba(239,246,248)',
