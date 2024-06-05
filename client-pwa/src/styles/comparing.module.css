@@ -63,6 +63,10 @@
     border-radius: 20px;
 }
 
+.lost:hover {
+
+}
+
 
 .cardWrapper {
     width: 100%;
@@ -97,6 +101,13 @@
 }
 
 
+
+.buttonsContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    width: 100%;
+}
 
 
 @media screen and (max-width: 850px) {
