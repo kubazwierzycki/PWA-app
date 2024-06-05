@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import pl.edu.pg.eti.users.dto.GetRanking;
 import pl.edu.pg.eti.users.dto.GetUser;
 import pl.edu.pg.eti.users.dto.GetUsers;
 import pl.edu.pg.eti.users.dto.PostLogin;
@@ -129,4 +130,27 @@ public interface UserController {
             @PathVariable("uuid") UUID uuid,
             @RequestHeader("Authorization") String token
     );
+
+    /**
+     * GET request for user ranking
+     * @param uuid - user ID
+     * @return ranking dictionary
+     */
+    @GetMapping("/api/users/{uuid}/ranking")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    GetRanking getRanking(
+            @PathVariable("uuid") UUID uuid
+    );
+
+    /**
+     * PUT request to update user ranking
+     * @param uuid - user ID
+     */
+    @PutMapping("/api/users/{uuid}/ranking")
+    @ResponseStatus(HttpStatus.CREATED)
+    void putRanking(
+            @PathVariable("uuid") UUID uuid
+    );
+
 }

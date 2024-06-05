@@ -14,6 +14,11 @@ public class Main {
     }
 
     @Bean
+    public RestTemplate bggApiRestTemplate(@Value("${bgg.api.url}") String bggApiUrl) {
+        return new RestTemplateBuilder().rootUri(bggApiUrl).build();
+    }
+
+    @Bean
     public RestTemplate experienceRestTemplate(@Value("${experience.url}") String experienceUrl) {
         return new RestTemplateBuilder().rootUri(experienceUrl).build();
     }
