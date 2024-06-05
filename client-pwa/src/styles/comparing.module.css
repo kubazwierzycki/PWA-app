@@ -63,8 +63,9 @@
     border-radius: 20px;
 }
 
-.lost:hover {
-
+.innerBox:hover:has(.lost) {
+    transform: scale(1.03);
+    transition: ease 0.3s;
 }
 
 
@@ -119,7 +120,6 @@
 
     .cardContainer {
         width: 100%;
-        max-height: 40vh;
         align-content: space-between;
     }
 
