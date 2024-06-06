@@ -1,5 +1,7 @@
 package pl.edu.pg.eti.users.entity;
 
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Embeddable;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -10,6 +12,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -56,5 +59,29 @@ public class User implements Serializable {
      * The BoardGeekGame username associated with the user
      */
     private String bggUsername;
+
+    /**
+     * User's BGG games ranking
+     */
+    @ElementCollection
+    @ToString.Exclude
+    private List<GameRanking> ranking;
+
+    @Embeddable
+    @Getter
+    public static class GameRanking {
+        /**
+         * Game ID
+         */
+        private String gameId;
+        /**
+         * Game rating (BGG and user)
+         */
+        private double rating;
+        /**
+         * How many times the game was compared with another
+         */
+        private int numberOfCompares;
+    }
 
 }

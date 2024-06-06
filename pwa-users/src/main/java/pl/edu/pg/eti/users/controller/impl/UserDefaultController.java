@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import pl.edu.pg.eti.users.controller.api.UserController;
+import pl.edu.pg.eti.users.dto.GetRanking;
 import pl.edu.pg.eti.users.dto.GetUser;
 import pl.edu.pg.eti.users.dto.GetUsers;
 import pl.edu.pg.eti.users.dto.PostLogin;
@@ -223,5 +224,15 @@ public class UserDefaultController implements UserController {
             return;
         }
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+    }
+
+    @Override
+    public GetRanking getRanking(UUID uuid) {
+        return null;
+    }
+
+    @Override
+    public void putRanking(UUID uuid) {
+
     }
 }
