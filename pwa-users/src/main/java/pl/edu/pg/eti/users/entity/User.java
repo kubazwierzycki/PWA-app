@@ -4,6 +4,7 @@ import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -67,6 +68,7 @@ public class User implements Serializable {
      */
     @ElementCollection
     @ToString.Exclude
+    @OrderBy("rating DESC")
     private List<GameRanking> ranking;
 
     @Embeddable
