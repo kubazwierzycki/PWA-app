@@ -70,14 +70,14 @@ public class BggRankingManager {
             List<User.GameRanking> ranking = new ArrayList<>();
 
             for (String id : games) {
-                boolean exisit = false;
+                boolean exist = false;
                 for (User.GameRanking game : userRanking) {
                     if (id.equals(game.getGameId())) {
-                        exisit = true;
+                        exist = true;
                         break;
                     }
                 }
-                if (!exisit) {
+                if (!exist) {
                     Double rating = getGameBggRating(id);
                     if (rating != null) {
                         ranking.add(new User.GameRanking(id, rating, 0));
@@ -91,7 +91,6 @@ public class BggRankingManager {
     /**
      * Get owned games from BGG
      * source: <a href="https://www.baeldung.com/java-http-request"/>
-     * source: <a href="https://www.baeldung.com/java-convert-string-xml-dom"/>
      * @param userUuid - user ID
      * @return list of owned bgg games (ID)
      */
@@ -131,7 +130,6 @@ public class BggRankingManager {
     /**
      * Get BGG rating of the game
      * source: <a href="https://www.baeldung.com/java-http-request"/>
-     * source: <a href="https://www.baeldung.com/java-convert-string-xml-dom"/>
      * @param gameId - game ID
      * @return game rating (Double) or null if not exists
      */
@@ -162,6 +160,7 @@ public class BggRankingManager {
 
     /**
      * Get BGG rating of the games
+     * source: <a href="https://www.baeldung.com/java-http-request"/>
      * @param gamesId - list of games ID
      * @return Map (game ID: game rating)
      */

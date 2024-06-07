@@ -108,6 +108,7 @@ public class UserDefaultController implements UserController {
             }
             else if ("email".equals(option)) {
                 user.setEmail(request.getEmail());
+                userService.update(user);
             }
             else {
                 user.setEmail(request.getEmail());
