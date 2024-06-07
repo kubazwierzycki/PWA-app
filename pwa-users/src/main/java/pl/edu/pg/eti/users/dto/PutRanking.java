@@ -18,8 +18,9 @@ import java.util.List;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @EqualsAndHashCode
 public class PutRanking {
-    private List<GetRanking.GameRanking> ranking;
+    private List<GameRanking> ranking;
 
+    @Getter
     public static class GameRanking {
         private String gameId;
         private double rating;

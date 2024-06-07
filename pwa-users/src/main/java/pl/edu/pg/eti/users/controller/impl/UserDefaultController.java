@@ -12,12 +12,15 @@ import pl.edu.pg.eti.users.dto.GetUsers;
 import pl.edu.pg.eti.users.dto.PostLogin;
 import pl.edu.pg.eti.users.dto.PostUser;
 import pl.edu.pg.eti.users.dto.PutPassword;
+import pl.edu.pg.eti.users.dto.PutRanking;
 import pl.edu.pg.eti.users.dto.PutUser;
 import pl.edu.pg.eti.users.dto.Token;
 import pl.edu.pg.eti.users.entity.User;
 import pl.edu.pg.eti.users.service.api.UserService;
+import pl.edu.pg.eti.users.utils.BggRankingManager;
 import pl.edu.pg.eti.users.utils.SecurityProvider;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,10 +28,12 @@ import java.util.UUID;
 public class UserDefaultController implements UserController {
 
     private final UserService userService;
+    private final BggRankingManager bggRankingManager;
 
     @Autowired
-    public UserDefaultController(UserService userService) {
+    public UserDefaultController(UserService userService, BggRankingManager bggRankingManager) {
         this.userService = userService;
+        this.bggRankingManager = bggRankingManager;
     }
 
     @Override
@@ -91,24 +96,30 @@ public class UserDefaultController implements UserController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
         else if (user.getToken().equals(SecurityProvider.calculateSHA256(token))) {
-            String bggUsername = request.getBggUsername();
-            String email = request.getEmail();
             if ("bgg".equals(option)) {
-                email = user.getEmail();
+                user.setBggUsername(request.getBggUsername());
+                userService.update(user);
+
+                Thread createRanking = new Thread(() -> {
+                    user.setRanking(bggRankingManager.getNewGameRanking(user.getUuid().toString()));
+                    userService.update(user);
+                });
+                createRanking.start();
             }
             else if ("email".equals(option)) {
-                bggUsername = user.getBggUsername();
+                user.setEmail(request.getEmail());
             }
-            userService.update(
-                    User.builder()
-                            .uuid(uuid)
-                            .email(email)
-                            .username(user.getUsername())
-                            .bggUsername(bggUsername)
-                            .password(user.getPassword())
-                            .token(user.getToken())
-                            .build()
-            );
+            else {
+                user.setEmail(request.getEmail());
+                user.setBggUsername(request.getBggUsername());
+                userService.update(user);
+
+                Thread createRanking = new Thread(() -> {
+                    user.setRanking(bggRankingManager.getNewGameRanking(user.getUuid().toString()));
+                    userService.update(user);
+                });
+                createRanking.start();
+            }
         }
         else {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
@@ -124,16 +135,22 @@ public class UserDefaultController implements UserController {
         else {
             String token = UUID.randomUUID().toString();
             UUID uuid = UUID.randomUUID();
-            userService.create(
-                    User.builder()
-                            .uuid(uuid)
-                            .email(request.getEmail())
-                            .username(request.getUsername())
-                            .password(SecurityProvider.calculateSHA256(request.getPassword()))
-                            .token(SecurityProvider.calculateSHA256(token))
-                            .bggUsername(request.getBggUsername())
-                            .build()
-            );
+            User user = User.builder()
+                    .uuid(uuid)
+                    .email(request.getEmail())
+                    .username(request.getUsername())
+                    .password(SecurityProvider.calculateSHA256(request.getPassword()))
+                    .token(SecurityProvider.calculateSHA256(token))
+                    .bggUsername(request.getBggUsername())
+                    .build();
+            userService.create(user);
+
+            Thread createRanking = new Thread(() -> {
+                user.setRanking(bggRankingManager.getNewGameRanking(user.getUuid().toString()));
+                userService.update(user);
+            });
+            createRanking.start();
+
             return ResponseEntity.ok(Token.builder().token(token).uuid(uuid.toString()).build());
         }
     }
@@ -147,17 +164,11 @@ public class UserDefaultController implements UserController {
         }
         else {
             if (user.getPassword().equals(SecurityProvider.calculateSHA256(request.getPassword()))) {
+
                 String token = UUID.randomUUID().toString();
-                userService.update(
-                        User.builder()
-                                .uuid(user.getUuid())
-                                .email(user.getEmail())
-                                .username(user.getUsername())
-                                .bggUsername(user.getBggUsername())
-                                .password(user.getPassword())
-                                .token(SecurityProvider.calculateSHA256(token))
-                                .build()
-                );
+                user.setToken(SecurityProvider.calculateSHA256(token));
+                userService.update(user);
+
                 return ResponseEntity.ok(Token.builder().token(token).uuid(user.getUuid().toString()).build());
             }
         }
@@ -173,16 +184,10 @@ public class UserDefaultController implements UserController {
         }
         else if (user.getToken().equals(SecurityProvider.calculateSHA256(token)) &&
                 user.getPassword().equals(SecurityProvider.calculateSHA256(request.getOldPassword()))) {
-            userService.update(
-                    User.builder()
-                            .uuid(user.getUuid())
-                            .email(user.getEmail())
-                            .username(user.getUsername())
-                            .bggUsername(user.getBggUsername())
-                            .password(SecurityProvider.calculateSHA256(request.getNewPassword()))
-                            .token(user.getToken())
-                            .build()
-            );
+
+            user.setPassword(SecurityProvider.calculateSHA256(request.getNewPassword()));
+            userService.update(user);
+
             return;
         }
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
@@ -211,16 +216,9 @@ public class UserDefaultController implements UserController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
         else if (user.getToken().equals(SecurityProvider.calculateSHA256(token))) {
-            userService.update(
-                    User.builder()
-                            .uuid(user.getUuid())
-                            .email(user.getEmail())
-                            .username(user.getUsername())
-                            .bggUsername(user.getBggUsername())
-                            .password(user.getPassword())
-                            .token(null)
-                            .build()
-            );
+
+            user.setToken(null);
+            userService.update(user);
             return;
         }
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
@@ -228,11 +226,47 @@ public class UserDefaultController implements UserController {
 
     @Override
     public GetRanking getRanking(UUID uuid) {
-        return null;
+        User user = userService.find(uuid).orElse(null);
+
+        if (user == null || user.getRanking() == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        else {
+            return GetRanking.builder()
+                    .ranking(user.getRanking().stream()
+                            .map(game -> GetRanking.GameRanking.builder()
+                                    .gameId(game.getGameId())
+                                    .rating(game.getRating())
+                                    .numberOfCompares(game.getNumberOfCompares())
+                                    .build())
+                            .toList())
+                    .build();
+        }
     }
 
     @Override
-    public void putRanking(UUID uuid) {
+    public void putRanking(UUID uuid, PutRanking request, String token) {
+        User user = userService.find(uuid).orElse(null);
 
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        else if (user.getToken().equals(SecurityProvider.calculateSHA256(token))) {
+            List<User.GameRanking> updatedRanking = new ArrayList<>();
+            for (PutRanking.GameRanking game : request.getRanking()) {
+                updatedRanking.add(new User.GameRanking(game.getGameId(), game.getRating(), game.getNumberOfCompares()));
+            }
+            user.setRanking(updatedRanking);
+            userService.update(user);
+        }
+        else {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+
+        Thread createRanking = new Thread(() -> {
+            user.setRanking(bggRankingManager.updateGameRanking(user.getUuid().toString()));
+            userService.update(user);
+        });
+        createRanking.start();
     }
 }

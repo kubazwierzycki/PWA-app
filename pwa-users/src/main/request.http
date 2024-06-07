@@ -60,3 +60,22 @@ Authorization: fad9faaf-64ad-48a1-b1aa-d008317bb5ab
 ### LOG OUT
 POST localhost:8080/api/users/a8755a07-aea1-45a4-86a2-b3ef6f889bbd/logout
 Authorization: fad9faaf-64ad-48a1-b1aa-d008317bb5ab
+
+### GET ranking
+GET localhost:8080/api/users/a8755a07-aea1-45a4-86a2-b3ef6f889bbd/ranking
+
+### UPDATE ranking
+PUT localhost:8080/api/users/a8755a07-aea1-45a4-86a2-b3ef6f889bbd/ranking
+Authorization: fad9faaf-64ad-48a1-b1aa-d008317bb5ab
+Content-Type: application/json
+
+{
+  "ranking": [
+    {"gameId": "192458", "rating": 1.0, "numberOfCompares": 0},
+    {"gameId": "68448", "rating": 5.0, "numberOfCompares": 1},
+    {"gameId": "173346", "rating": 2.0, "numberOfCompares": 2},
+    {"gameId": "309116", "rating": 4.0, "numberOfCompares": 3},
+    {"gameId": "202976", "rating": 3.0, "numberOfCompares": 4}
+  ]
+}
+

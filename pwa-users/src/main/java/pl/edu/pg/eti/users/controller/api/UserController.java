@@ -18,6 +18,7 @@ import pl.edu.pg.eti.users.dto.GetUsers;
 import pl.edu.pg.eti.users.dto.PostLogin;
 import pl.edu.pg.eti.users.dto.PostUser;
 import pl.edu.pg.eti.users.dto.PutPassword;
+import pl.edu.pg.eti.users.dto.PutRanking;
 import pl.edu.pg.eti.users.dto.PutUser;
 import pl.edu.pg.eti.users.dto.Token;
 import pl.edu.pg.eti.users.entity.User;
@@ -146,11 +147,15 @@ public interface UserController {
     /**
      * PUT request to update user ranking
      * @param uuid - user ID
+     * @param request - updated game ranking
+     * @param token - authorization token
      */
     @PutMapping("/api/users/{uuid}/ranking")
     @ResponseStatus(HttpStatus.CREATED)
     void putRanking(
-            @PathVariable("uuid") UUID uuid
+            @PathVariable("uuid") UUID uuid,
+            @RequestBody PutRanking request,
+            @RequestHeader("Authorization") String token
     );
 
 }

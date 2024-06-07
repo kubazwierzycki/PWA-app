@@ -1,6 +1,5 @@
 package pl.edu.pg.eti.users.dto;
 
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,13 +14,19 @@ import java.util.List;
  */
 @Getter
 @Setter
-@AllArgsConstructor(access= AccessLevel.PRIVATE)
+@AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @ToString
 public class GetRanking {
     private List<GameRanking> ranking;
 
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    @ToString
     public static class GameRanking {
         private String gameId;
         private double rating;

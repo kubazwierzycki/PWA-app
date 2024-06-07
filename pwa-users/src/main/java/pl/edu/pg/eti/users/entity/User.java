@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 
 import java.io.Serializable;
@@ -19,6 +20,7 @@ import java.util.UUID;
  * The entity represents a registered user
  */
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -69,6 +71,9 @@ public class User implements Serializable {
 
     @Embeddable
     @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class GameRanking {
         /**
          * Game ID
