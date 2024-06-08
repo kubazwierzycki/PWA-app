@@ -9,6 +9,7 @@ import {clearCharEntities, getShortDescription} from "../../utils/DescriptionPar
 import axiosRetry from "axios-retry";
 import {useCollectionViewContext} from "../../contexts/CollectionViewContext.tsx";
 import {useBoardgamesContext} from "../../contexts/BoardgamesContext.tsx";
+import {getGameDetails} from "../../services/boardgames.ts";
 
 interface NameType {
     "#text": string
@@ -98,15 +99,7 @@ const CollectionPage = (): ReactNode => {
         }
 
         const idsList = ids.join(",");
-        const url = `${baseApiAddress}/thing?id=${idsList}&stats=1`;
-
-        const detailsResponse = await axios.get(url);
-        let gameDetails = parseXml(detailsResponse.data).items.item;
-
-        // special case when only one item present
-        if (!Array.isArray(gameDetails)) {
-            gameDetails = [gameDetails];
-        }
+        const gameDetails = await getGameDetails(idsList);
 
         for (let i = 0; i < gameDetails.length; i++) {
 
