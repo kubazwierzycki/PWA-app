@@ -5,12 +5,12 @@
 }
 
 .leftPanel {
-    padding: 30px;
+    padding: 0 30px;
     flex: 0;
 }
 
 .rightPanel {
-    padding: 30px;
+    padding: 0 30px;
     flex: 1;
 }
 
@@ -19,13 +19,32 @@
 }
 
 .info {
-
+    display: flex;
+    flex-direction: column;
 }
 
 .title {
-
+    text-align: center;
 }
 
 .description {
 
 }
+
+
+.tile {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+    margin: 8px 0;
+}
+
+.element {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+

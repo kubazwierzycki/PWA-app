@@ -1,11 +1,8 @@
 import Paper from "@mui/material/Paper";
 import styles from "../styles/boardGameTile.module.css"
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import StarIcon from '@mui/icons-material/Star';
-import StarOutlineIcon from '@mui/icons-material/StarOutline';
-import StarHalfIcon from '@mui/icons-material/StarHalf';
 import {ReactNode, useEffect, useState} from "react";
-import {getRatingColor} from "../utils/RatingUtil.ts";
+import {getRatingColor, renderStar} from "../utils/RatingUtil.tsx";
 import {Button, Card, Stack, Typography} from "@mui/material";
 import PersonIcon from '@mui/icons-material/Person';
 import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt';
@@ -44,25 +41,6 @@ const BoardGameTile = ({data}: {data: BoardGameItem}): ReactNode => {
 
     const toggleExpanded = () => {
         setExpanded(!expanded);
-    }
-
-    const renderStar = (rating: number, color: string) => {
-        const style = {color: color};
-        if (rating <= 5.0) {
-            return (
-                <StarOutlineIcon style={style}/>
-            )
-        }
-        else if (rating > 5.0 && rating < 8.0) {
-            return (
-                <StarHalfIcon style={style} />
-            )
-        }
-        else {
-            return (
-                <StarIcon style={style}/>
-            )
-        }
     }
 
     return (
