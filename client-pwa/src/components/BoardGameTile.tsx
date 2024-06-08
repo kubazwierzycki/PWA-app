@@ -13,44 +13,16 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import NumbersIcon from '@mui/icons-material/Numbers';
 import MilitaryTechIcon from '@mui/icons-material/MilitaryTech';
 import {Link} from "react-router-dom";
-
-interface NameType {
-    "#text": string
-}
-
-interface BoardGameDetails {
-    description: string,
-    shortDescription: string,
-    statistics: {ratings: BoardGameStats},
-    thumbnail: string,
-    yearpublished: {"@_value": string},
-    minplayers: {"@_value": string},
-    maxplayers: {"@_value": string},
-    minage: {"@_value": string},
-    playingtime: {"@_value": string}
-}
-
-interface BoardGameStats {
-    usersRated: string,
-    average: {"@_value": string},
-    owned: string,
-    ranks: {rank: [{"@_value": string}]}
-}
-
-interface BoardGameData {
-    name: NameType,
-    details: BoardGameDetails,
-    "@_objectid": string
-}
+import {BoardGameItem} from "../types/IBoardgames.ts";
 
 
 /**
  * Component presenting short information about single board game
  * Expandable for more details
- * @param {BoardGameData} data - fetched data for presented board game (with details)
+ * @param {BoardGameItem} data - fetched data for presented board game (with details)
  * @returns ReactNode
  */
-const BoardGameTile = ({data}: {data: BoardGameData}): ReactNode => {
+const BoardGameTile = ({data}: {data: BoardGameItem}): ReactNode => {
 
     const [expanded, setExpanded] = useState(false);
 

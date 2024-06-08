@@ -1,26 +1,9 @@
 import axios from "axios";
 import {parseXml} from "../utils/XMLToJSON.ts";
+import {BoardGameDetails} from "../types/IBoardgames.ts";
 
 const baseApiAddress: string = 'https://boardgamegeek.com/xmlapi2';
 
-interface BoardGameStats {
-    usersRated: string,
-    average: {"@_value": string},
-    owned: string,
-    ranks: {rank: [{"@_value": string}]}
-}
-
-interface BoardGameDetails {
-    description: string,
-    shortDescription: string,
-    statistics: {ratings: BoardGameStats},
-    thumbnail: string,
-    yearpublished: {"@_value": string},
-    minplayers: {"@_value": string},
-    maxplayers: {"@_value": string},
-    minage: {"@_value": string},
-    playingtime: {"@_value": string}
-}
 
 /**
  * Function fetching full info about board game(s) by its id using BGG API

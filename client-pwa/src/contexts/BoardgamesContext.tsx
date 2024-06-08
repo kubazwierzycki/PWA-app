@@ -1,26 +1,12 @@
 import {
     createContext,
-    Dispatch,
     ReactElement,
     ReactNode,
-    SetStateAction,
     useContext,
     useState
 } from "react";
+import {BoardgamesContextType, BoardGameStub} from "../types/IBoardgames.ts";
 
-interface NameType {
-    "#text": string
-}
-
-interface BoardGameStub {
-    name: NameType,
-    "@_objectid": string
-}
-
-type BoardgamesContextType = {
-    games: BoardGameStub[],
-    setGames: Dispatch<SetStateAction<BoardGameStub[]>>,
-}
 
 export const BoardgamesContext = createContext<BoardgamesContextType>({} as BoardgamesContextType);
 

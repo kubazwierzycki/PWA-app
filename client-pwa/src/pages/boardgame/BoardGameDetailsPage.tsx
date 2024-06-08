@@ -2,25 +2,8 @@ import {ReactNode, useEffect, useState} from "react";
 import {useParams} from "react-router-dom";
 import styles from "../../styles/boardGameDetails.module.css"
 import {getGameDetails} from "../../services/boardgames.ts";
+import {BoardGameDetails} from "../../types/IBoardgames.ts";
 
-interface BoardGameStats {
-    usersRated: string,
-    average: {"@_value": string},
-    owned: string,
-    ranks: {rank: [{"@_value": string}]}
-}
-
-interface BoardGameDetails {
-    description: string,
-    shortDescription: string,
-    statistics: {ratings: BoardGameStats},
-    thumbnail: string,
-    yearpublished: {"@_value": string},
-    minplayers: {"@_value": string},
-    maxplayers: {"@_value": string},
-    minage: {"@_value": string},
-    playingtime: {"@_value": string}
-}
 
 const BoardGameDetailsPage = (): ReactNode => {
 

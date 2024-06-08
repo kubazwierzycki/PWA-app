@@ -10,46 +10,8 @@ import axiosRetry from "axios-retry";
 import {useCollectionViewContext} from "../../contexts/CollectionViewContext.tsx";
 import {useBoardgamesContext} from "../../contexts/BoardgamesContext.tsx";
 import {getGameDetails} from "../../services/boardgames.ts";
+import {BoardGameItem, BoardGameStub, FiltersState} from "../../types/IBoardgames.ts";
 
-interface NameType {
-    "#text": string
-}
-
-interface BoardGameDetails {
-    description: string,
-    shortDescription: string,
-    statistics: {ratings: BoardGameStats},
-    thumbnail: string,
-    yearpublished: {"@_value": string},
-    minplayers: {"@_value": string},
-    maxplayers: {"@_value": string},
-    minage: {"@_value": string},
-    playingtime: {"@_value": string}
-}
-
-interface BoardGameStats {
-    usersRated: string,
-    average: {"@_value": string},
-    owned: string,
-    ranks: {rank: [{"@_value": string}]}
-}
-
-interface BoardGameItem {
-    name: NameType,
-    "@_objectid": string,
-    details: BoardGameDetails,
-}
-
-interface BoardGameStub {
-    name: NameType,
-    "@_objectid": string
-}
-
-interface FiltersState {
-    rated: boolean;
-    commented: boolean;
-    minRating: boolean;
-}
 
 /**
  * User game board collection page
