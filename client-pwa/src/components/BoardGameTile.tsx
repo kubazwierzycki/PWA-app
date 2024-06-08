@@ -39,7 +39,8 @@ interface BoardGameStats {
 
 interface BoardGameData {
     name: NameType,
-    details: BoardGameDetails
+    details: BoardGameDetails,
+    "@_objectid": string
 }
 
 
@@ -187,7 +188,7 @@ const BoardGameTile = ({data}: {data: BoardGameData}): ReactNode => {
                             {shortDescription}
                         </div>
                         <div className={styles.pageLinkContainer}>
-                            <Link to={"/"}>
+                            <Link to={"/boardgames/collection/"+data["@_objectid"]}>
                                 <Button>Board game page</Button>
                             </Link>
                         </div>
