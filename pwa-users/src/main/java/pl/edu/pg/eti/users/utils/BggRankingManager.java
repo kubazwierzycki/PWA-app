@@ -42,10 +42,9 @@ public class BggRankingManager {
             return new ArrayList<>();
         }
         else {
-            List<String> games = getUserGamesId(userUuid);
             List<User.GameRanking> ranking = new ArrayList<>();
 
-            Map<String, Double> dictionaryRating = getGamesBggRating(games);
+            Map<String, Double> dictionaryRating = getUserGamesWithRating(user.getBggUsername());
             for (String id : dictionaryRating.keySet()) {
                 ranking.add(new User.GameRanking(id, dictionaryRating.get(id), 0));
             }
@@ -66,22 +65,20 @@ public class BggRankingManager {
         }
         else {
             List<User.GameRanking> userRanking = user.getRanking();
-            List<String> games = getUserGamesId(userUuid);
+            Map<String, Double> gamesWithRating = getUserGamesWithRating(user.getBggUsername());
             List<User.GameRanking> ranking = new ArrayList<>();
 
-            for (String id : games) {
+            for (String gameId : gamesWithRating.keySet()) {
                 boolean exist = false;
                 for (User.GameRanking game : userRanking) {
-                    if (id.equals(game.getGameId())) {
+                    if (gameId.equals(game.getGameId())) {
+                        ranking.add(new User.GameRanking(gameId, game.getRating(), game.getNumberOfCompares()));
                         exist = true;
                         break;
                     }
                 }
                 if (!exist) {
-                    Double rating = getGameBggRating(id);
-                    if (rating != null) {
-                        ranking.add(new User.GameRanking(id, rating, 0));
-                    }
+                    ranking.add(new User.GameRanking(gameId, gamesWithRating.get(gameId), 0));
                 }
             }
             return ranking;
@@ -89,113 +86,45 @@ public class BggRankingManager {
     }
 
     /**
-     * Get owned games from BGG
-     * source: <a href="https://www.baeldung.com/java-http-request"/>
-     * @param userUuid - user ID
-     * @return list of owned bgg games (ID)
-     */
-    private List<String> getUserGamesId(String userUuid) {
-        User user = userService.find(UUID.fromString(userUuid)).orElse(null);
-        if (user == null || user.getBggUsername() == null) {
-            return new ArrayList<>();
-        }
-        else {
-            List<String> objectsId = new ArrayList<>();
-            try {
-                URL url = new URL(bggApiUrl + "/collection?username=" + user.getBggUsername() + "&own=1");
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.setRequestMethod("GET");
-
-                BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                String inputLine;
-                while ((inputLine = in.readLine()) != null) {
-                    if (inputLine.contains("<item") && inputLine.contains("objectid=")) {
-                        Pattern pattern = Pattern.compile("objectid=\"(\\d+)\"");
-                        Matcher matcher = pattern.matcher(inputLine);
-
-                        if (matcher.find()) {
-                            objectsId.add(matcher.group(1));
-                        }
-                    }
-                }
-                in.close();
-                connection.disconnect();
-            } catch (IOException ex) {
-                System.err.println("Connection failed: userUuid: " + userUuid + ", bgg: " + user.getBggUsername());
-            }
-            return objectsId;
-        }
-    }
-
-    /**
-     * Get BGG rating of the game
-     * source: <a href="https://www.baeldung.com/java-http-request"/>
-     * @param gameId - game ID
-     * @return game rating (Double) or null if not exists
-     */
-    private Double getGameBggRating(String gameId) {
-        try {
-            URL url = new URL(bggApiUrl + "/thing?id=" + gameId + "&stats=1");
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-
-            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String inputLine;
-            while ((inputLine = in.readLine()) != null) {
-                if (inputLine.contains("<average value=")) {
-                    Pattern pattern = Pattern.compile("<average value=\"(\\d{1,2}(\\.\\d+)?)\"");
-                    Matcher matcher = pattern.matcher(inputLine);
-                    if (matcher.find()) {
-                        return Double.valueOf(matcher.group(1));
-                    }
-                }
-            }
-            in.close();
-            connection.disconnect();
-        } catch (IOException ex) {
-            System.err.println("Connection failed: gameId: " + gameId);
-        }
-        return null;
-    }
-
-    /**
      * Get BGG rating of the games
-     * source: <a href="https://www.baeldung.com/java-http-request"/>
-     * @param gamesId - list of games ID
-     * @return Map (game ID: game rating)
+     * @param username - BGG username
+     * @return  Map (game ID: game rating)
      */
-    private Map<String, Double> getGamesBggRating(List<String> gamesId) {
-        if (gamesId.isEmpty()) {
-            return new HashMap<>();
-        }
-        StringBuilder ids = new StringBuilder(gamesId.get(0));
-        for (int i = 1; i < gamesId.size(); i++) {
-            ids.append(",").append(gamesId.get(i));
-        }
+    private Map<String, Double> getUserGamesWithRating(String username) {
         Map<String, Double> result = new HashMap<>();
-
         try {
-            URL url = new URL(bggApiUrl + "/thing?id=" + ids.toString() + "&stats=1");
+            URL url = new URL(bggApiUrl + "/collection?username=" + username + "&own=1&stats=1");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
 
             BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             String inputLine;
-            String id = null;
+            String gameId = null;
             while ((inputLine = in.readLine()) != null) {
-                if (inputLine.contains("<item")) {
-                    Pattern pattern = Pattern.compile("id=\"(\\d+)\"");
+                if (inputLine.contains("<item") && inputLine.contains("objectid=")) {
+                    Pattern pattern = Pattern.compile("objectid=\"(\\d+)\"");
                     Matcher matcher = pattern.matcher(inputLine);
+
                     if (matcher.find()) {
-                        id = matcher.group(1);
+                        gameId = matcher.group(1);
                     }
                 }
-                else if (id != null && inputLine.contains("<average value=")) {
+                else if (gameId != null && inputLine.contains("<rating") && inputLine.contains("value=")
+                        && !inputLine.contains("value=\"N/A\"")) {
+                    Pattern pattern = Pattern.compile("value=\"(\\d+)\"");
+                    Matcher matcher = pattern.matcher(inputLine);
+
+                    if (matcher.find()) {
+                        result.put(gameId, Double.valueOf(matcher.group(1)));
+                        gameId = null;
+                    }
+                }
+                else if (gameId != null && inputLine.contains("<average value=")) {
                     Pattern pattern = Pattern.compile("<average value=\"(\\d{1,2}(\\.\\d+)?)\"");
                     Matcher matcher = pattern.matcher(inputLine);
                     if (matcher.find()) {
-                        result.put(id, Double.valueOf(matcher.group(1)));
-                        id = null;
+                        result.put(gameId, Double.valueOf(matcher.group(1)));
+                        gameId = null;
                     }
                 }
             }

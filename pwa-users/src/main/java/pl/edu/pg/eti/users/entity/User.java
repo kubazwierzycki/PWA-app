@@ -3,6 +3,7 @@ package pl.edu.pg.eti.users.entity;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
@@ -66,7 +67,7 @@ public class User implements Serializable {
     /**
      * User's BGG games ranking
      */
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @ToString.Exclude
     @OrderBy("rating DESC")
     private List<GameRanking> ranking;
