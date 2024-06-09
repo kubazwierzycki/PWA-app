@@ -11,31 +11,44 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import MilitaryTechIcon from "@mui/icons-material/MilitaryTech";
 import StarIcon from '@mui/icons-material/Star';
 import {getRatingColor, renderStar} from "../../utils/RatingUtil.tsx";
+import LoadingProgress from "../../components/LoadingProgress.tsx";
 
 
 const BoardGameDetailsPage = (): ReactNode => {
 
+    // game id from page routing url parameter
     const { gameId } = useParams<{ gameId: string }>();
 
+    // state with game details
     const [game, setGame] = useState({} as BoardGameDetails);
+
+    // state should be true when data not ready yet
+    const [loading, setLoading] = useState<boolean>(true);
 
     useEffect(() => {
         const fetchGameDetails = async () => {
             const gameDetails = await getGameDetails(gameId);
+            //console.log(gameDetails[0])
             setGame(gameDetails[0]);
         };
 
-        fetchGameDetails().then();
+        fetchGameDetails().then(() => setLoading(false));
     }, []);
 
     let rating = game.statistics?.ratings?.average["@_value"] || "0.0";
     let userBGGgrade = game.statistics?.ratings?.["@_value"] || "N/A";
 
+    if (loading) {
+        return (
+            <LoadingProgress />
+        )
+    }
+
     return (
         <div className={styles.container}>
             <div className={styles.leftPanel}>
                 <div className={styles.image}>
-                    <img alt="game_image" src={game.image} style={{maxHeight: "40vh"}}/>
+                    <img alt="game_image" src={game.image} style={{maxWidth: "20vw"}}/>
                 </div>
                 <div className={styles.info}>
                     <div className={styles.tile}>
@@ -122,7 +135,7 @@ const BoardGameDetailsPage = (): ReactNode => {
             </div>
             <div className={styles.rightPanel}>
                 <div className={styles.title}>
-                    <h1><b><i>{game.name?.[0]?.["@_value"] || ""}</i></b></h1>
+                    <h1><b><i>{game.name?.["@_value"] || ""}</i></b></h1>
                 </div>
                 <div className={styles.description}>
                     <hr/>

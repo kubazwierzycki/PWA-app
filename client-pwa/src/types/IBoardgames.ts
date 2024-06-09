@@ -5,7 +5,7 @@ export interface NameType {
 }
 
 export interface BoardGameDetails {
-    name: {"@_value": string}[]
+    name: {"@_value": string}
     description: string
     shortDescription: string
     statistics: {ratings: BoardGameStats}
@@ -17,6 +17,11 @@ export interface BoardGameDetails {
     minage: {"@_value": string}
     playingtime: {"@_value": string}
     comment: {"#text": string}
+}
+
+export interface BoardGameUsersDetails {
+    comment: {"#text": string}
+    statistics: {ratings: BoardGameStats}
 }
 
 export interface BoardGameStats {

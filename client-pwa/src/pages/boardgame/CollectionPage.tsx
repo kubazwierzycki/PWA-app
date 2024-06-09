@@ -11,6 +11,7 @@ import {useCollectionViewContext} from "../../contexts/CollectionViewContext.tsx
 import {useBoardgamesContext} from "../../contexts/BoardgamesContext.tsx";
 import {getGameDetails} from "../../services/boardgames.ts";
 import {BoardGameItem, BoardGameStub, FiltersState} from "../../types/IBoardgames.ts";
+import LoadingProgress from "../../components/LoadingProgress.tsx";
 
 
 /**
@@ -47,6 +48,9 @@ const CollectionPage = (): ReactNode => {
         filtersState,
         minRating
     } = useCollectionViewContext();
+
+    // state should be true when data not ready yet
+    const [loading, setLoading] = useState<boolean>(true);
 
     const fetchDetails = async () => {
 
@@ -180,32 +184,35 @@ const CollectionPage = (): ReactNode => {
 
     // update shownGames effect
     useEffect(() => {
-        fetchDetails().then();
+        fetchDetails().then(() => setLoading(false));
     }, [games, currentPage]);
 
+
     return (
-        <div className={styles.container}>
-            <div className={styles.header}>
-                <CollectionToggle />
+        loading ? <LoadingProgress/> :
+            <div className={styles.container}>
+                <div className={styles.header}>
+                    <CollectionToggle/>
+                </div>
+                <div className={styles.body}>
+                    {
+                        shownGames.map(game => (
+                            <BoardGameTile data={game} key={game.name["#text"]}/>
+                        ))
+                    }
+                </div>
+                <div className={styles.pagination}>
+                    <Pagination
+                        count={getPaginationLen()}
+                        page={currentPage}
+                        shape="rounded"
+                        onChange={(_event: ChangeEvent<unknown>, page: number) => {
+                            setCurrentPage(page);
+                            setLoading(true);
+                        }}
+                    />
+                </div>
             </div>
-            <div className={styles.body}>
-                {
-                    shownGames.map(game => (
-                        <BoardGameTile data={game} key={game.name["#text"]}/>
-                    ))
-                }
-            </div>
-            <div className={styles.pagination}>
-                <Pagination
-                    count={getPaginationLen()}
-                    page={currentPage}
-                    shape="rounded"
-                    onChange={(_event: ChangeEvent<unknown>, page: number) => {
-                        setCurrentPage(page);
-                    }}
-                />
-            </div>
-        </div>
     )
 }
 
