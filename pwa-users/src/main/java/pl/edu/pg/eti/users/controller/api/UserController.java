@@ -12,11 +12,13 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import pl.edu.pg.eti.users.dto.GetRanking;
 import pl.edu.pg.eti.users.dto.GetUser;
 import pl.edu.pg.eti.users.dto.GetUsers;
 import pl.edu.pg.eti.users.dto.PostLogin;
 import pl.edu.pg.eti.users.dto.PostUser;
 import pl.edu.pg.eti.users.dto.PutPassword;
+import pl.edu.pg.eti.users.dto.PutRanking;
 import pl.edu.pg.eti.users.dto.PutUser;
 import pl.edu.pg.eti.users.dto.Token;
 import pl.edu.pg.eti.users.entity.User;
@@ -129,4 +131,31 @@ public interface UserController {
             @PathVariable("uuid") UUID uuid,
             @RequestHeader("Authorization") String token
     );
+
+    /**
+     * GET request for user ranking
+     * @param uuid - user ID
+     * @return ranking dictionary
+     */
+    @GetMapping("/api/users/{uuid}/ranking")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    GetRanking getRanking(
+            @PathVariable("uuid") UUID uuid
+    );
+
+    /**
+     * PUT request to update user ranking
+     * @param uuid - user ID
+     * @param request - updated game ranking
+     * @param token - authorization token
+     */
+    @PutMapping("/api/users/{uuid}/ranking")
+    @ResponseStatus(HttpStatus.CREATED)
+    void putRanking(
+            @PathVariable("uuid") UUID uuid,
+            @RequestBody PutRanking request,
+            @RequestHeader("Authorization") String token
+    );
+
 }
