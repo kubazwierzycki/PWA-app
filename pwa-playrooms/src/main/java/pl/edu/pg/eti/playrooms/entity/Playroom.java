@@ -16,32 +16,63 @@ import java.time.LocalDate;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * The entity represents the playroom
+ */
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name="experience")
+@Table(name="playrooms")
 public class Playroom implements Serializable {
 
+    /**
+     * Playroom ID
+     */
     @Id
     private UUID uuid;
 
+    /**
+     * If timer settings are global
+     */
     private boolean isGlobalTimer;
 
+    /**
+     * If playroom is currently paused
+     */
     private boolean paused;
 
+    /**
+     * Player number in the play queue
+     */
     private int currentPlayer;
 
+    /**
+     * The date of the creation
+     */
     private LocalDate startDate;
 
+    /**
+     * The date of the end
+     */
     private LocalDate endDate;
 
+    /**
+     * Timer (in seconds) for whole playroom
+     * null if not exists
+     */
     private Double globalTimer;
 
+    /**
+     * Played game
+     */
     private Game game;
 
+    /**
+     * Players in the playroom
+     */
     @ElementCollection
     private Map<Integer, Player> players;
 
@@ -52,10 +83,30 @@ public class Playroom implements Serializable {
     @AllArgsConstructor
     @NoArgsConstructor
     private static class Player {
+        /**
+         * User ID
+         * null if guest
+         */
         private UUID uuid;
+
+        /**
+         * Username
+         */
         private String username;
+
+        /**
+         * Timer (in seconds) for specific player
+         */
         private Double timer;
+
+        /**
+         * If player is host of playroom
+         */
         private boolean host;
+
+        /**
+         * If user is not registered
+         */
         private boolean guest;
     }
 
@@ -65,7 +116,13 @@ public class Playroom implements Serializable {
     @AllArgsConstructor
     @NoArgsConstructor
     private static class Game {
+        /**
+         * Game ID
+         */
         private String id;
+        /**
+         * Game name
+         */
         private String name;
     }
 }
