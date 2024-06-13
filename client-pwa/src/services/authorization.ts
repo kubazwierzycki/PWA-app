@@ -64,7 +64,7 @@ const signUp = async (
 
 const changeEmail = async (token: string, uuid: string, email: string) => {
     const request = axios({
-        method: "post",
+        method: "put",
         url: `${baseUrl}/${uuid}?option=email`,
         headers: {
             Authorization: `${token}`,

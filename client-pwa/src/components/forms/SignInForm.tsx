@@ -13,6 +13,7 @@ import {
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import authorisationService from "../../services/authorization.ts";
+import bggService from "../../services/bgg.ts";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { useAuth } from "../../contexts/AuthContext.tsx";
@@ -43,7 +44,7 @@ export default function SignInForm(): ReactNode {
         password: "",
     });
 
-    const { setToken, setUuid } = useAuth();
+    const { setToken, setUuid, setUser } = useAuth();
 
     const [alertMessage, setAlertMessage] = useState<Message>({
         message: "",
@@ -108,14 +109,30 @@ export default function SignInForm(): ReactNode {
 
         if (vResult == ValidationResult.Success) {
             try {
-                const res = await authorisationService.signIn(
+                const resA = await authorisationService.signIn(
                     fD.username,
                     fD.password
                 );
-                Cookies.set("token", res.token);
-                Cookies.set("uuid", res.uuid);
-                setToken(res.token);
-                setUuid(res.uuid);
+                Cookies.set("token", resA.token);
+                Cookies.set("uuid", resA.uuid);
+                setToken(resA.token);
+                setUuid(resA.uuid);
+
+                const resB = await authorisationService.getUserByUuid(
+                    resA.uuid
+                );
+
+                const resC = await bggService.getUserByUsername(
+                    resB.bggUsername
+                );
+                const bggId = bggService.getUserIdFromResponse(resC);
+
+                setUser({
+                    username: fD.username,
+                    email: resB.email,
+                    bggUsername: resB.bggUsername,
+                    bggId: bggId,
+                });
                 navigate("/");
             } catch (err) {
                 if (axios.isAxiosError(err)) {
@@ -143,7 +160,6 @@ export default function SignInForm(): ReactNode {
                                 message: "Unknown error.",
                                 severity: Severity.Error,
                             });
-                            break;
                     }
                 } else {
                     setAlertMessage({

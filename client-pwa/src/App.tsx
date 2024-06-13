@@ -13,22 +13,38 @@ import BoardGameSearch from "./pages/boardgame/BoardGameSearch.tsx";
 import { ReactNode, useEffect } from "react";
 import Cookies from "js-cookie";
 import { useAuth } from "./contexts/AuthContext.tsx";
-import {CollectionContextProvider} from "./contexts/CollectionViewContext.tsx";
+import { CollectionContextProvider } from "./contexts/CollectionViewContext.tsx";
+import bggService from "./services/bgg.ts";
+import authorisationService from "./services/authorization.ts";
 
 /**
  * Main app component, controls page routing
  * @returns {ReactNode}
  */
 function App(): ReactNode {
-    const { setUuid } = useAuth();
+    const { setToken, setUuid, setUser } = useAuth();
+
     useEffect(() => {
+        async function fetchUserDetails(uuid: string) {
+            const resA = await authorisationService.getUserByUuid(uuid);
+            const resB = await bggService.getUserByUsername(resA.bggUsername);
+            const bggId = bggService.getUserIdFromResponse(resB);
+            setUser({
+                username: resA.username,
+                bggUsername: resA.bggUsername,
+                email: resA.email,
+                bggId: bggId,
+            });
+        }
+
         const token = Cookies.get("token");
         const uuid = Cookies.get("uuid");
         if (token && uuid) {
-            setUuid(token);
+            setToken(token);
             setUuid(uuid);
+            fetchUserDetails(uuid);
         }
-    });
+    }, []);
 
     return (
         <Routes>
@@ -39,13 +55,22 @@ function App(): ReactNode {
                 <Route path="/play" element={<Play />}></Route>
                 <Route path="/signIn" element={<SignIn />}></Route>
                 <Route path="/signUp" element={<SignUp />}></Route>
-                <Route path="/boardgames/collection" element={
-                    <CollectionContextProvider>
-                        <CollectionPage />
-                    </CollectionContextProvider>
-                }></Route>
-                <Route path="/boardgames/random" element={<RandomGamePage />}></Route>
-                <Route path="/boardgames/search" element={<BoardGameSearch />}></Route>
+                <Route
+                    path="/boardgames/collection"
+                    element={
+                        <CollectionContextProvider>
+                            <CollectionPage />
+                        </CollectionContextProvider>
+                    }
+                ></Route>
+                <Route
+                    path="/boardgames/random"
+                    element={<RandomGamePage />}
+                ></Route>
+                <Route
+                    path="/boardgames/search"
+                    element={<BoardGameSearch />}
+                ></Route>
             </Route>
         </Routes>
     );
