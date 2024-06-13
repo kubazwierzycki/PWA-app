@@ -14,6 +14,7 @@ import { ReactNode, useEffect } from "react";
 import Cookies from "js-cookie";
 import { useAuth } from "./contexts/AuthContext.tsx";
 import {CollectionContextProvider} from "./contexts/CollectionViewContext.tsx";
+import ComparingGamesPage from "./pages/boardgame/ComparingGamesPage.tsx";
 
 /**
  * Main app component, controls page routing
@@ -44,6 +45,7 @@ function App(): ReactNode {
                         <CollectionPage />
                     </CollectionContextProvider>
                 }></Route>
+                <Route path="/boardgames/compare" element={<ComparingGamesPage />}></Route>
                 <Route path="/boardgames/random" element={<RandomGamePage />}></Route>
                 <Route path="/boardgames/search" element={<BoardGameSearch />}></Route>
             </Route>
