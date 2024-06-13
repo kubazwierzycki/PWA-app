@@ -27,7 +27,7 @@ const CollectionPage = (): ReactNode => {
     // Aldie
     // goluch
     // To be replaced with BGG username logic
-    const username: string = "goluch";
+    const username: string = "bhr_79";
 
     const baseApiAddress: string = 'https://boardgamegeek.com/xmlapi2';
 
@@ -124,7 +124,7 @@ const CollectionPage = (): ReactNode => {
 
             urlParams += parameters.join("&");
 
-            let url = `${baseApiAddress}/collection?username=${username}${urlParams}`;
+            let url = `${baseApiAddress}/collection?username=${username}&stats=1${urlParams}`;
             const collectionResponse = await axios.get(url);
 
             if (collectionResponse.status === 200) {

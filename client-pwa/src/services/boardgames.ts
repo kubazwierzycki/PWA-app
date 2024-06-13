@@ -22,8 +22,10 @@ export const getGameDetails = async (gameId: string | undefined): Promise<BoardG
     const detailsResponse = await axios.get(url);
     let gameDetails = parseXml(detailsResponse.data).items.item;
 
-    // fetch user specific data
-    // TODO
+    // take only primary name if multiple provided
+    if (Array.isArray(gameDetails.name)) {
+        gameDetails.name = gameDetails.name[0];
+    }
 
     // special case when only one item present
     if (!Array.isArray(gameDetails)) {

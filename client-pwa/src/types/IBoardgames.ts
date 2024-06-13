@@ -16,16 +16,14 @@ export interface BoardGameDetails {
     maxplayers: {"@_value": string}
     minage: {"@_value": string}
     playingtime: {"@_value": string}
-    comment: {"#text": string}
 }
 
 export interface BoardGameUsersDetails {
-    comment: {"#text": string}
-    statistics: {ratings: BoardGameStats}
+    comment: string
+    stats: {rating: {"@_value": string}}
 }
 
 export interface BoardGameStats {
-    "@_value": string
     usersRated: string
     average: {"@_value": string}
     owned: string
@@ -38,7 +36,7 @@ export interface BoardGameItem {
     details: BoardGameDetails
 }
 
-export interface BoardGameStub {
+export interface BoardGameStub extends BoardGameUsersDetails {
     name: NameType
     "@_objectid": string
 }

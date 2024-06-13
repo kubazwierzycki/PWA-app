@@ -2,7 +2,7 @@ import {ReactNode, useEffect, useState} from "react";
 import {useParams} from "react-router-dom";
 import styles from "../../styles/boardGameDetails.module.css"
 import {getGameDetails} from "../../services/boardgames.ts";
-import {BoardGameDetails} from "../../types/IBoardgames.ts";
+import {BoardGameDetails, BoardGameStub} from "../../types/IBoardgames.ts";
 import {clearCharEntities} from "../../utils/DescriptionParser.ts";
 import {Stack, Typography} from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
@@ -12,6 +12,7 @@ import MilitaryTechIcon from "@mui/icons-material/MilitaryTech";
 import StarIcon from '@mui/icons-material/Star';
 import {getRatingColor, renderStar} from "../../utils/RatingUtil.tsx";
 import LoadingProgress from "../../components/LoadingProgress.tsx";
+import {useBoardgamesContext} from "../../contexts/BoardgamesContext.tsx";
 
 
 const BoardGameDetailsPage = (): ReactNode => {
@@ -22,21 +23,36 @@ const BoardGameDetailsPage = (): ReactNode => {
     // state with game details
     const [game, setGame] = useState({} as BoardGameDetails);
 
+    // user related details
+    const [comment, setComment] = useState<string>("");
+    const [userBGGgrade, setUserBGGgrade] = useState<string>("N/A");
+
+    const {games} = useBoardgamesContext();
+
     // state should be true when data not ready yet
     const [loading, setLoading] = useState<boolean>(true);
 
     useEffect(() => {
         const fetchGameDetails = async () => {
             const gameDetails = await getGameDetails(gameId);
-            //console.log(gameDetails[0])
             setGame(gameDetails[0]);
         };
 
         fetchGameDetails().then(() => setLoading(false));
     }, []);
 
+    useEffect(() => {
+        const _game = games.filter((value: BoardGameStub) =>
+            value["@_objectid"] === gameId
+        )[0];
+        console.log(_game)
+        const commentText = _game?.comment || "";
+        setComment(clearCharEntities(commentText));
+        console.log(_game?.stats?.rating?.["@_value"])
+        setUserBGGgrade(_game?.stats?.rating?.["@_value"] || "N/A");
+    }, [game]);
+
     let rating = game.statistics?.ratings?.average["@_value"] || "0.0";
-    let userBGGgrade = game.statistics?.ratings?.["@_value"] || "N/A";
 
     if (loading) {
         return (
@@ -141,12 +157,11 @@ const BoardGameDetailsPage = (): ReactNode => {
                     <hr/>
                     {clearCharEntities(game.description)}
                     <hr/>
-                    {
-                        game.comment !== undefined ?
-                            <i>
-                                game.comment["#text"]
-                            </i> : <></>
-                    }
+                    Comment:
+                    <br/>
+                    <i>
+                        {comment}
+                    </i>
                 </div>
             </div>
         </div>
