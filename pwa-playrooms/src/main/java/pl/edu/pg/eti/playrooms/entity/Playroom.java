@@ -10,6 +10,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.web.socket.WebSocketSession;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -108,6 +109,11 @@ public class Playroom implements Serializable {
          * If user is not registered
          */
         private boolean guest;
+
+        /**
+         * Player webSocket session
+         */
+        private WebSocketSession webSocketSession;
     }
 
     @Embeddable
