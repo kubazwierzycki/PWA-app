@@ -13,7 +13,7 @@ import lombok.Setter;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Map;
 import java.util.UUID;
 
@@ -51,14 +51,9 @@ public class Playroom implements Serializable {
     private int currentPlayer;
 
     /**
-     * The date of the creation
+     * The time of last operation
      */
-    private LocalDate startDate;
-
-    /**
-     * The date of the end
-     */
-    private LocalDate endDate;
+    private LocalTime lastOperationTime;
 
     /**
      * Timer (in seconds) for whole playroom
