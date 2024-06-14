@@ -63,7 +63,6 @@ const MenuButton = ({menu_item, outlined}: {menu_item: MenuItem, outlined?: bool
 
     const handleOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
         if (anchorEl !== event.currentTarget) {
-            console.log(event.currentTarget)
             setAnchorEl(event.currentTarget);
         }
     }
