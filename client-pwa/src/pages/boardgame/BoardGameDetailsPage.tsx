@@ -63,8 +63,8 @@ const BoardGameDetailsPage = (): ReactNode => {
     return (
         <div className={styles.container}>
             <div className={styles.leftPanel}>
-                <div className={styles.image}>
-                    <img alt="game_image" src={game.image} style={{maxWidth: "20vw"}}/>
+                <div className={styles.imageContainer}>
+                    <img alt="game_image" src={game.image} className={styles.image}/>
                 </div>
                 <div className={styles.info}>
                     <div className={styles.tile}>

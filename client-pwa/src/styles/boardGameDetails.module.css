@@ -14,8 +14,12 @@
     flex: 1;
 }
 
-.image {
+.imageContainer {
     width: fit-content;
+}
+
+.image {
+    max-width: 20vw;
 }
 
 .info {
@@ -47,4 +51,16 @@
     justify-content: center;
 }
 
+@media screen and (max-width: 800px) {
 
+    .container {
+        flex-direction: column;
+    }
+
+    .image {
+        max-width: 100%;
+        margin-bottom: 10px;
+        border: 1px solid black;
+    }
+
+}
