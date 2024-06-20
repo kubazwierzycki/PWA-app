@@ -51,18 +51,17 @@ export default function PasswordUpdateForm(): ReactNode {
         };
 
     const validateForm = async (): Promise<ValidationResult> => {
-        const fD = formData;
         const passwordValidationResult: ValidationResult = validatePassword(
-            fD.oldPassword,
-            fD.oldPassword
+            formData.oldPassword,
+            formData.oldPassword
         );
         if (passwordValidationResult !== ValidationResult.Success) {
             return passwordValidationResult;
         }
 
         const newPasswordValidationResult: ValidationResult = validatePassword(
-            fD.newPassword,
-            fD.passwordConfirmation
+            formData.newPassword,
+            formData.passwordConfirmation
         );
         if (newPasswordValidationResult !== ValidationResult.Success) {
             return newPasswordValidationResult;
@@ -80,8 +79,8 @@ export default function PasswordUpdateForm(): ReactNode {
         event: React.FormEvent<HTMLFormElement>
     ) => {
         event.preventDefault();
-        const vResult = await validateForm();
-        if (vResult === ValidationResult.Success) {
+        const validationResult = await validateForm();
+        if (validationResult === ValidationResult.Success) {
             try {
                 await authorisationService.changePassword(
                     token,
@@ -131,7 +130,7 @@ export default function PasswordUpdateForm(): ReactNode {
             }
         } else {
             setAlertMessage({
-                message: vResult,
+                message: validationResult,
                 severity: Severity.Warning,
             });
         }

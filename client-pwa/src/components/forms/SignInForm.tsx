@@ -69,21 +69,20 @@ export default function SignInForm(): ReactNode {
     };
 
     const validateForm = (): ValidationResult => {
-        const fD = formData;
-        const vUsername: ValidationResult = validateUsername(
-            fD.username,
+        const usernameValidationResult: ValidationResult = validateUsername(
+            formData.username,
             UsernameType.CoGame
         );
-        if (vUsername !== ValidationResult.Success) {
-            return vUsername;
+        if (usernameValidationResult !== ValidationResult.Success) {
+            return usernameValidationResult;
         }
 
-        const vPassword: ValidationResult = validatePassword(
-            fD.password,
-            fD.password
+        const passwordValidationResult: ValidationResult = validatePassword(
+            formData.password,
+            formData.password
         );
-        if (vPassword !== ValidationResult.Success) {
-            return vPassword;
+        if (passwordValidationResult !== ValidationResult.Success) {
+            return passwordValidationResult;
         }
 
         return ValidationResult.Success;
@@ -104,14 +103,13 @@ export default function SignInForm(): ReactNode {
     const handleSignIn = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         resetFormData();
-        const fD = formData;
-        const vResult: ValidationResult = validateForm();
+        const validationResult: ValidationResult = validateForm();
 
-        if (vResult == ValidationResult.Success) {
+        if (validationResult == ValidationResult.Success) {
             try {
                 const resA = await authorisationService.signIn(
-                    fD.username,
-                    fD.password
+                    formData.username,
+                    formData.password
                 );
                 Cookies.set("token", resA.token);
                 Cookies.set("uuid", resA.uuid);
@@ -128,7 +126,7 @@ export default function SignInForm(): ReactNode {
                 const bggId = bggService.getUserIdFromResponse(resC);
 
                 setUser({
-                    username: fD.username,
+                    username: formData.username,
                     email: resB.email,
                     bggUsername: resB.bggUsername,
                     bggId: bggId,

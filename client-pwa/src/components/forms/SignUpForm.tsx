@@ -57,38 +57,36 @@ export default function SignUpForm(): ReactNode {
         };
 
     const validateForm = async (): Promise<ValidationResult> => {
-        const fD = formData;
-
-        const vUsername: ValidationResult = validateUsername(
-            fD.username,
+        const usernamevalidationResult: ValidationResult = validateUsername(
+            formData.username,
             UsernameType.CoGame
         );
-        if (vUsername !== ValidationResult.Success) {
-            return vUsername;
+        if (usernamevalidationResult !== ValidationResult.Success) {
+            return usernamevalidationResult;
         }
 
-        if (fD.bggUsername !== "") {
-            const vBggUsername: ValidationResult = validateUsername(
-                fD.bggUsername,
-                UsernameType.Bgg
-            );
-            if (vBggUsername !== ValidationResult.Success) {
-                return vBggUsername;
+        if (formData.bggUsername !== "") {
+            const bggUsernameValidationResult: ValidationResult =
+                validateUsername(formData.bggUsername, UsernameType.Bgg);
+            if (bggUsernameValidationResult !== ValidationResult.Success) {
+                return bggUsernameValidationResult;
             }
-            const vBggId: string = await getBggUserId(fD.bggUsername);
-            if (vBggId === "") {
+            const bggIdValidationResult: string = await getBggUserId(
+                formData.bggUsername
+            );
+            if (bggIdValidationResult === "") {
                 return ValidationResult.BggUserNotFound;
             } else {
-                fD.bggId = vBggId;
+                formData.bggId = bggIdValidationResult;
             }
         }
 
-        const vPassword: ValidationResult = validatePassword(
-            fD.password,
-            fD.passwordConfirmation
+        const passwordValidationResult: ValidationResult = validatePassword(
+            formData.password,
+            formData.passwordConfirmation
         );
-        if (vPassword !== ValidationResult.Success) {
-            return vPassword;
+        if (passwordValidationResult !== ValidationResult.Success) {
+            return passwordValidationResult;
         }
 
         return ValidationResult.Success;
@@ -100,26 +98,25 @@ export default function SignUpForm(): ReactNode {
             message: "",
             severity: Severity.Info,
         });
-        const fD = formData;
-        const vResult: ValidationResult = await validateForm();
+        const validationResult: ValidationResult = await validateForm();
 
-        if (vResult == ValidationResult.Success) {
+        if (validationResult == ValidationResult.Success) {
             try {
                 const res = await authorisationService.signUp(
-                    fD.email,
-                    fD.username,
-                    fD.password,
-                    fD.bggUsername
+                    formData.email,
+                    formData.username,
+                    formData.password,
+                    formData.bggUsername
                 );
                 Cookies.set("token", res.token);
                 Cookies.set("uuid", res.uuid);
                 setToken(res.token);
                 setUuid(res.uuid);
                 setUser({
-                    username: fD.username,
-                    bggUsername: fD.bggUsername,
-                    bggId: fD.bggId,
-                    email: fD.email,
+                    username: formData.username,
+                    bggUsername: formData.bggUsername,
+                    bggId: formData.bggId,
+                    email: formData.email,
                 });
                 navigate("/");
             } catch (err) {
@@ -159,7 +156,7 @@ export default function SignUpForm(): ReactNode {
             }
         } else {
             setAlertMessage({
-                message: vResult,
+                message: validationResult,
                 severity: Severity.Warning,
             });
         }

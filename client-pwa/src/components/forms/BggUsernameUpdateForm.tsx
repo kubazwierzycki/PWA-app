@@ -51,20 +51,19 @@ export default function BggUsernameUpdateForm(): ReactNode {
         };
 
     const validateForm = async (): Promise<ValidationResult> => {
-        const fD = formData;
-        if (fD.bggUsername !== "") {
-            const vBggUsername: ValidationResult = validateUsername(
-                fD.bggUsername,
-                UsernameType.Bgg
-            );
-            if (vBggUsername !== ValidationResult.Success) {
-                return vBggUsername;
+        if (formData.bggUsername !== "") {
+            const bggUsernameValidationResult: ValidationResult =
+                validateUsername(formData.bggUsername, UsernameType.Bgg);
+            if (bggUsernameValidationResult !== ValidationResult.Success) {
+                return bggUsernameValidationResult;
             }
-            const vBggId: string = await getBggUserId(fD.bggUsername);
-            if (vBggId === "") {
+            const bggIdValidationResult: string = await getBggUserId(
+                formData.bggUsername
+            );
+            if (bggIdValidationResult === "") {
                 return ValidationResult.BggUserNotFound;
             } else {
-                fD.bggId = vBggId;
+                formData.bggId = bggIdValidationResult;
             }
         }
         return ValidationResult.Success;
@@ -78,8 +77,8 @@ export default function BggUsernameUpdateForm(): ReactNode {
         event: React.FormEvent<HTMLFormElement>
     ) => {
         event.preventDefault();
-        const vResult = await validateForm();
-        if (vResult === ValidationResult.Success) {
+        const validationResult = await validateForm();
+        if (validationResult === ValidationResult.Success) {
             setUser({
                 ...user,
                 bggId: formData.bggId,
@@ -127,7 +126,7 @@ export default function BggUsernameUpdateForm(): ReactNode {
             }
         } else {
             setAlertMessage({
-                message: vResult,
+                message: validationResult,
                 severity: Severity.Warning,
             });
         }
