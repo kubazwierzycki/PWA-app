@@ -42,6 +42,10 @@ export default function EmailUpdateForm(): ReactNode {
             setFormData({ ...formData, [prop]: event.target.value });
         };
 
+    const resetFormData = () => {
+        formData.email = "";
+    };
+
     const handleEmailUpdate = async (
         event: React.FormEvent<HTMLFormElement>
     ) => {
@@ -86,6 +90,7 @@ export default function EmailUpdateForm(): ReactNode {
                 }
             }
         }
+        resetFormData();
     };
 
     return (

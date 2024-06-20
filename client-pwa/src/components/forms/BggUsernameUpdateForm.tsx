@@ -70,6 +70,10 @@ export default function BggUsernameUpdateForm(): ReactNode {
         return ValidationResult.Success;
     };
 
+    const resetFormData = () => {
+        formData.bggUsername = "";
+        formData.bggId = "";
+    };
     const handleBggUsernameUpdate = async (
         event: React.FormEvent<HTMLFormElement>
     ) => {
@@ -127,6 +131,7 @@ export default function BggUsernameUpdateForm(): ReactNode {
                 severity: Severity.Warning,
             });
         }
+        resetFormData();
     };
 
     return (

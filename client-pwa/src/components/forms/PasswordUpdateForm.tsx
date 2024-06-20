@@ -21,6 +21,7 @@ import React from "react";
 interface State {
     oldPassword: string;
     newPassword: string;
+    passwordConfirmation: string;
 }
 
 /**
@@ -35,6 +36,7 @@ export default function PasswordUpdateForm(): ReactNode {
     const [formData, setFormData] = useState<State>({
         oldPassword: "",
         newPassword: "",
+        passwordConfirmation: "",
     });
 
     const { uuid, token } = useAuth();
@@ -60,6 +62,11 @@ export default function PasswordUpdateForm(): ReactNode {
         return ValidationResult.Success;
     };
 
+    const resetFormData = () => {
+        formData.oldPassword = "";
+        formData.newPassword = "";
+        formData.passwordConfirmation = "";
+    };
     const handlePasswordUpdate = async (
         event: React.FormEvent<HTMLFormElement>
     ) => {
@@ -119,6 +126,7 @@ export default function PasswordUpdateForm(): ReactNode {
                 severity: Severity.Warning,
             });
         }
+        resetFormData();
     };
 
     return (
@@ -172,6 +180,22 @@ export default function PasswordUpdateForm(): ReactNode {
                     type="password"
                     value={formData.newPassword}
                     onChange={handleChange("newPassword")}
+                />
+            </FormControl>
+            <FormControl
+                sx={{ m: 1 }}
+                variant="filled"
+                color="primary"
+                required={true}
+            >
+                <InputLabel shrink htmlFor="passwordConfirmation">
+                    Password confirmation
+                </InputLabel>
+                <OutlinedInput
+                    id="passwordConfirmation"
+                    type="password"
+                    value={formData.passwordConfirmation}
+                    onChange={handleChange("passwordConfirmation")}
                 />
             </FormControl>
             <Button
