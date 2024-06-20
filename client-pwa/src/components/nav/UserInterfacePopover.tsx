@@ -30,13 +30,13 @@ const UserInterfacePopover = ({anchorEl, open, handleClose}: UserInterfacePopove
     const AnonInterface = () => (
         <div className={styles.notLoggedContainer}>
             <ButtonGroup orientation="vertical" fullWidth={true} variant="outlined" onClick={handlePopoverClose}>
-                <MenuButton menu_item={getMenuItemByName("Sign In")!}/>
+                <MenuButton menu_item={getMenuItemByName("Sign In")!} outlined={true}/>
             </ButtonGroup>
             <Typography style={{marginTop: "5px", marginBottom: "5px"}}>
                 Don't have an account yet?
             </Typography>
             <ButtonGroup orientation="vertical" fullWidth={true} variant="outlined" onClick={handlePopoverClose}>
-                <MenuButton menu_item={getMenuItemByName("Sign Up")!}/>
+                <MenuButton menu_item={getMenuItemByName("Sign Up")!} outlined={true}/>
             </ButtonGroup>
         </div>
     )

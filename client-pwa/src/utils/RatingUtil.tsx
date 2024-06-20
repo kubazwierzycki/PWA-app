@@ -1,3 +1,7 @@
+import StarOutlineIcon from "@mui/icons-material/StarOutline";
+import StarHalfIcon from "@mui/icons-material/StarHalf";
+import StarIcon from "@mui/icons-material/Star";
+
 /**
  * Function assigning a color on scale from red to green for rating [0, 10]
  * @param {number} rating - rating from [0,10] (float)
@@ -32,5 +36,25 @@ export function getRatingColor(rating: number) {
 
     // Return the color code
     return "#" + redHex + greenHex + "00";
+}
+
+
+export const renderStar = (rating: number, color: string) => {
+    const style = {color: color};
+    if (rating <= 5.0) {
+        return (
+            <StarOutlineIcon style={style}/>
+        )
+    }
+    else if (rating > 5.0 && rating < 8.0) {
+        return (
+            <StarHalfIcon style={style} />
+        )
+    }
+    else {
+        return (
+            <StarIcon style={style}/>
+        )
+    }
 }
 

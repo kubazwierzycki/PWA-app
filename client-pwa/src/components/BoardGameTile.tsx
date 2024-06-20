@@ -1,11 +1,8 @@
 import Paper from "@mui/material/Paper";
 import styles from "../styles/boardGameTile.module.css"
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import StarIcon from '@mui/icons-material/Star';
-import StarOutlineIcon from '@mui/icons-material/StarOutline';
-import StarHalfIcon from '@mui/icons-material/StarHalf';
 import {ReactNode, useEffect, useState} from "react";
-import {getRatingColor} from "../utils/RatingUtil.ts";
+import {getRatingColor, renderStar} from "../utils/RatingUtil.tsx";
 import {Button, Card, Stack, Typography} from "@mui/material";
 import PersonIcon from '@mui/icons-material/Person';
 import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt';
@@ -13,43 +10,16 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import NumbersIcon from '@mui/icons-material/Numbers';
 import MilitaryTechIcon from '@mui/icons-material/MilitaryTech';
 import {Link} from "react-router-dom";
-
-interface NameType {
-    "#text": string
-}
-
-interface BoardGameDetails {
-    description: string,
-    shortDescription: string,
-    statistics: {ratings: BoardGameStats},
-    thumbnail: string,
-    yearpublished: {"@_value": string},
-    minplayers: {"@_value": string},
-    maxplayers: {"@_value": string},
-    minage: {"@_value": string},
-    playingtime: {"@_value": string}
-}
-
-interface BoardGameStats {
-    usersRated: string,
-    average: {"@_value": string},
-    owned: string,
-    ranks: {rank: [{"@_value": string}]}
-}
-
-interface BoardGameData {
-    name: NameType,
-    details: BoardGameDetails
-}
+import {BoardGameItem} from "../types/IBoardgames.ts";
 
 
 /**
  * Component presenting short information about single board game
  * Expandable for more details
- * @param {BoardGameData} data - fetched data for presented board game (with details)
+ * @param {BoardGameItem} data - fetched data for presented board game (with details)
  * @returns ReactNode
  */
-const BoardGameTile = ({data}: {data: BoardGameData}): ReactNode => {
+const BoardGameTile = ({data}: {data: BoardGameItem}): ReactNode => {
 
     const [expanded, setExpanded] = useState(false);
 
@@ -71,25 +41,6 @@ const BoardGameTile = ({data}: {data: BoardGameData}): ReactNode => {
 
     const toggleExpanded = () => {
         setExpanded(!expanded);
-    }
-
-    const renderStar = (rating: number, color: string) => {
-        const style = {color: color};
-        if (rating <= 5.0) {
-            return (
-                <StarOutlineIcon style={style}/>
-            )
-        }
-        else if (rating > 5.0 && rating < 8.0) {
-            return (
-                <StarHalfIcon style={style} />
-            )
-        }
-        else {
-            return (
-                <StarIcon style={style}/>
-            )
-        }
     }
 
     return (
@@ -187,7 +138,7 @@ const BoardGameTile = ({data}: {data: BoardGameData}): ReactNode => {
                             {shortDescription}
                         </div>
                         <div className={styles.pageLinkContainer}>
-                            <Link to={"/"}>
+                            <Link to={"/boardgames/collection/"+data["@_objectid"]}>
                                 <Button>Board game page</Button>
                             </Link>
                         </div>

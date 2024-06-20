@@ -21,7 +21,14 @@ const Navbar = (): ReactNode => {
     const {drawerOpen, setDrawerOpen} = useNavContext();
     const {anchorEl, setAnchorEl, userPopupOpen, setUserPopupOpen, handlePopoverClose} = useNavContext();
 
-    const Offset = styled('div')(({ theme }) => theme.mixins.toolbar);
+    // custom height navbar offset
+    const Offset = styled('div')(({ theme }) => ({
+        ...theme.mixins.toolbar,
+        minHeight: '32px', // adjust this value for desired height
+        [`${theme.breakpoints.up('sm')}`]: {
+            minHeight: '32px', // adjust this value for desired height for larger screens
+        },
+    }));
 
     const handleDrawerClick = () => {
         setDrawerOpen(!drawerOpen);

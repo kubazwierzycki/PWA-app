@@ -1,4 +1,4 @@
-import {Button, Menu, MenuItem, Typography} from "@mui/material";
+import {Button, Menu, MenuItem, styled, Typography} from "@mui/material";
 import React, {ReactNode, useState} from "react";
 import {useNavigate} from "react-router-dom";
 
@@ -16,12 +16,42 @@ interface MenuItem {
     sub: MenuItem[];
 }
 
+
+const CustomButton = styled(Button, {
+    shouldForwardProp: () => true
+})(({ theme }) => ({
+    marginLeft: '5px',
+    borderBottom: '3px solid transparent',
+    borderRadius: 0,
+    '&:hover': {
+        borderBottom: `3px solid ${theme.palette.primary.main}`
+    },
+    '&:active': {
+        borderBottom: `3px solid ${theme.palette.primary.main}`
+    },
+}));
+
+const CustomMenuItem = styled(MenuItem, {
+    shouldForwardProp: () => true
+})(({ theme }) => ({
+    borderBottom: '2px solid transparent',
+    borderRadius: 0,
+    '&:hover': {
+        borderBottom: `2px solid ${theme.palette.primary.main}`
+    },
+    '&:active': {
+        borderBottom: `2px solid ${theme.palette.primary.main}`
+    },
+}));
+
+
 /**
  * Single navbar menu button component
  * @param {MenuItem} menu_item - component props
+ * @param {boolean} outlined - is button variant outlined (no underline on this variant)
  * @returns {ReactNode}
  */
-const MenuButton = ({menu_item}: {menu_item: MenuItem}): ReactNode => {
+const MenuButton = ({menu_item, outlined}: {menu_item: MenuItem, outlined?: boolean}): ReactNode => {
 
     const hasSubMenu: boolean = menu_item.sub.length > 0;
 
@@ -52,19 +82,34 @@ const MenuButton = ({menu_item}: {menu_item: MenuItem}): ReactNode => {
         handleClose();
     }
 
+
     return (
         <div>
-            <Button
-                aria-owns={anchorEl ? "simple-menu" : undefined}
-                aria-haspopup="true"
-                onClick={hasSubMenu ? handleOpen : handleClick}
-                onMouseOver={hasSubMenu ? handleOpen : undefined}
-                style={{marginLeft: "5px"}}
-            >
-                <Typography color={"text.primary"}>
-                    {menu_item.name}
-                </Typography>
-            </Button>
+            {
+                hasSubMenu || outlined ?
+                    <Button
+                        aria-owns={anchorEl ? "simple-menu" : undefined}
+                        aria-haspopup="true"
+                        onClick={hasSubMenu ? handleOpen : handleClick}
+                        onMouseOver={hasSubMenu ? handleOpen : undefined}
+                        style={!outlined ? {borderBottom: "3px solid transparent"}:{}}
+                    >
+                        <Typography color={"text.primary"}>
+                            {menu_item.name}
+                        </Typography>
+                    </Button>
+                    :
+                    <CustomButton
+                        aria-owns={anchorEl ? "simple-menu" : undefined}
+                        aria-haspopup="true"
+                        onClick={hasSubMenu ? handleOpen : handleClick}
+                        onMouseOver={hasSubMenu ? handleOpen : undefined}
+                    >
+                        <Typography color={"text.primary"}>
+                            {menu_item.name}
+                        </Typography>
+                    </CustomButton>
+            }
             {
                 hasSubMenu &&
                 <Menu
@@ -76,9 +121,12 @@ const MenuButton = ({menu_item}: {menu_item: MenuItem}): ReactNode => {
                 >
                     {
                         menu_item.sub.map((submenuItem, index) => (
-                            <MenuItem key={index} onClick={() => handleSubItemClick(submenuItem.link)}>
+                            <CustomMenuItem
+                                key={index}
+                                onClick={() => handleSubItemClick(submenuItem.link)}
+                            >
                                 {submenuItem.name}
-                            </MenuItem>
+                            </CustomMenuItem>
                         ))
                     }
                 </Menu>

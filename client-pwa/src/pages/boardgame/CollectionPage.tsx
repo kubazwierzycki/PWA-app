@@ -14,47 +14,10 @@ import axiosRetry from "axios-retry";
 import { useCollectionViewContext } from "../../contexts/CollectionViewContext.tsx";
 import { useAuth } from "../../contexts/AuthContext.tsx";
 import {useBoardgamesContext} from "../../contexts/BoardgamesContext.tsx";
+import {getGameDetails} from "../../services/boardgames.ts";
+import {BoardGameItem, BoardGameStub, FiltersState} from "../../types/IBoardgames.ts";
+import LoadingProgress from "../../components/LoadingProgress.tsx";
 
-
-interface NameType {
-    "#text": string;
-}
-
-interface BoardGameDetails {
-    description: string;
-    shortDescription: string;
-    statistics: { ratings: BoardGameStats };
-    thumbnail: string;
-    yearpublished: { "@_value": string };
-    minplayers: { "@_value": string };
-    maxplayers: { "@_value": string };
-    minage: { "@_value": string };
-    playingtime: { "@_value": string };
-}
-
-interface BoardGameStats {
-    usersRated: string;
-    average: { "@_value": string };
-    owned: string;
-    ranks: { rank: [{ "@_value": string }] };
-}
-
-interface BoardGameItem {
-    name: NameType;
-    "@_objectid": string;
-    details: BoardGameDetails;
-}
-
-interface BoardGameStub {
-    name: NameType;
-    "@_objectid": string;
-}
-
-interface FiltersState {
-    rated: boolean;
-    commented: boolean;
-    minRating: boolean;
-}
 
 /**
  * User game board collection page
@@ -67,9 +30,8 @@ const CollectionPage = (): ReactNode => {
     // bhr_79
     // Aldie
     // goluch
-    // To be replaced with BGG username logic
     const { user } = useAuth();
-    const bggUsername: string = user.bggUsername;
+    const username: string = user.bggUsername;
 
     const baseApiAddress: string = "https://boardgamegeek.com/xmlapi2";
 
@@ -87,6 +49,9 @@ const CollectionPage = (): ReactNode => {
     const { type, ordering, filtersState, minRating } =
         useCollectionViewContext();
 
+    // state should be true when data not ready yet
+    const [loading, setLoading] = useState<boolean>(true);
+
     const fetchDetails = async () => {
         if (games.length === 0) return;
 
@@ -99,15 +64,7 @@ const CollectionPage = (): ReactNode => {
         }
 
         const idsList = ids.join(",");
-        const url = `${baseApiAddress}/thing?id=${idsList}&stats=1`;
-
-        const detailsResponse = await axios.get(url);
-        let gameDetails = parseXml(detailsResponse.data).items.item;
-
-        // special case when only one item present
-        if (!Array.isArray(gameDetails)) {
-            gameDetails = [gameDetails];
-        }
+        const gameDetails = await getGameDetails(idsList);
 
         for (let i = 0; i < gameDetails.length; i++) {
             let details = gameDetails[i];
@@ -167,7 +124,7 @@ const CollectionPage = (): ReactNode => {
 
             urlParams += parameters.join("&");
 
-            const url = `${baseApiAddress}/collection?username=${bggUsername}${urlParams}`;
+            const url = `${baseApiAddress}/collection?username=${username}&stats=1${urlParams}`;
             const collectionResponse = await axios.get(url);
 
             if (collectionResponse.status === 200) {
@@ -226,31 +183,36 @@ const CollectionPage = (): ReactNode => {
 
     // update shownGames effect
     useEffect(() => {
-        fetchDetails().then();
+        fetchDetails().then(() => setLoading(false));
     }, [games, currentPage]);
 
+
     return (
-        <div className={styles.container}>
-            <div className={styles.header}>
-                <CollectionToggle />
+        loading ? <LoadingProgress/> :
+            <div className={styles.container}>
+                <div className={styles.header}>
+                    <CollectionToggle/>
+                </div>
+                <div className={styles.body}>
+                    {
+                        shownGames.map(game => (
+                            <BoardGameTile data={game} key={game.name["#text"]}/>
+                        ))
+                    }
+                </div>
+                <div className={styles.pagination}>
+                    <Pagination
+                        count={getPaginationLen()}
+                        page={currentPage}
+                        shape="rounded"
+                        onChange={(_event: ChangeEvent<unknown>, page: number) => {
+                            setCurrentPage(page);
+                            setLoading(true);
+                        }}
+                    />
+                </div>
             </div>
-            <div className={styles.body}>
-                {shownGames.map((game) => (
-                    <BoardGameTile data={game} key={game.name["#text"]} />
-                ))}
-            </div>
-            <div className={styles.pagination}>
-                <Pagination
-                    count={getPaginationLen()}
-                    page={currentPage}
-                    shape="rounded"
-                    onChange={(_event: ChangeEvent<unknown>, page: number) => {
-                        setCurrentPage(page);
-                    }}
-                />
-            </div>
-        </div>
-    );
-};
+    )
+}
 
 export default CollectionPage;

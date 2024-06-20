@@ -1,0 +1,66 @@
+.container {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+}
+
+.leftPanel {
+    padding: 0 30px;
+    flex: 0;
+}
+
+.rightPanel {
+    padding: 0 30px;
+    flex: 1;
+}
+
+.imageContainer {
+    width: fit-content;
+}
+
+.image {
+    max-width: 20vw;
+}
+
+.info {
+    display: flex;
+    flex-direction: column;
+}
+
+.title {
+    text-align: center;
+}
+
+.description {
+
+}
+
+
+.tile {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+    margin: 8px 0;
+}
+
+.element {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+@media screen and (max-width: 800px) {
+
+    .container {
+        flex-direction: column;
+    }
+
+    .image {
+        max-width: 100%;
+        margin-bottom: 10px;
+        border: 1px solid black;
+    }
+
+}

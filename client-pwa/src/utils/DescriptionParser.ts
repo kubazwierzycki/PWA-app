@@ -4,6 +4,8 @@
  * @returns {string} corrected text
  */
 export function clearCharEntities(description: string): string {
+    if (description === undefined) return "";
+
     const entityRegex = /&.*?;/g;
     const matches = description.match(entityRegex) || [];
 
