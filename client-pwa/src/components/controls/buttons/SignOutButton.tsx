@@ -19,11 +19,19 @@ const SignOutButton = (): ReactNode => {
         const token = Cookies.get("token");
         if (token) {
             try {
-                const res = await authorizationService.signOut(token, uuid);
-                console.log(res);
+                await authorizationService.signOut(token, uuid);
             } catch (err) {
                 if (axios.isAxiosError(err)) {
-                    console.log(err);
+                    switch (err.code) {
+                        case "ERR_BAD_RESPONSE":
+                            alert("Internal server error.");
+                            break;
+                        case "ERR_NETWORK":
+                            alert("Network error.");
+                            break;
+                        default:
+                            alert("Unknown error.");
+                    }
                 }
             } finally {
                 Cookies.remove("token");

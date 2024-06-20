@@ -48,7 +48,6 @@ export const validateUsername = (
     }
     const regexp = new RegExp("^[a-zA-Z][\\w\\d]{3,19}$");
     const hasValidCharacters = regexp.test(username);
-    console.log("hasValidCharacters: ", hasValidCharacters, username);
     if (!hasValidCharacters) {
         return type === UsernameType.CoGame
             ? ValidationResult.IncorrectPattern
@@ -76,7 +75,6 @@ export const getBggUserId = async (bggUsername: string): Promise<string> => {
     try {
         const res = await bggService.getUserByUsername(bggUsername);
         bggUserId = bggService.getUserIdFromResponse(res);
-        console.log("bggId:", bggUserId);
     } catch (err) {
         if (axios.isAxiosError(err)) {
             if (err.code === "ERR_NETWORK") bggUserId = "";
