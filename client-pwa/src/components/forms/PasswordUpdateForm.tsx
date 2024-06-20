@@ -52,13 +52,22 @@ export default function PasswordUpdateForm(): ReactNode {
 
     const validateForm = async (): Promise<ValidationResult> => {
         const fD = formData;
-        const vPassword: ValidationResult = validatePassword(
+        const passwordValidationResult: ValidationResult = validatePassword(
             fD.oldPassword,
             fD.oldPassword
         );
-        if (vPassword !== ValidationResult.Success) {
-            return vPassword;
+        if (passwordValidationResult !== ValidationResult.Success) {
+            return passwordValidationResult;
         }
+
+        const newPasswordValidationResult: ValidationResult = validatePassword(
+            fD.newPassword,
+            fD.passwordConfirmation
+        );
+        if (newPasswordValidationResult !== ValidationResult.Success) {
+            return newPasswordValidationResult;
+        }
+
         return ValidationResult.Success;
     };
 
