@@ -38,6 +38,11 @@ export const menu_structure: MenuItem[] = [
                 sub: [],
             },
             {
+                name: "Update ranking",
+                link: "/boardgames/compare",
+                sub: [],
+            },
+            {
                 name: "Random game",
                 link: "/boardgames/random",
                 sub: [],

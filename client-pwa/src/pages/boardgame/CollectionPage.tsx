@@ -10,8 +10,11 @@ import {
     getShortDescription,
 } from "../../utils/DescriptionParser.ts";
 import axiosRetry from "axios-retry";
+
 import { useCollectionViewContext } from "../../contexts/CollectionViewContext.tsx";
 import { useAuth } from "../../contexts/AuthContext.tsx";
+import {useBoardgamesContext} from "../../contexts/BoardgamesContext.tsx";
+
 
 interface NameType {
     "#text": string;
@@ -70,7 +73,9 @@ const CollectionPage = (): ReactNode => {
 
     const baseApiAddress: string = "https://boardgamegeek.com/xmlapi2";
 
-    const [games, setGames] = useState<BoardGameStub[]>([]);
+    const {games, setGames} = useBoardgamesContext();
+
+    //const [games, setGames] = useState<BoardGameStub[]>([]);
     const [shownGames, setShownGames] = useState<BoardGameItem[]>([]);
     const [numGames, setNumberGames] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);

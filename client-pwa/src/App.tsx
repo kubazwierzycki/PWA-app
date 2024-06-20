@@ -13,9 +13,11 @@ import BoardGameSearch from "./pages/boardgame/BoardGameSearch.tsx";
 import { ReactNode, useEffect } from "react";
 import Cookies from "js-cookie";
 import { useAuth } from "./contexts/AuthContext.tsx";
+
 import { CollectionContextProvider } from "./contexts/CollectionViewContext.tsx";
 import bggService from "./services/bgg.ts";
 import authorisationService from "./services/authorization.ts";
+import ComparingGamesPage from "./pages/boardgame/ComparingGamesPage.tsx";
 
 /**
  * Main app component, controls page routing
@@ -55,22 +57,14 @@ function App(): ReactNode {
                 <Route path="/play" element={<Play />}></Route>
                 <Route path="/signIn" element={<SignIn />}></Route>
                 <Route path="/signUp" element={<SignUp />}></Route>
-                <Route
-                    path="/boardgames/collection"
-                    element={
-                        <CollectionContextProvider>
-                            <CollectionPage />
-                        </CollectionContextProvider>
-                    }
-                ></Route>
-                <Route
-                    path="/boardgames/random"
-                    element={<RandomGamePage />}
-                ></Route>
-                <Route
-                    path="/boardgames/search"
-                    element={<BoardGameSearch />}
-                ></Route>
+                <Route path="/boardgames/collection" element={
+                    <CollectionContextProvider>
+                        <CollectionPage />
+                    </CollectionContextProvider>
+                }></Route>
+                <Route path="/boardgames/compare" element={<ComparingGamesPage />}></Route>
+                <Route path="/boardgames/random" element={<RandomGamePage />}></Route>
+                <Route path="/boardgames/search" element={<BoardGameSearch />}></Route>
             </Route>
         </Routes>
     );

@@ -5,6 +5,7 @@ import {ThemeModeProvider} from "../contexts/ThemeContext.tsx";
 import Footer from "../sections/Footer.tsx";
 import {ReactNode} from "react";
 import {NavContextProvider} from "../contexts/NavbarContext.tsx";
+import {BoardgamesContextProvider} from "../contexts/BoardgamesContext.tsx";
 
 
 /**
@@ -17,6 +18,7 @@ const Layout = (): ReactNode => {
 
     return (
         <ThemeModeProvider>
+            <BoardgamesContextProvider>
                 <div className={styles.pageContainer}>
                     <div className={styles.contentWrapper}>
                         <div className={styles.navbar}>
@@ -32,6 +34,7 @@ const Layout = (): ReactNode => {
                         <Footer />
                     </div>
                 </div>
+            </BoardgamesContextProvider>
         </ThemeModeProvider>
     )
 }
