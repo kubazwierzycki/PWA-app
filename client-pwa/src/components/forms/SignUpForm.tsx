@@ -7,28 +7,29 @@ import authorisationService from "../../services/authorization.ts";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { useAuth } from "../../contexts/AuthContext.tsx";
+import axios from "axios";
+import {
+    Severity,
+    Message,
+    ValidationResult,
+    validateUsername,
+    validatePassword,
+    getBggUserId,
+    UsernameType,
+} from "./formHelpers.ts";
+
 /**
  * Form state.
  */
 interface State {
     username: string;
     email: string;
-    bgg: string;
+    bggUsername: string;
+    bggId: string;
     password: string;
     passwordConfirmation: string;
 }
 
-enum Severity {
-    Error = "error",
-    Info = "info",
-    Success = "success",
-    Warning = "warning",
-}
-
-interface Message {
-    message: string;
-    severity: Severity;
-}
 /**
  * Component with sign in logic.
  * @returns {ReactNode}
@@ -37,12 +38,13 @@ export default function SignUpForm(): ReactNode {
     const [formData, setFormData] = useState<State>({
         username: "",
         email: "",
-        bgg: "",
+        bggUsername: "",
+        bggId: "",
         password: "",
         passwordConfirmation: "",
     });
 
-    const { setToken, setUuid } = useAuth();
+    const { setToken, setUuid, setUser } = useAuth();
     const navigate = useNavigate();
     const [alertMessage, setAlertMessage] = useState<Message>({
         message: "",
@@ -54,88 +56,71 @@ export default function SignUpForm(): ReactNode {
             setFormData({ ...formData, [prop]: event.target.value });
         };
 
-    const validateUsername = (username: string, type: string): boolean => {
-        const usernameLength = username.length;
-        if (usernameLength < 4) {
-            setAlertMessage({
-                message: `${type} must be at least 4 characters long.`,
-                severity: Severity.Warning,
-            });
-            return false;
-        }
-        if (usernameLength > 20) {
-            setAlertMessage({
-                message: `${type} must be no more than 20 characters long.`,
-                severity: Severity.Warning,
-            });
-            return false;
-        }
-        const regexp = new RegExp("^[a-zA-Z][\\w\\d]{3,19}$");
-        const hasValidCharacters = regexp.test(username);
-        console.log("hasValidCharacters: ", hasValidCharacters, username);
-        if (!hasValidCharacters) {
-            setAlertMessage({
-                message: `${type} must start with a letter, and may contain only letters, numbers and underscores (_).`,
-                severity: Severity.Warning,
-            });
-            return false;
+    const validateForm = async (): Promise<ValidationResult> => {
+        const usernamevalidationResult: ValidationResult = validateUsername(
+            formData.username,
+            UsernameType.CoGame
+        );
+        if (usernamevalidationResult !== ValidationResult.Success) {
+            return usernamevalidationResult;
         }
 
-        return true;
+        if (formData.bggUsername !== "") {
+            const bggUsernameValidationResult: ValidationResult =
+                validateUsername(formData.bggUsername, UsernameType.Bgg);
+            if (bggUsernameValidationResult !== ValidationResult.Success) {
+                return bggUsernameValidationResult;
+            }
+            const bggIdValidationResult: string = await getBggUserId(
+                formData.bggUsername
+            );
+            if (bggIdValidationResult === "") {
+                return ValidationResult.BggUserNotFound;
+            } else {
+                formData.bggId = bggIdValidationResult;
+            }
+        }
+
+        const passwordValidationResult: ValidationResult = validatePassword(
+            formData.password,
+            formData.passwordConfirmation
+        );
+        if (passwordValidationResult !== ValidationResult.Success) {
+            return passwordValidationResult;
+        }
+
+        return ValidationResult.Success;
     };
 
-    const validatePassword = (
-        password: string,
-        passwordConfirmation: string
-    ): boolean => {
-        if (password.length < 6) {
-            setAlertMessage({
-                message: "Password must be at least  6 characters long.",
-                severity: Severity.Warning,
-            });
-            return false;
-        }
-        if (password !== passwordConfirmation) {
-            setAlertMessage({
-                message: "Password and password confirmation do not match.",
-                severity: Severity.Warning,
-            });
-            return false;
-        }
-        return true;
-    };
-
-    const validateForm = (): boolean => {
-        const fD = formData;
-
-        const isValid =
-            validateUsername(fD.username, "Username") &&
-            (fD.bgg === "" || validateUsername(fD.bgg, "BGG Username")) &&
-            validatePassword(fD.password, fD.passwordConfirmation);
-        return isValid;
-    };
-
-    const handleSignUp = (event: React.FormEvent<HTMLFormElement>) => {
+    const handleSignUp = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         setAlertMessage({
             message: "",
             severity: Severity.Info,
         });
-        const fD = formData;
-        const isValid: boolean = validateForm();
+        const validationResult: ValidationResult = await validateForm();
 
-        if (isValid) {
-            authorisationService
-                .signUp(fD.email, fD.username, fD.password, fD.bgg)
-                .then((res) => {
-                    navigate("/");
-                    Cookies.set("token", res.token);
-                    Cookies.set("uuid", res.uuid);
-                    setToken(res.token);
-                    setUuid(res.uuid);
-                })
-                .catch((err) => {
-                    console.log(err);
+        if (validationResult == ValidationResult.Success) {
+            try {
+                const res = await authorisationService.signUp(
+                    formData.email,
+                    formData.username,
+                    formData.password,
+                    formData.bggUsername
+                );
+                Cookies.set("token", res.token);
+                Cookies.set("uuid", res.uuid);
+                setToken(res.token);
+                setUuid(res.uuid);
+                setUser({
+                    username: formData.username,
+                    bggUsername: formData.bggUsername,
+                    bggId: formData.bggId,
+                    email: formData.email,
+                });
+                navigate("/");
+            } catch (err) {
+                if (axios.isAxiosError(err)) {
                     switch (err.code) {
                         case "ERR_BAD_REQUEST":
                             setAlertMessage({
@@ -156,8 +141,24 @@ export default function SignUpForm(): ReactNode {
                                 severity: Severity.Error,
                             });
                             break;
+                        default:
+                            setAlertMessage({
+                                message: "Unknown error.",
+                                severity: Severity.Error,
+                            });
                     }
-                });
+                } else {
+                    setAlertMessage({
+                        message: "Unknown error.",
+                        severity: Severity.Error,
+                    });
+                }
+            }
+        } else {
+            setAlertMessage({
+                message: validationResult,
+                severity: Severity.Warning,
+            });
         }
     };
     return (
@@ -227,8 +228,8 @@ export default function SignUpForm(): ReactNode {
                 <OutlinedInput
                     id="signUpFormBGG"
                     type="text"
-                    value={formData.bgg}
-                    onChange={handleChange("bgg")}
+                    value={formData.bggUsername}
+                    onChange={handleChange("bggUsername")}
                 />
             </FormControl>
             <FormControl

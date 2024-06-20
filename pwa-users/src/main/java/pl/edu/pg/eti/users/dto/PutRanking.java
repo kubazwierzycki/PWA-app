@@ -6,22 +6,24 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
+
+import java.util.List;
 
 /**
- * Used as a PUT request to update user data
+ * Used as a PUT request to update user ranking
  */
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @EqualsAndHashCode
-public class PutUser {
+public class PutRanking {
+    private List<GameRanking> ranking;
 
-    private String username;
-
-    @ToString.Exclude
-    private String email;
-
-    private String bggUsername;
+    @Getter
+    public static class GameRanking {
+        private String gameId;
+        private double rating;
+        private int numberOfCompares;
+    }
 }

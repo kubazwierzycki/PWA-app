@@ -13,10 +13,19 @@ import {
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import authorisationService from "../../services/authorization.ts";
+import bggService from "../../services/bgg.ts";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { useAuth } from "../../contexts/AuthContext.tsx";
-
+import axios from "axios";
+import {
+    Severity,
+    Message,
+    ValidationResult,
+    UsernameType,
+    validatePassword,
+    validateUsername,
+} from "./formHelpers.ts";
 /**
  * Form state.
  */
@@ -25,17 +34,6 @@ interface State {
     password: string;
 }
 
-enum Severity {
-    Error = "error",
-    Info = "info",
-    Success = "success",
-    Warning = "warning",
-}
-
-interface Message {
-    message: string;
-    severity: Severity;
-}
 /**
  * Component with sign in logic.
  * @returns {ReactNode}
@@ -45,13 +43,16 @@ export default function SignInForm(): ReactNode {
         username: "",
         password: "",
     });
-    const { setToken, setUuid } = useAuth();
+
+    const { setToken, setUuid, setUser } = useAuth();
+
     const [alertMessage, setAlertMessage] = useState<Message>({
         message: "",
         severity: Severity.Info,
     });
 
     const navigate = useNavigate();
+
     const handleChange =
         (prop: keyof State) => (event: React.ChangeEvent<HTMLInputElement>) => {
             setFormData({ ...formData, [prop]: event.target.value });
@@ -67,37 +68,72 @@ export default function SignInForm(): ReactNode {
         event.preventDefault();
     };
 
-    const handleSignIn = (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
+    const validateForm = (): ValidationResult => {
+        const usernameValidationResult: ValidationResult = validateUsername(
+            formData.username,
+            UsernameType.CoGame
+        );
+        if (usernameValidationResult !== ValidationResult.Success) {
+            return usernameValidationResult;
+        }
+
+        const passwordValidationResult: ValidationResult = validatePassword(
+            formData.password,
+            formData.password
+        );
+        if (passwordValidationResult !== ValidationResult.Success) {
+            return passwordValidationResult;
+        }
+
+        return ValidationResult.Success;
+    };
+
+    const resetFormData = () => {
         setAlertMessage({
             message: "",
             severity: Severity.Info,
         });
-        let isValid: boolean = false;
-        const fD = formData;
-        const regexp = new RegExp("^[a-zA-Z][\\w\\d]{3,19}$");
-        const hasValidCharacters = regexp.test(fD.username);
-        isValid = hasValidCharacters;
-        if (fD.password.length < 6) {
-            isValid = false;
-        }
         setFormData({
             username: "",
             password: "",
         });
         setShowPassword(false);
-        if (isValid) {
-            authorisationService
-                .signIn(fD.username, fD.password)
-                .then((res) => {
-                    navigate("/");
-                    Cookies.set("token", res.token);
-                    Cookies.set("uuid", res.uuid);
-                    setToken(res.token);
-                    setUuid(res.uuid);
-                })
-                .catch((err) => {
-                    console.log(err);
+    };
+
+    const handleSignIn = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        resetFormData();
+        const validationResult: ValidationResult = validateForm();
+
+        if (validationResult == ValidationResult.Success) {
+            try {
+                const resA = await authorisationService.signIn(
+                    formData.username,
+                    formData.password
+                );
+                Cookies.set("token", resA.token);
+                Cookies.set("uuid", resA.uuid);
+                setToken(resA.token);
+                setUuid(resA.uuid);
+
+                const resB = await authorisationService.getUserByUuid(
+                    resA.uuid
+                );
+
+                const resC = await bggService.getUserByUsername(
+                    resB.bggUsername
+                );
+                const bggId = bggService.getUserIdFromResponse(resC);
+
+                setUser({
+                    username: formData.username,
+                    email: resB.email,
+                    bggUsername: resB.bggUsername,
+                    bggId: bggId,
+                });
+                navigate("/");
+            } catch (err) {
+                if (axios.isAxiosError(err)) {
                     switch (err.code) {
                         case "ERR_BAD_REQUEST":
                             setAlertMessage({
@@ -117,8 +153,19 @@ export default function SignInForm(): ReactNode {
                                 severity: Severity.Error,
                             });
                             break;
+                        default:
+                            setAlertMessage({
+                                message: "Unknown error.",
+                                severity: Severity.Error,
+                            });
                     }
-                });
+                } else {
+                    setAlertMessage({
+                        message: "Unknown error.",
+                        severity: Severity.Error,
+                    });
+                }
+            }
         } else {
             setAlertMessage({
                 message: "Incorrect username or password.",

@@ -23,8 +23,6 @@ public class UserDefaultController implements UserController {
 
     @Override
     public void putUser(UUID uuid, PutUser request) {
-        User user = userService.find(uuid).orElse(null);
-
         userService.update(
                 User.builder()
                         .uuid(uuid)

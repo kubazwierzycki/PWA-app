@@ -54,6 +54,7 @@ public class UserDefaultService implements UserService {
         userRepository.save(user);
         userEventRepository.create(user.getUuid(),
                 PutUser.builder()
+                        .username(user.getUsername())
                         .bggUsername(user.getBggUsername())
                         .build());
     }
@@ -63,6 +64,7 @@ public class UserDefaultService implements UserService {
         userRepository.save(user);
         userEventRepository.create(user.getUuid(),
                 PutUser.builder()
+                        .username(user.getUsername())
                         .bggUsername(user.getBggUsername())
                         .build());
     }
