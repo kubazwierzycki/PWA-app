@@ -1,47 +1,53 @@
-import {ChangeEvent, ReactNode, useEffect, useState} from "react";
+import { ChangeEvent, ReactNode, useEffect, useState } from "react";
 import CollectionToggle from "../../components/CollectionToggle.tsx";
-import styles from "../../styles/collections.module.css"
+import styles from "../../styles/collections.module.css";
 import BoardGameTile from "../../components/BoardGameTile.tsx";
-import {Pagination} from "@mui/material";
+import { Pagination } from "@mui/material";
 import axios from "axios";
-import {parseXml} from "../../utils/XMLToJSON.ts";
-import {clearCharEntities, getShortDescription} from "../../utils/DescriptionParser.ts";
+import { parseXml } from "../../utils/XMLToJSON.ts";
+import {
+    clearCharEntities,
+    getShortDescription,
+} from "../../utils/DescriptionParser.ts";
 import axiosRetry from "axios-retry";
-import {useCollectionViewContext} from "../../contexts/CollectionViewContext.tsx";
+
+import { useCollectionViewContext } from "../../contexts/CollectionViewContext.tsx";
+import { useAuth } from "../../contexts/AuthContext.tsx";
 import {useBoardgamesContext} from "../../contexts/BoardgamesContext.tsx";
 
+
 interface NameType {
-    "#text": string
+    "#text": string;
 }
 
 interface BoardGameDetails {
-    description: string,
-    shortDescription: string,
-    statistics: {ratings: BoardGameStats},
-    thumbnail: string,
-    yearpublished: {"@_value": string},
-    minplayers: {"@_value": string},
-    maxplayers: {"@_value": string},
-    minage: {"@_value": string},
-    playingtime: {"@_value": string}
+    description: string;
+    shortDescription: string;
+    statistics: { ratings: BoardGameStats };
+    thumbnail: string;
+    yearpublished: { "@_value": string };
+    minplayers: { "@_value": string };
+    maxplayers: { "@_value": string };
+    minage: { "@_value": string };
+    playingtime: { "@_value": string };
 }
 
 interface BoardGameStats {
-    usersRated: string,
-    average: {"@_value": string},
-    owned: string,
-    ranks: {rank: [{"@_value": string}]}
+    usersRated: string;
+    average: { "@_value": string };
+    owned: string;
+    ranks: { rank: [{ "@_value": string }] };
 }
 
 interface BoardGameItem {
-    name: NameType,
-    "@_objectid": string,
-    details: BoardGameDetails,
+    name: NameType;
+    "@_objectid": string;
+    details: BoardGameDetails;
 }
 
 interface BoardGameStub {
-    name: NameType,
-    "@_objectid": string
+    name: NameType;
+    "@_objectid": string;
 }
 
 interface FiltersState {
@@ -57,15 +63,15 @@ interface FiltersState {
  * @returns {ReactNode}
  */
 const CollectionPage = (): ReactNode => {
-
     // FOR TESTING
     // bhr_79
     // Aldie
     // goluch
     // To be replaced with BGG username logic
-    const username: string = "goluch";
+    const { user } = useAuth();
+    const bggUsername: string = user.bggUsername;
 
-    const baseApiAddress: string = 'https://boardgamegeek.com/xmlapi2';
+    const baseApiAddress: string = "https://boardgamegeek.com/xmlapi2";
 
     const {games, setGames} = useBoardgamesContext();
 
@@ -78,15 +84,10 @@ const CollectionPage = (): ReactNode => {
     const getPaginationLen = () => Math.ceil(numGames / perPage);
 
     // view toggle state from context
-    const {
-        type,
-        ordering,
-        filtersState,
-        minRating
-    } = useCollectionViewContext();
+    const { type, ordering, filtersState, minRating } =
+        useCollectionViewContext();
 
     const fetchDetails = async () => {
-
         if (games.length === 0) return;
 
         // get list of required games
@@ -109,39 +110,40 @@ const CollectionPage = (): ReactNode => {
         }
 
         for (let i = 0; i < gameDetails.length; i++) {
-
             let details = gameDetails[i];
 
             // Correct description and create short description
             const correctedDescription = clearCharEntities(details.description);
             details.description = correctedDescription;
-            details.shortDescription = getShortDescription(correctedDescription);
+            details.shortDescription =
+                getShortDescription(correctedDescription);
 
             gameDetails[i] = details;
         }
 
         let counter = -1;
-        const chosenGames: BoardGameItem[] = games.slice(start, start + perPage).map(stub => {
-            counter++;
-            return {
-                name: stub.name,
-                "@_objectid": stub["@_objectid"],
-                details: gameDetails[counter]
-            };
-        });
+        const chosenGames: BoardGameItem[] = games
+            .slice(start, start + perPage)
+            .map((stub) => {
+                counter++;
+                return {
+                    name: stub.name,
+                    "@_objectid": stub["@_objectid"],
+                    details: gameDetails[counter],
+                };
+            });
 
         setShownGames(chosenGames);
-    }
+    };
 
     const fetchGames = async () => {
         try {
-
             let urlParams: string = "&";
             let parameters: string[] = [];
             if (type === "owned") {
                 parameters.push("own=1");
-            }
-            else { // "played"
+            } else {
+                // "played"
                 parameters.push("played=1");
             }
             // popover filters
@@ -165,7 +167,7 @@ const CollectionPage = (): ReactNode => {
 
             urlParams += parameters.join("&");
 
-            let url = `${baseApiAddress}/collection?username=${username}${urlParams}`;
+            const url = `${baseApiAddress}/collection?username=${bggUsername}${urlParams}`;
             const collectionResponse = await axios.get(url);
 
             if (collectionResponse.status === 200) {
@@ -186,28 +188,27 @@ const CollectionPage = (): ReactNode => {
                 // wrap in array if only one item present
                 if (totalItems == 1) {
                     gamesData.push(parsedData.items.item);
-                }
-                else {
+                } else {
                     gamesData = parsedData.items.item;
                 }
 
                 // sorting games according to ordering
                 if (ordering === "ranking") {
                     // TODO: sorting by ranking from backend, makes sense after full ranking functionality present
-                }
-                else { // alphabetical
+                } else {
+                    // alphabetical
                     // sort with name comparator
                     gamesData.sort((a: BoardGameStub, b: BoardGameStub) => {
                         const nameA = a.name["#text"];
                         const nameB = b.name["#text"];
                         return nameA.localeCompare(nameB);
-                    })
+                    });
                 }
 
                 setGames(gamesData);
             }
         } catch (error) {
-            console.error('Error fetching data:', error);
+            console.error("Error fetching data:", error);
         }
     };
 
@@ -234,11 +235,9 @@ const CollectionPage = (): ReactNode => {
                 <CollectionToggle />
             </div>
             <div className={styles.body}>
-                {
-                    shownGames.map(game => (
-                        <BoardGameTile data={game} key={game.name["#text"]}/>
-                    ))
-                }
+                {shownGames.map((game) => (
+                    <BoardGameTile data={game} key={game.name["#text"]} />
+                ))}
             </div>
             <div className={styles.pagination}>
                 <Pagination
@@ -251,7 +250,7 @@ const CollectionPage = (): ReactNode => {
                 />
             </div>
         </div>
-    )
-}
+    );
+};
 
 export default CollectionPage;
