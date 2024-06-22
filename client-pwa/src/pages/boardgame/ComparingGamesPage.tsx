@@ -40,7 +40,6 @@ const ComparingGamesPage = () => {
     const {ranking, setRanking} = useBoardgamesContext();
 
     const {uuid} = useAuth();
-    console.log(uuid)
 
     // fetch ranking data from backend on load
     useEffect(() => {
@@ -50,9 +49,10 @@ const ComparingGamesPage = () => {
             setRanking(data);
         };
 
-        console.log(uuid)
-        fetchRankings().then();
-    }, []);
+        if (uuid !== "") {
+            fetchRankings().then();
+        }
+    }, [uuid]);
 
     return (
         <div className={styles.container}>
