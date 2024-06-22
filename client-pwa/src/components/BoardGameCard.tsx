@@ -33,7 +33,6 @@ const BoardGameCard = ({chosen, val, thumbnail, title, text}: BoardGameCardProps
                         <div className={styles.text}>
                             <Typography variant="body1">
                                 {text}
-                                The game lets you travel in time to decide the fate of 1930s Germany. Become the leader of a political party and ensure your ascension to power.
                             </Typography>
                         </div>
                     </div>

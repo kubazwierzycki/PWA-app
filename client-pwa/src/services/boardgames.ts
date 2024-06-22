@@ -1,6 +1,7 @@
 import axios from "axios";
 import {parseXml} from "../utils/XMLToJSON.ts";
 import {BoardGameDetails} from "../types/IBoardgames.ts";
+import {clearCharEntities, getShortDescription} from "../utils/DescriptionParser.ts";
 
 const baseApiAddress: string = 'https://boardgamegeek.com/xmlapi2';
 
@@ -31,6 +32,11 @@ export const getGameDetails = async (gameId: string | undefined): Promise<BoardG
     if (!Array.isArray(gameDetails)) {
         gameDetails = [gameDetails];
     }
+
+    // correct descriptions
+    const correctedDescription = clearCharEntities(gameDetails[0].description);
+    gameDetails[0].description = correctedDescription;
+    gameDetails[0].shortDescription = getShortDescription(correctedDescription);
 
     return gameDetails;
 }

@@ -7,6 +7,8 @@ import {Box} from "@mui/system";
 import {useBoardgamesContext} from "../../contexts/BoardgamesContext.tsx";
 import {getRanking} from "../../services/rankings.ts";
 import {useAuth} from "../../contexts/AuthContext.tsx";
+import {BoardGameDetails} from "../../types/IBoardgames.ts";
+import {getGameDetails} from "../../services/boardgames.ts";
 
 
 const ComparingGamesPage = () => {
@@ -45,7 +47,6 @@ const ComparingGamesPage = () => {
     useEffect(() => {
         const fetchRankings = async () => {
             const data = await getRanking(uuid);
-            console.log(data);
             setRanking(data);
         };
 
@@ -53,6 +54,34 @@ const ComparingGamesPage = () => {
             fetchRankings().then();
         }
     }, [uuid]);
+
+    // ids of the games currently chosen for comparison
+    const [game1Id, setGame1Id] = useState<string>("302035");
+    const [game2Id, setGame2Id] = useState<string>("302035");
+
+    // game details for the games currently chosen for comparison
+    const [game1, setGame1] = useState<BoardGameDetails>({} as BoardGameDetails);
+    const [game2, setGame2] = useState<BoardGameDetails>({} as BoardGameDetails);
+
+    // get details for the first game when id is set
+    useEffect(() => {
+        if (game1Id === "") return;
+        const fetchDetails = async (gameId: string) => {
+            const data = await getGameDetails(gameId);
+            setGame1(data[0]);
+        };
+        fetchDetails(game1Id).then();
+    }, [game1Id]);
+
+    // get details for the second game when id is set
+    useEffect(() => {
+        if (game2Id === "") return;
+        const fetchDetails = async (gameId: string) => {
+            const data = await getGameDetails(gameId);
+            setGame2(data[0]);
+        };
+        fetchDetails(game2Id).then();
+    }, [game2Id]);
 
     return (
         <div className={styles.container}>
@@ -66,9 +95,9 @@ const ComparingGamesPage = () => {
                     <BoardGameCard
                         chosen={chosen}
                         val={1}
-                        thumbnail={image}
-                        title={"Die Macher"}
-                        text={""}
+                        thumbnail={game1.thumbnail}
+                        title={game1.name?.["@_value"] || "Title"}
+                        text={game1.shortDescription}
                     />
                 </div>
                 <div className={styles.vs}>
@@ -80,9 +109,9 @@ const ComparingGamesPage = () => {
                     <BoardGameCard
                         chosen={chosen}
                         val={2}
-                        thumbnail={image}
-                        title={"Die Macher"}
-                        text={""}
+                        thumbnail={game2.thumbnail}
+                        title={game2.name?.["@_value"] || "Title"}
+                        text={game2.shortDescription}
                     />
                 </div>
             </div>
