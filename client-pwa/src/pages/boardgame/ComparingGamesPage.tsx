@@ -1,9 +1,12 @@
 import styles from "../../styles/comparing.module.css"
 import {Button, Modal, Stack, Typography} from "@mui/material";
 import BoardGameCard from "../../components/BoardGameCard.tsx";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import image from "../../assets/test_thumbnail.webp"
-import {Box} from "@mui/system"; // testing only
+import {Box} from "@mui/system";
+import {useBoardgamesContext} from "../../contexts/BoardgamesContext.tsx";
+import {getRanking} from "../../services/rankings.ts";
+import {useAuth} from "../../contexts/AuthContext.tsx";
 
 
 const ComparingGamesPage = () => {
@@ -32,6 +35,24 @@ const ComparingGamesPage = () => {
         boxShadow: 24,
         p: 4,
     };
+
+    // current state of user's boardgames ranking
+    const {ranking, setRanking} = useBoardgamesContext();
+
+    const {uuid} = useAuth();
+    console.log(uuid)
+
+    // fetch ranking data from backend on load
+    useEffect(() => {
+        const fetchRankings = async () => {
+            const data = await getRanking(uuid);
+            console.log(data);
+            setRanking(data);
+        };
+
+        console.log(uuid)
+        fetchRankings().then();
+    }, []);
 
     return (
         <div className={styles.container}>

@@ -1,12 +1,18 @@
 import {
-    createContext,
+    createContext, Dispatch,
     ReactElement,
-    ReactNode,
+    ReactNode, SetStateAction,
     useContext,
     useState
 } from "react";
-import {BoardgamesContextType, BoardGameStub} from "../types/IBoardgames.ts";
+import {BoardGameRank, BoardGameStub} from "../types/IBoardgames.ts";
 
+interface BoardgamesContextType {
+    games: BoardGameStub[]
+    setGames: Dispatch<SetStateAction<BoardGameStub[]>>
+    ranking: BoardGameRank[]
+    setRanking: Dispatch<SetStateAction<BoardGameRank[]>>
+}
 
 export const BoardgamesContext = createContext<BoardgamesContextType>({} as BoardgamesContextType);
 
@@ -17,12 +23,18 @@ export const BoardgamesContext = createContext<BoardgamesContextType>({} as Boar
  */
 export const BoardgamesContextProvider = ({children}: {children: ReactElement}): ReactNode => {
 
+    // list of games for collection reference
     const [games, setGames] = useState<BoardGameStub[]>([] as BoardGameStub[]);
+
+    // ranking list from backend
+    const [ranking, setRanking] = useState<BoardGameRank[]>([] as BoardGameRank[]);
 
     return (
         <BoardgamesContext.Provider value={{
             games,
-            setGames
+            setGames,
+            ranking,
+            setRanking
         }}>
             {children}
         </BoardgamesContext.Provider>
