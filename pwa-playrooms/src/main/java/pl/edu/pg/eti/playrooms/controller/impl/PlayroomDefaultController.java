@@ -1,7 +1,6 @@
 package pl.edu.pg.eti.playrooms.controller.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Controller;
 import pl.edu.pg.eti.playrooms.controller.api.PlayroomController;
 import pl.edu.pg.eti.playrooms.service.api.PlayroomService;
@@ -21,8 +20,4 @@ public class PlayroomDefaultController implements PlayroomController {
 
     }
 
-    @Override
-    public void handleWebSocketMessage(String message, SimpMessageHeaderAccessor headerAccessor) {
-
-    }
 }
