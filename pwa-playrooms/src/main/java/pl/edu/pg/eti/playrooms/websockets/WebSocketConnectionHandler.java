@@ -1,27 +1,27 @@
 package pl.edu.pg.eti.playrooms.websockets;
 
+import org.springframework.lang.NonNull;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * WebSocket Handler for playroom functionality
  */
 public class WebSocketConnectionHandler extends TextWebSocketHandler {
 
-    private final List<WebSocketSession> webSocketSessions;
+    private final Map<String, WebSocketSession> webSocketSessions;
 
     public WebSocketConnectionHandler() {
-        webSocketSessions = Collections.synchronizedList(new ArrayList<>());
+        webSocketSessions = Collections.synchronizedMap(new HashMap<>());
     }
 
     @Override
-    public void
-    afterConnectionEstablished(WebSocketSession session) {
+    public void afterConnectionEstablished(@NonNull WebSocketSession session) {
         try {
             super.afterConnectionEstablished(session);
         } catch (Exception e) {
@@ -29,11 +29,12 @@ public class WebSocketConnectionHandler extends TextWebSocketHandler {
             return;
         }
 
-        webSocketSessions.add(session);
+        webSocketSessions.put(session.getId(), session);
     }
 
     @Override
-    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
+    public void afterConnectionClosed(@NonNull WebSocketSession session, @NonNull CloseStatus status) {
+        String sessionId = session.getId();
         try {
             super.afterConnectionClosed(session, status);
         } catch (Exception e) {
@@ -41,16 +42,7 @@ public class WebSocketConnectionHandler extends TextWebSocketHandler {
             return;
         }
 
-        webSocketSessions.remove(session);
-    }
-
-    public WebSocketSession getSessionById(String id) {
-        for (WebSocketSession webSocketSession : webSocketSessions) {
-            if (id.equals(webSocketSession.getId())) {
-                return webSocketSession;
-            }
-        }
-        return null;
+        webSocketSessions.remove(sessionId);
     }
 
 }
