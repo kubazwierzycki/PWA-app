@@ -43,11 +43,43 @@ const ComparingGamesPage = () => {
         const index1 = Math.floor(Math.random() * ranking.length);
         const index2 = Math.floor(Math.random() * ranking.length);
 
-        const id1 = ranking[index1]?.gameId;
-        const id2 = ranking[index2]?.gameId;
+        setGame1Index(index1);
+        setGame2Index(index2);
+    }
 
-        setGame1Id(id1);
-        setGame2Id(id2);
+    // Function to update the rank for a specific id
+    const updateRank = (id: string, newRank: number) => {
+        setRanking(prevRankings => {
+            return prevRankings.map(rank => {
+                if (rank.gameId === id) {
+                    return { ...rank, rating: newRank };
+                }
+                return rank;
+            });
+        });
+    };
+
+    const updateRanking = (winner: number) => {
+        const id1 = ranking[game1Index].gameId;
+        const id2 = ranking[game2Index].gameId;
+        const initial1 = ranking[game1Index].rating;
+        const initial2 = ranking[game2Index].rating;
+        console.log(initial1, initial2)
+        // TODO: switch to real updating logic
+        switch (winner) {
+            case 1:
+                // left game won
+                updateRank(id1, initial2);
+                updateRank(id2, initial1);
+                break;
+            case 2:
+                // right game won
+                updateRank(id1, initial2);
+                updateRank(id2, initial1);
+                break;
+            default:
+                break;
+        }
     }
 
     // current state of user's boardgames ranking
@@ -68,8 +100,8 @@ const ComparingGamesPage = () => {
     }, [uuid]);
 
     // ids of the games currently chosen for comparison
-    const [game1Id, setGame1Id] = useState<string>("");
-    const [game2Id, setGame2Id] = useState<string>("");
+    const [game1Index, setGame1Index] = useState<number>(-1);
+    const [game2Index, setGame2Index] = useState<number>(-1);
 
     // game details for the games currently chosen for comparison
     const [game1, setGame1] = useState<BoardGameDetails>({} as BoardGameDetails);
@@ -77,23 +109,25 @@ const ComparingGamesPage = () => {
 
     // get details for the first game when id is set
     useEffect(() => {
-        if (game1Id === "") return;
+        if (game1Index === -1) return;
+        const game1Id = ranking[game1Index].gameId;
         const fetchDetails = async (gameId: string) => {
             const data = await getGameDetails(gameId);
             setGame1(data[0]);
         };
         fetchDetails(game1Id).then();
-    }, [game1Id]);
+    }, [game1Index]);
 
     // get details for the second game when id is set
     useEffect(() => {
-        if (game2Id === "") return;
+        if (game2Index === -1) return;
+        const game2Id = ranking[game2Index].gameId;
         const fetchDetails = async (gameId: string) => {
             const data = await getGameDetails(gameId);
             setGame2(data[0]);
         };
         fetchDetails(game2Id).then();
-    }, [game2Id]);
+    }, [game2Index]);
 
     useEffect(() => {
         chooseTwoGames();
@@ -132,10 +166,16 @@ const ComparingGamesPage = () => {
                 </div>
             </div>
             <div className={styles.next}>
-                <Button variant="contained" sx={{marginRight: "20px"}} onClick={handleModalOpen}>
+                <Button
+                    variant="contained" sx={{marginRight: "20px"}}
+                    onClick={handleModalOpen}
+                >
                     Finish and Save
                 </Button>
-                <Button variant="outlined">
+                <Button
+                    variant="outlined"
+                    onClick={() => updateRanking(chosen)}
+                >
                     Next pair
                 </Button>
             </div>
