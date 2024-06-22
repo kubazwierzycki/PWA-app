@@ -2,7 +2,6 @@ package pl.edu.pg.eti.playrooms.service.api;
 
 import pl.edu.pg.eti.playrooms.entity.Playroom;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -25,13 +24,6 @@ public interface PlayroomService {
      * @return a list of paused playrooms
      */
     List<Playroom> findByPaused(boolean paused);
-
-    /**
-     * Find playrooms created before specific date
-     * @param date - specific date
-     * @return a list of playrooms
-     */
-    List<Playroom> findByStartDateBefore(LocalDate date);
 
     /**
      * Find all playrooms

@@ -6,7 +6,6 @@ import pl.edu.pg.eti.playrooms.entity.Playroom;
 import pl.edu.pg.eti.playrooms.repository.api.PlayroomRepository;
 import pl.edu.pg.eti.playrooms.service.api.PlayroomService;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -29,11 +28,6 @@ public class PlayroomDefaultService implements PlayroomService {
     @Override
     public List<Playroom> findByPaused(boolean paused) {
         return playroomRepository.findByPaused(paused);
-    }
-
-    @Override
-    public List<Playroom> findByStartDateBefore(LocalDate date) {
-        return playroomRepository.findByStartDateBefore(date);
     }
 
     @Override
