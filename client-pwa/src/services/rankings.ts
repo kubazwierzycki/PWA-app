@@ -14,6 +14,6 @@ export const getRanking = async (userId: string): Promise<BoardGameRank[]> => {
     });
 
     const response = await request;
-    return response.data;
+    return response.data.ranking;
 }
 

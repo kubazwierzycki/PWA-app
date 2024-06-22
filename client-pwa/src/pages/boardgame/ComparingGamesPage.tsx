@@ -2,7 +2,6 @@ import styles from "../../styles/comparing.module.css"
 import {Button, Modal, Stack, Typography} from "@mui/material";
 import BoardGameCard from "../../components/BoardGameCard.tsx";
 import {useEffect, useState} from "react";
-import image from "../../assets/test_thumbnail.webp"
 import {Box} from "@mui/system";
 import {useBoardgamesContext} from "../../contexts/BoardgamesContext.tsx";
 import {getRanking} from "../../services/rankings.ts";
@@ -38,6 +37,19 @@ const ComparingGamesPage = () => {
         p: 4,
     };
 
+    const chooseTwoGames = () => {
+        if (ranking === undefined || ranking.length === 0) return null;
+
+        const index1 = Math.floor(Math.random() * ranking.length);
+        const index2 = Math.floor(Math.random() * ranking.length);
+
+        const id1 = ranking[index1]?.gameId;
+        const id2 = ranking[index2]?.gameId;
+
+        setGame1Id(id1);
+        setGame2Id(id2);
+    }
+
     // current state of user's boardgames ranking
     const {ranking, setRanking} = useBoardgamesContext();
 
@@ -56,8 +68,8 @@ const ComparingGamesPage = () => {
     }, [uuid]);
 
     // ids of the games currently chosen for comparison
-    const [game1Id, setGame1Id] = useState<string>("302035");
-    const [game2Id, setGame2Id] = useState<string>("302035");
+    const [game1Id, setGame1Id] = useState<string>("");
+    const [game2Id, setGame2Id] = useState<string>("");
 
     // game details for the games currently chosen for comparison
     const [game1, setGame1] = useState<BoardGameDetails>({} as BoardGameDetails);
@@ -82,6 +94,10 @@ const ComparingGamesPage = () => {
         };
         fetchDetails(game2Id).then();
     }, [game2Id]);
+
+    useEffect(() => {
+        chooseTwoGames();
+    }, [ranking]);
 
     return (
         <div className={styles.container}>
