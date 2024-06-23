@@ -1,7 +1,7 @@
 import styles from "../../styles/comparing.module.css"
 import {Button, Modal, Stack, Typography} from "@mui/material";
 import BoardGameCard from "../../components/BoardGameCard.tsx";
-import {useEffect, useState} from "react";
+import {ReactNode, useEffect, useState} from "react";
 import {Box} from "@mui/system";
 import {useBoardgamesContext} from "../../contexts/BoardgamesContext.tsx";
 import {getRanking} from "../../services/rankings.ts";
@@ -9,11 +9,23 @@ import {useAuth} from "../../contexts/AuthContext.tsx";
 import {BoardGameDetails} from "../../types/IBoardgames.ts";
 import {getGameDetails} from "../../services/boardgames.ts";
 
+/**
+ * Enum type for single comparison winner game
+ */
+enum Winner {
+    LEFT,
+    RIGHT,
+    UNKNOWN
+}
 
-const ComparingGamesPage = () => {
+/**
+ * Page for updating user's personal game ranking based on comparing games pair by pair
+ * @returns {ReactNode}
+ */
+const ComparingGamesPage = (): ReactNode => {
 
     // state of current pair choice
-    const [chosen, setChosen] = useState(0);
+    const [chosen, setChosen] = useState<Winner>(Winner.UNKNOWN);
 
     // finish modal popup
     const [modalOpen, setModalOpen] = useState(false);
@@ -22,7 +34,7 @@ const ComparingGamesPage = () => {
 
     const handleModalOpen = () => setModalOpen(true);
 
-    const handleCardClick = (val: number) => {
+    const handleCardClick = (val: Winner) => {
         setChosen(val);
     }
 
@@ -37,17 +49,31 @@ const ComparingGamesPage = () => {
         p: 4,
     };
 
+    /**
+     * Function for choosing two games to be compared in the iteration
+     * Chooses games randomly
+     * Avoids using same game twice in iteration
+     */
     const chooseTwoGames = () => {
         if (ranking === undefined || ranking.length === 0) return null;
 
-        const index1 = Math.floor(Math.random() * ranking.length);
-        const index2 = Math.floor(Math.random() * ranking.length);
+        let index1 = -1;
+        let index2 = -1;
+        // avoid choosing the same game twice
+        while (index1 === index2) {
+            index1 = Math.floor(Math.random() * ranking.length);
+            index2 = Math.floor(Math.random() * ranking.length);
+        }
 
         setGame1Index(index1);
         setGame2Index(index2);
     }
 
-    // Function to update the rank for a specific id
+    /**
+     * Function to update the rank for a specific game id
+     * @param {string} id - BGG id of the game
+     * @param {number} newRank - new established ranking value for this game
+     */
     const updateRank = (id: string, newRank: number) => {
         setRanking(prevRankings => {
             return prevRankings.map(rank => {
@@ -59,7 +85,11 @@ const ComparingGamesPage = () => {
         });
     };
 
-    const updateRanking = (winner: number) => {
+    /**
+     * Function updating ranking based on single comparison iteration result
+     * @param {@link Winner} winner - determines which game won in this iteration
+     */
+    const updateRanking = (winner: Winner) => {
         const id1 = ranking[game1Index].gameId;
         const id2 = ranking[game2Index].gameId;
         const initial1 = ranking[game1Index].rating;
@@ -141,7 +171,7 @@ const ComparingGamesPage = () => {
                 </Typography>
             </div>
             <div className={styles.wrapper}>
-                <div className={styles.cardContainer} onClick={() => handleCardClick(1)}>
+                <div className={styles.cardContainer} onClick={() => handleCardClick(Winner.LEFT)}>
                     <BoardGameCard
                         chosen={chosen}
                         val={1}
@@ -155,7 +185,7 @@ const ComparingGamesPage = () => {
                         vs.
                     </Typography>
                 </div>
-                <div className={styles.cardContainer}  onClick={() => handleCardClick(2)}>
+                <div className={styles.cardContainer}  onClick={() => handleCardClick(Winner.RIGHT)}>
                     <BoardGameCard
                         chosen={chosen}
                         val={2}
