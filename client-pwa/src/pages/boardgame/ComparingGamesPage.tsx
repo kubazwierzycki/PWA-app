@@ -1,13 +1,14 @@
 import styles from "../../styles/comparing.module.css"
-import {Button, Modal, Stack, Typography} from "@mui/material";
+import {Button, Typography} from "@mui/material";
 import BoardGameCard from "../../components/BoardGameCard.tsx";
 import {ReactNode, useEffect, useState} from "react";
-import {Box} from "@mui/system";
 import {useBoardgamesContext} from "../../contexts/BoardgamesContext.tsx";
 import {getRanking} from "../../services/rankings.ts";
 import {useAuth} from "../../contexts/AuthContext.tsx";
 import {BoardGameDetails} from "../../types/IBoardgames.ts";
 import {getGameDetails} from "../../services/boardgames.ts";
+import FinishAndSaveModal from "../../components/modals/comparing/FinishAndSaveModal.tsx";
+import CompareErrorModal from "../../components/modals/comparing/CompareErrorModal.tsx";
 
 /**
  * Enum type for single comparison winner game
@@ -30,24 +31,24 @@ const ComparingGamesPage = (): ReactNode => {
     // finish modal popup
     const [modalOpen, setModalOpen] = useState(false);
 
-    const handleModalClose = () => setModalOpen(false);
-
     const handleModalOpen = () => setModalOpen(true);
 
     const handleCardClick = (val: Winner) => {
         setChosen(val);
     }
 
-    const style = {
-        position: 'absolute' as 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        width: 400,
-        bgcolor: 'background.paper',
-        boxShadow: 24,
-        p: 4,
-    };
+    // compare error modal state
+    const [errorModalOpen, setErrorModalOpen] = useState(false);
+
+    const handleNextClick = () => {
+        if (chosen === Winner.UNKNOWN) {
+            // winner has not been chosen - error
+            setErrorModalOpen(true);
+            return;
+        }
+        updateRanking(chosen);
+        setChosen(Winner.UNKNOWN);
+    }
 
     /**
      * Function for choosing two games to be compared in the iteration
@@ -174,7 +175,7 @@ const ComparingGamesPage = (): ReactNode => {
                 <div className={styles.cardContainer} onClick={() => handleCardClick(Winner.LEFT)}>
                     <BoardGameCard
                         chosen={chosen}
-                        val={1}
+                        val={Winner.LEFT}
                         thumbnail={game1.thumbnail}
                         title={game1.name?.["@_value"] || "Title"}
                         text={game1.shortDescription}
@@ -188,7 +189,7 @@ const ComparingGamesPage = (): ReactNode => {
                 <div className={styles.cardContainer}  onClick={() => handleCardClick(Winner.RIGHT)}>
                     <BoardGameCard
                         chosen={chosen}
-                        val={2}
+                        val={Winner.RIGHT}
                         thumbnail={game2.thumbnail}
                         title={game2.name?.["@_value"] || "Title"}
                         text={game2.shortDescription}
@@ -204,51 +205,20 @@ const ComparingGamesPage = (): ReactNode => {
                 </Button>
                 <Button
                     variant="outlined"
-                    onClick={() => updateRanking(chosen)}
+                    onClick={handleNextClick}
                 >
                     Next pair
                 </Button>
             </div>
-            <Modal
-                open={modalOpen}
-                onClose={handleModalClose}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
-            >
-                <Box sx={style}>
-                    <Typography id="modal-modal-title" variant="h6" component="h2" textAlign="center">
-                        Finish and save
-                    </Typography>
-                    <Typography id="modal-modal-description" sx={{ mt: 2, marginBottom: "10px" }}>
-                        Are you sure you want finish comparing and save your ranking update?
-                    </Typography>
-                    <div className={styles.buttonsContainer}>
-                        <Stack direction="row" spacing={1}>
-                            <Button
-                                variant="contained"
-                                color="warning"
-                                onClick={() => setModalOpen(false)}
-                            >
-                                Cancel
-                            </Button>
-                            <Button
-                                variant="contained"
-                                color="error"
-                                onClick={() => setModalOpen(false)} // to be changed
-                            >
-                                Discard
-                            </Button>
-                            <Button
-                                variant="contained"
-                                color="success"
-                                onClick={() => setModalOpen(false)} // to be changed
-                            >
-                                Save
-                            </Button>
-                        </Stack>
-                    </div>
-                </Box>
-            </Modal>
+            <FinishAndSaveModal
+                modalOpen={modalOpen}
+                setModalOpen={setModalOpen}
+            />
+            <CompareErrorModal
+                errorModalOpen={errorModalOpen}
+                setErrorModalOpen={setErrorModalOpen}
+                text="Please choose better game"
+            />
         </div>
     )
 }
