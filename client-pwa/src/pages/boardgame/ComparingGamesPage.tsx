@@ -3,12 +3,14 @@ import {Button, Typography} from "@mui/material";
 import BoardGameCard from "../../components/BoardGameCard.tsx";
 import {ReactNode, useEffect, useState} from "react";
 import {useBoardgamesContext} from "../../contexts/BoardgamesContext.tsx";
-import {getRanking} from "../../services/rankings.ts";
+import {getRanking, saveRanking} from "../../services/rankings.ts";
 import {useAuth} from "../../contexts/AuthContext.tsx";
 import {BoardGameDetails} from "../../types/IBoardgames.ts";
 import {getGameDetails} from "../../services/boardgames.ts";
 import FinishAndSaveModal from "../../components/modals/comparing/FinishAndSaveModal.tsx";
-import CompareErrorModal from "../../components/modals/comparing/CompareErrorModal.tsx";
+import CompareModal from "../../components/modals/comparing/CompareModal.tsx";
+import {useNavigate} from "react-router-dom";
+import Cookies from "js-cookie";
 
 /**
  * Enum type for single comparison winner game
@@ -25,6 +27,11 @@ enum Winner {
  */
 const ComparingGamesPage = (): ReactNode => {
 
+    const {uuid} = useAuth();
+    const token = Cookies.get("token");
+
+    const navigate = useNavigate();
+
     // state of current pair choice
     const [chosen, setChosen] = useState<Winner>(Winner.UNKNOWN);
 
@@ -39,6 +46,8 @@ const ComparingGamesPage = (): ReactNode => {
 
     // compare error modal state
     const [errorModalOpen, setErrorModalOpen] = useState(false);
+    // save success modal state
+    const [successModalOpen, setSuccessModalOpen] = useState(false);
 
     const handleNextClick = () => {
         if (chosen === Winner.UNKNOWN) {
@@ -113,10 +122,29 @@ const ComparingGamesPage = (): ReactNode => {
         }
     }
 
+    const saveSession = async () => {
+        const response = await saveRanking(uuid, token!, ranking);
+        console.log(response);
+        if (response == 200) {
+            setSuccessModalOpen(true);
+            navigate("boardgames/collection");
+        }
+        else {
+
+        }
+    }
+
+    const finishComparing = () => {
+        if (chosen !== Winner.UNKNOWN) {
+            // save last pair result
+            handleNextClick();
+        }
+        // send final session ranking to be saved on backend
+        saveSession().then();
+    }
+
     // current state of user's boardgames ranking
     const {ranking, setRanking} = useBoardgamesContext();
-
-    const {uuid} = useAuth();
 
     // fetch ranking data from backend on load
     useEffect(() => {
@@ -213,11 +241,23 @@ const ComparingGamesPage = (): ReactNode => {
             <FinishAndSaveModal
                 modalOpen={modalOpen}
                 setModalOpen={setModalOpen}
+                handleFinish={finishComparing}
             />
-            <CompareErrorModal
-                errorModalOpen={errorModalOpen}
-                setErrorModalOpen={setErrorModalOpen}
+            <CompareModal
+                compareModalOpen={errorModalOpen}
+                setCompareModalOpen={setErrorModalOpen}
+                header="Comparing error"
                 text="Please choose better game"
+                actionText="Close"
+                mode="error"
+            />
+            <CompareModal
+                compareModalOpen={successModalOpen}
+                setCompareModalOpen={setSuccessModalOpen}
+                header="Success"
+                text="The updated ranking has been saved"
+                actionText="Ok"
+                mode="success"
             />
         </div>
     )

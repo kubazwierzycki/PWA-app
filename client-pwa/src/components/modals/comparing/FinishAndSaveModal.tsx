@@ -2,17 +2,21 @@ import {Box} from "@mui/system";
 import {Button, Modal, Stack, Typography} from "@mui/material";
 import styles from "../../../styles/comparing.module.css";
 import {Dispatch, ReactNode, SetStateAction} from "react";
+import {useNavigate} from "react-router-dom";
 
 
 /**
  * Modal component for handling ending comparing pairs session
  * @param {boolean} modalOpen - state controlling whether modal is open
  * @param {Dispatch<SetStateAction<boolean>>} setModalOpen - changing modal state
+ * @param {() => void} handleFinish - callback to be used when user ends session
  * @returns {ReactNode}
  */
-const FinishAndSaveModal = (
-    {modalOpen, setModalOpen}: {modalOpen: boolean, setModalOpen: Dispatch<SetStateAction<boolean>>}
-): ReactNode => {
+const FinishAndSaveModal = ({modalOpen, setModalOpen, handleFinish}: {
+    modalOpen: boolean,
+    setModalOpen: Dispatch<SetStateAction<boolean>>,
+    handleFinish: () => void
+}): ReactNode => {
 
     const style = {
         position: 'absolute' as 'absolute',
@@ -24,6 +28,13 @@ const FinishAndSaveModal = (
         boxShadow: 24,
         p: 4,
     };
+
+    const navigate = useNavigate();
+
+    const handleDiscard = () => {
+        setModalOpen(false);
+        navigate("/boardgames/collection");
+    }
 
     return (
         <Modal
@@ -51,14 +62,14 @@ const FinishAndSaveModal = (
                         <Button
                             variant="contained"
                             color="error"
-                            onClick={() => setModalOpen(false)} // to be changed
+                            onClick={handleDiscard}
                         >
                             Discard
                         </Button>
                         <Button
                             variant="contained"
                             color="success"
-                            onClick={() => setModalOpen(false)} // to be changed
+                            onClick={handleFinish}
                         >
                             Save
                         </Button>

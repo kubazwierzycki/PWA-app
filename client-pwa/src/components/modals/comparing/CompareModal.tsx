@@ -3,10 +3,23 @@ import {Button, Modal, Typography} from "@mui/material";
 import {Dispatch, SetStateAction} from "react";
 
 
-const CompareErrorModal = ({errorModalOpen, setErrorModalOpen, text}: {
-    errorModalOpen: boolean,
-    setErrorModalOpen: Dispatch<SetStateAction<boolean>>,
-    text: string
+/**
+ *
+ * @param compareModalOpen
+ * @param setCompareModalOpen
+ * @param header
+ * @param text
+ * @param actionText
+ * @param mode
+ * @constructor
+ */
+const CompareModal = ({compareModalOpen, setCompareModalOpen, header, text, actionText, mode}: {
+    compareModalOpen: boolean,
+    setCompareModalOpen: Dispatch<SetStateAction<boolean>>,
+    header: string,
+    text: string,
+    actionText: string
+    mode: "success" | "error" | "info" | "warning" | undefined
 }) => {
 
     const style = {
@@ -22,8 +35,8 @@ const CompareErrorModal = ({errorModalOpen, setErrorModalOpen, text}: {
 
     return (
         <Modal
-            open={errorModalOpen}
-            onClose={() => setErrorModalOpen(false)}
+            open={compareModalOpen}
+            onClose={() => setCompareModalOpen(false)}
             aria-labelledby="Comparing error"
             aria-describedby={text}
         >
@@ -32,9 +45,9 @@ const CompareErrorModal = ({errorModalOpen, setErrorModalOpen, text}: {
                     id="modal-modal-title"
                     variant="h6" component="h2"
                     textAlign="center"
-                    color={"error"}
+                    color={mode}
                 >
-                    Comparing error
+                    {header}
                 </Typography>
                 <Typography
                     id="modal-modal-description"
@@ -46,10 +59,10 @@ const CompareErrorModal = ({errorModalOpen, setErrorModalOpen, text}: {
                 <div style={{width: "100%", display: "flex", justifyContent: "center"}}>
                     <Button
                         variant="contained"
-                        color="error"
-                        onClick={() => setErrorModalOpen(false)}
+                        color={mode}
+                        onClick={() => setCompareModalOpen(false)}
                     >
-                        Close
+                        {actionText}
                     </Button>
                 </div>
             </Box>
@@ -57,4 +70,4 @@ const CompareErrorModal = ({errorModalOpen, setErrorModalOpen, text}: {
     )
 }
 
-export default CompareErrorModal;
+export default CompareModal;
