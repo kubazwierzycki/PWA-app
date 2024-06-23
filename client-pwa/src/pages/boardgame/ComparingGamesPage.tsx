@@ -9,8 +9,6 @@ import {BoardGameDetails} from "../../types/IBoardgames.ts";
 import {getGameDetails} from "../../services/boardgames.ts";
 import FinishAndSaveModal from "../../components/modals/comparing/FinishAndSaveModal.tsx";
 import CompareModal from "../../components/modals/comparing/CompareModal.tsx";
-import {useNavigate} from "react-router-dom";
-import Cookies from "js-cookie";
 
 /**
  * Enum type for single comparison winner game
@@ -27,10 +25,7 @@ enum Winner {
  */
 const ComparingGamesPage = (): ReactNode => {
 
-    const {uuid} = useAuth();
-    const token = Cookies.get("token");
-
-    const navigate = useNavigate();
+    const {uuid, token} = useAuth();
 
     // state of current pair choice
     const [chosen, setChosen] = useState<Winner>(Winner.UNKNOWN);
@@ -123,11 +118,10 @@ const ComparingGamesPage = (): ReactNode => {
     }
 
     const saveSession = async () => {
-        const response = await saveRanking(uuid, token!, ranking);
+        const response = await saveRanking(uuid, token, ranking);
         console.log(response);
-        if (response == 200) {
+        if (response == 201) {
             setSuccessModalOpen(true);
-            navigate("boardgames/collection");
         }
         else {
 

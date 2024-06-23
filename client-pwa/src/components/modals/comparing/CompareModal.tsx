@@ -1,17 +1,18 @@
 import {Box} from "@mui/system";
 import {Button, Modal, Typography} from "@mui/material";
-import {Dispatch, SetStateAction} from "react";
+import {Dispatch, ReactNode, SetStateAction} from "react";
+import {useNavigate} from "react-router-dom";
 
 
 /**
- *
- * @param compareModalOpen
- * @param setCompareModalOpen
- * @param header
- * @param text
- * @param actionText
- * @param mode
- * @constructor
+ * Modal showing information during comparing pairs session
+ * @param {boolean} compareModalOpen - modal state
+ * @param {Dispatch<SetStateAction<boolean>>} setCompareModalOpen - modal state change function
+ * @param {string} header - modal title header
+ * @param {string} text - text to be shown under the header
+ * @param {string} actionText - action button text
+ * @param {string} mode - MUI color class, decides modal type
+ * @returns {ReactNode}
  */
 const CompareModal = ({compareModalOpen, setCompareModalOpen, header, text, actionText, mode}: {
     compareModalOpen: boolean,
@@ -20,7 +21,7 @@ const CompareModal = ({compareModalOpen, setCompareModalOpen, header, text, acti
     text: string,
     actionText: string
     mode: "success" | "error" | "info" | "warning" | undefined
-}) => {
+}): ReactNode => {
 
     const style = {
         position: 'absolute' as 'absolute',
@@ -33,10 +34,19 @@ const CompareModal = ({compareModalOpen, setCompareModalOpen, header, text, acti
         p: 4
     };
 
+    const navigate = useNavigate();
+
+    const handleClose = () => {
+        setCompareModalOpen(false)
+        if (mode === "success") {
+            navigate("/boardgames/collection");
+        }
+    }
+
     return (
         <Modal
             open={compareModalOpen}
-            onClose={() => setCompareModalOpen(false)}
+            onClose={handleClose}
             aria-labelledby="Comparing error"
             aria-describedby={text}
         >
@@ -60,7 +70,7 @@ const CompareModal = ({compareModalOpen, setCompareModalOpen, header, text, acti
                     <Button
                         variant="contained"
                         color={mode}
-                        onClick={() => setCompareModalOpen(false)}
+                        onClick={handleClose}
                     >
                         {actionText}
                     </Button>

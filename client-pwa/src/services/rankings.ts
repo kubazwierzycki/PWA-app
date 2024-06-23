@@ -40,7 +40,9 @@ export const saveRanking = async (userId: string, token: string, ranking: BoardG
             Authorization: `${token}`,
             "Content-Type": "application/json"
         },
-        data: ranking
+        data: {
+            ranking: ranking
+        }
     });
 
     const response = await request;
