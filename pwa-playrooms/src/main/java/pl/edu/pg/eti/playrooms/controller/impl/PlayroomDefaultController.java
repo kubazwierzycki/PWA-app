@@ -2,9 +2,12 @@ package pl.edu.pg.eti.playrooms.controller.impl;
 
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.socket.WebSocketSession;
 import pl.edu.pg.eti.playrooms.controller.api.PlayroomController;
+import pl.edu.pg.eti.playrooms.dto.PlayroomInfo;
+import pl.edu.pg.eti.playrooms.dto.PostPlayroom;
 import pl.edu.pg.eti.playrooms.service.api.PlayroomService;
 
 import java.util.Collections;
@@ -24,8 +27,8 @@ public class PlayroomDefaultController implements PlayroomController {
     }
 
     @Override
-    public void createNewPlayroom() {
-
+    public ResponseEntity<PlayroomInfo> createNewPlayroom(PostPlayroom request) {
+        return null;
     }
 
     @Override
