@@ -12,8 +12,14 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 @EnableWebSocket
 public class WebSocketConfiguration implements WebSocketConfigurer {
 
+    private final WebSocketConnectionHandler webSocketConnectionHandler;
+
+    public WebSocketConfiguration(WebSocketConnectionHandler webSocketConnectionHandler) {
+        this.webSocketConnectionHandler = webSocketConnectionHandler;
+    }
+
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(new WebSocketConnectionHandler(), "/ws-playrooms").setAllowedOrigins("*");
+        registry.addHandler(webSocketConnectionHandler, "/ws-playrooms").setAllowedOrigins("*");
     }
 }

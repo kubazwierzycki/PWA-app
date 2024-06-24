@@ -1,24 +1,24 @@
 package pl.edu.pg.eti.playrooms.websockets;
 
+import org.json.JSONObject;
 import org.springframework.lang.NonNull;
+import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import pl.edu.pg.eti.playrooms.controller.api.PlayroomController;
 
 /**
  * WebSocket Handler for playroom functionality
  */
+@Component
 public class WebSocketConnectionHandler extends TextWebSocketHandler {
 
-    private final Map<String, WebSocketSession> webSocketSessions;
+    private final PlayroomController playroomController;
 
-    public WebSocketConnectionHandler() {
-        webSocketSessions = Collections.synchronizedMap(new HashMap<>());
+    public WebSocketConnectionHandler(PlayroomController playroomController) {
+        this.playroomController = playroomController;
     }
 
     @Override
@@ -30,8 +30,6 @@ public class WebSocketConnectionHandler extends TextWebSocketHandler {
             return;
         }
         System.out.println("Connected: " + session.getId());
-
-        webSocketSessions.put(session.getId(), session);
     }
 
     @Override
@@ -44,8 +42,6 @@ public class WebSocketConnectionHandler extends TextWebSocketHandler {
             return;
         }
         System.out.println("Disconnected: " + sessionId);
-
-        webSocketSessions.remove(sessionId);
     }
 
     @Override
@@ -55,13 +51,27 @@ public class WebSocketConnectionHandler extends TextWebSocketHandler {
             super.handleMessage(session, message);
         } catch (Exception e) {
             System.err.println("Error handling websocket message: " + e.getMessage());
+            return;
         }
 
-        System.out.println(message.getPayload());
-    }
+        JSONObject messageJSON = new JSONObject(message.getPayload().toString());
 
-    public WebSocketSession getWebSocketSession(String id) {
-        return webSocketSessions.get(id);
+        if ("endTurn".equals(messageJSON.get("operation"))) {
+            playroomController.endTurn(session.getId(), messageJSON);
+        }
+        else if ("pause".equals(messageJSON.get("operation"))) {
+            playroomController.pause(session.getId(), messageJSON);
+        }
+        else if ("joinPlayroom".equals(messageJSON.get("operation"))) {
+            playroomController.joinPlayroom(session, messageJSON);
+        }
+        else if ("quitPlayroom".equals(messageJSON.get("operation"))) {
+            playroomController.quitPlayroom(session.getId(), messageJSON);
+        }
+        else {
+            System.err.println("Unhandled type of message: \n" + message.getPayload());
+        }
+
     }
 
 }
