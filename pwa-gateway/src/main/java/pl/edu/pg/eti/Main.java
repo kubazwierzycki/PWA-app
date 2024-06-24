@@ -22,6 +22,7 @@ public class Main {
             @Value("${gameplays.url}") String gameplaysUrl,
             @Value("${games.url}") String gamesUrl,
             @Value("${playrooms.url}") String playroomsUrl,
+            @Value("${ws-playrooms.url}") String wsPlayroomsUrl,
             @Value("${experience.url}") String experienceUrl) {
         return builder.routes()
                 .route("users", route -> route
@@ -47,6 +48,12 @@ public class Main {
                         .and()
                         .path("/api/playrooms/{uuid}", "/api/playrooms")
                         .uri(playroomsUrl)
+                )
+                .route("ws-playrooms", route -> route
+                        .host(gateway)
+                        .and()
+                        .path("/ws-playrooms")
+                        .uri(wsPlayroomsUrl)
                 )
                 .route("experience", route -> route
                         .host(gateway)
