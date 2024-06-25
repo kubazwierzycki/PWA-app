@@ -92,29 +92,68 @@ const ComparingGamesPage = (): ReactNode => {
 
     /**
      * Function updating ranking based on single comparison iteration result
+     * Algorithm calculates equilibrium point based on numbers of comparisons of games.
+     * Winner and loser are put around the equilibrium point on the right sides.
      * @param {@link Winner} winner - determines which game won in this iteration
      */
     const updateRanking = (winner: Winner) => {
+
+        // parameter deciding how far from equilibrium games land after comparison
+        const gap = 0.5;
+
         const id1 = ranking[game1Index].gameId;
         const id2 = ranking[game2Index].gameId;
-        const initial1 = ranking[game1Index].rating;
-        const initial2 = ranking[game2Index].rating;
-        console.log(initial1, initial2)
-        // TODO: switch to real updating logic
+        // game ranks
+        const rank1 = ranking[game1Index].rating;
+        const rank2 = ranking[game2Index].rating;
+        // number of compares of games
+        const n1 = ranking[game1Index].numberOfCompares;
+        const n2 = ranking[game2Index].numberOfCompares;
+
+        // higher and lower ranks
+        const lower = rank1 > rank2 ? rank2 : rank1;
+        const higher = rank1 > rank2 ? rank1 : rank2;
+
+        // middle of the road between two ranks
+        const middle = lower + (higher - lower) / 2.0;
+
+        const halfDistance = Math.abs(rank1 - rank2) / 2;
+
+        // absolute distance between the middle and the equilibrium point
+        let delta = 0;
+        if (n1 + n2 > 0) {
+            delta = Math.abs(n1 - n2) / (n1 + n2) * halfDistance;
+        }
+
+        // direction from the middle where equilibrium should be
+        let direction = n2 - n1 >= 0 ? 1 : -1;
+        if (rank1 > rank2) {
+            direction *= -1;
+        }
+
+        // equilibrium point
+        const x = middle + direction * delta;
+
+        // calculate winner and loser spots after comparison
+        const winnerNewRank = x + gap > 10 ? 10 : x + gap;
+        const loserNewRank = x - gap < 0 ? 0 : x - gap;
+
         switch (winner) {
             case 1:
                 // left game won
-                updateRank(id1, initial2);
-                updateRank(id2, initial1);
+                updateRank(id1, winnerNewRank);
+                updateRank(id2, loserNewRank);
                 break;
             case 2:
                 // right game won
-                updateRank(id1, initial2);
-                updateRank(id2, initial1);
+                updateRank(id1, loserNewRank);
+                updateRank(id2, winnerNewRank);
                 break;
             default:
                 break;
         }
+        console.log(rank1, rank2)
+        console.log(winnerNewRank, loserNewRank)
     }
 
     const saveSession = async () => {
