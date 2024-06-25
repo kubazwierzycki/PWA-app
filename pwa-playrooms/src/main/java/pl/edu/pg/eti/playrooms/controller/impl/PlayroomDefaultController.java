@@ -4,6 +4,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import pl.edu.pg.eti.playrooms.controller.api.PlayroomController;
 import pl.edu.pg.eti.playrooms.dto.PlayroomInfo;
@@ -11,6 +12,7 @@ import pl.edu.pg.eti.playrooms.dto.PostPlayroom;
 import pl.edu.pg.eti.playrooms.entity.Playroom;
 import pl.edu.pg.eti.playrooms.service.api.PlayroomService;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -55,7 +57,37 @@ public class PlayroomDefaultController implements PlayroomController {
 
     @Override
     public void status(String sessionId, JSONObject message) {
+        String playroomId = getStringValue("playroomId", message);
+        if (playroomId != null) {
+            Playroom playroom = playroomService.find(UUID.fromString(playroomId)).orElse(null);
+            if (playroom != null) {
+                for (int playerNumber: playroom.getPlayers().keySet()) {
+                    WebSocketSession webSocketSession = webSocketSessions.get(
+                            playroom.getPlayers().get(playerNumber).getWebSocketSessionId());
+                    JSONObject gameStatus = getGameStatus(playroomId);
+                    sendMessageJSON(webSocketSession, gameStatus);
+                }
+            }
+        }
+    }
 
+    private String getStringValue(String key, JSONObject json) {
+        try {
+            return json.get(key).toString();
+        }
+        catch (Exception ex) {
+            System.err.println("Cannot resolve the value for key: " + key);
+            return null;
+        }
+    }
+
+    private void sendMessageJSON(WebSocketSession webSocketSession, JSONObject message) {
+        try {
+            webSocketSession.sendMessage(new TextMessage(message.toString()));
+        }
+        catch (IOException ex) {
+            System.err.println("Cannot send message: " + message + "\nWebSocketSession: " + webSocketSession.getId());
+        }
     }
 
     /**
