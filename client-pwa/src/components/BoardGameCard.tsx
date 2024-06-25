@@ -27,10 +27,19 @@ const BoardGameCard = ({chosen, val, thumbnail, title, text}: BoardGameCardProps
                         </div>
                         <div className={styles.title}>
                             <Typography variant="h4">
-                                <b><u>{title}</u></b>
+                                <span
+                                    style={{
+                                        whiteSpace: "nowrap",
+                                        overflow: "auto",
+                                        textOverflow: "auto",
+                                        display: "block"
+                                    }}
+                                >
+                                    <b><u>{title}</u></b>
+                                </span>
                             </Typography>
                         </div>
-                        <div className={styles.text} style={{overflowY:"scroll"}}>
+                        <div className={styles.text} style={{overflow: "auto"}}>
                             <Typography variant="body1">
                                 {text}
                             </Typography>

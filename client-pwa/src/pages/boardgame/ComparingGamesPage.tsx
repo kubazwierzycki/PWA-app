@@ -43,6 +43,8 @@ const ComparingGamesPage = (): ReactNode => {
     const [errorModalOpen, setErrorModalOpen] = useState(false);
     // save success modal state
     const [successModalOpen, setSuccessModalOpen] = useState(false);
+    // save error modal state
+    const [saveErrorModalOpen, setSaveErrorModalOpen] = useState(false);
 
     const handleNextClick = () => {
         if (chosen === Winner.UNKNOWN) {
@@ -52,6 +54,7 @@ const ComparingGamesPage = (): ReactNode => {
         }
         updateRanking(chosen);
         setChosen(Winner.UNKNOWN);
+        chooseTwoGames();
     }
 
     /**
@@ -160,10 +163,12 @@ const ComparingGamesPage = (): ReactNode => {
         const response = await saveRanking(uuid, token, ranking);
         console.log(response);
         if (response == 201) {
+            // save success
             setSuccessModalOpen(true);
         }
         else {
-
+            // failed save
+            setSaveErrorModalOpen(true);
         }
     }
 
@@ -223,7 +228,7 @@ const ComparingGamesPage = (): ReactNode => {
 
     useEffect(() => {
         chooseTwoGames();
-    }, [ranking]);
+    }, []);
 
     return (
         <div className={styles.container}>
@@ -291,6 +296,14 @@ const ComparingGamesPage = (): ReactNode => {
                 text="The updated ranking has been saved"
                 actionText="Ok"
                 mode="success"
+            />
+            <CompareModal
+                compareModalOpen={saveErrorModalOpen}
+                setCompareModalOpen={setSaveErrorModalOpen}
+                header="Saving error"
+                text="Server couldn't save updated ranking. Please try again later."
+                actionText="Close"
+                mode="error"
             />
         </div>
     )
