@@ -77,4 +77,15 @@ public interface PlayroomController {
      */
     void pause(String sessionId, JSONObject message);
 
+    /**
+     * Get game status
+     * @param sessionId - websocket session ID
+     * @param message - message with all details
+     *                {
+     *                  "operation": "pause",
+     *                  "playroomId": --playroomUUID--
+     *                }
+     */
+    void status(String sessionId, JSONObject message);
+
 }

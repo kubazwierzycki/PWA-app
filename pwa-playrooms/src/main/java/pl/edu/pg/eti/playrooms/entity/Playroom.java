@@ -77,7 +77,7 @@ public class Playroom implements Serializable {
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
-    private static class Player {
+    public static class Player {
         /**
          * User ID
          * null if guest
@@ -115,7 +115,7 @@ public class Playroom implements Serializable {
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
-    private static class Game {
+    public static class Game {
         /**
          * Game ID
          */
