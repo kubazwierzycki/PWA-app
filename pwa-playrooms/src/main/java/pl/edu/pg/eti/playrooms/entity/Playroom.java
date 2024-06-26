@@ -57,7 +57,6 @@ public class Playroom implements Serializable {
 
     /**
      * Timer (in seconds) for whole playroom
-     * null if not exists
      */
     private Double globalTimer;
 

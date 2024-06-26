@@ -42,8 +42,8 @@ public class PlayroomDefaultController implements PlayroomController {
                 .uuid(playroomId)
                 .isGlobalTimer(request.getIsGlobalTimer())
                 .paused(true)
-                .currentPlayer(0)
-                .lastOperationTime(null)
+                .currentPlayer(1)
+                .lastOperationTime(LocalTime.now())
                 .globalTimer(request.getTimer())
                 .game(new Playroom.Game(request.getGameId(), request.getGame()))
                 .players(new HashMap<>())
@@ -99,14 +99,7 @@ public class PlayroomDefaultController implements PlayroomController {
     public void quitPlayroom(String sessionId, JSONObject message) {
         Playroom playroom = null;
         if (message == null) {
-            List<Playroom> playrooms = playroomService.findAll();
-            for (Playroom playroom1 : playrooms) {
-                for (Playroom.Player player : playroom1.getPlayers().values()) {
-                    if (player.getWebSocketSessionId().equals(sessionId)) {
-                        playroom = playroom1;
-                    }
-                }
-            }
+            playroom = getPlayroomByPlayerSession(sessionId);
         }
         else {
             String playroomId = getStringValue("playroomId", message);
@@ -174,6 +167,18 @@ public class PlayroomDefaultController implements PlayroomController {
         }
     }
 
+    private Playroom getPlayroomByPlayerSession(String sessionId) {
+        List<Playroom> playrooms = playroomService.findAll();
+        for (Playroom playroom : playrooms) {
+            for (Playroom.Player player : playroom.getPlayers().values()) {
+                if (player.getWebSocketSessionId().equals(sessionId)) {
+                    return playroom;
+                }
+            }
+        }
+        return null;
+    }
+
     private String getStringValue(String key, JSONObject json) {
         try {
             return json.get(key).toString();
@@ -214,10 +219,12 @@ public class PlayroomDefaultController implements PlayroomController {
                         (Duration.between(LocalTime.now(), playroom.getLastOperationTime()).toMillis() / 1000.0));
             }
             else {
-                Playroom.Player player = playroom.getPlayers().get(playroom.getCurrentPlayer());
+                Map<Integer, Playroom.Player> players = playroom.getPlayers();
+                Playroom.Player player = players.get(playroom.getCurrentPlayer());
                 player.setTimer(player.getTimer() -
                         (Duration.between(LocalTime.now(), playroom.getLastOperationTime()).toMillis() / 1000.0));
-
+                players.put(playroom.getCurrentPlayer(), player);
+                playroom.setPlayers(players);
             }
         }
         playroomService.update(playroom);

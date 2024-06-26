@@ -9,6 +9,9 @@ import lombok.Setter;
 
 import java.util.List;
 
+/**
+ * Used as GET response to represent all playrooms
+ */
 @Getter
 @Setter
 @AllArgsConstructor(access= AccessLevel.PRIVATE)
