@@ -63,7 +63,7 @@ const ComparingGamesPage = (): ReactNode => {
      * Avoids using same game twice in iteration
      */
     const chooseTwoGames = () => {
-        if (ranking === undefined || ranking.length === 0) return null;
+        if (ranking === undefined || ranking.length <= 1) return;
 
         let index1 = -1;
         let index2 = -1;
@@ -231,81 +231,88 @@ const ComparingGamesPage = (): ReactNode => {
     }, []);
 
     return (
-        <div className={styles.container}>
-            <div className={styles.header}>
-                <Typography variant="h4" sx={{fontSize: "1.5em"}}>
-                    Choose better game:
+        (ranking === undefined || ranking.length <= 1) ?
+            <div className={styles.container} style={{textAlign: "center", paddingTop: "100px"}}>
+                <Typography variant="h3" sx={{fontSize: "2em"}}>
+                    You don't have enough games to compare pairs
                 </Typography>
             </div>
-            <div className={styles.wrapper}>
-                <div className={styles.cardContainer} onClick={() => handleCardClick(Winner.LEFT)}>
-                    <BoardGameCard
-                        chosen={chosen}
-                        val={Winner.LEFT}
-                        thumbnail={game1.thumbnail}
-                        title={game1.name?.["@_value"] || "Title"}
-                        text={game1.shortDescription}
-                    />
-                </div>
-                <div className={styles.vs}>
-                    <Typography variant="h5">
-                        vs.
+            :
+            <div className={styles.container}>
+                <div className={styles.header}>
+                    <Typography variant="h4" sx={{fontSize: "1.5em"}}>
+                        Choose better game:
                     </Typography>
                 </div>
-                <div className={styles.cardContainer}  onClick={() => handleCardClick(Winner.RIGHT)}>
-                    <BoardGameCard
-                        chosen={chosen}
-                        val={Winner.RIGHT}
-                        thumbnail={game2.thumbnail}
-                        title={game2.name?.["@_value"] || "Title"}
-                        text={game2.shortDescription}
-                    />
+                <div className={styles.wrapper}>
+                    <div className={styles.cardContainer} onClick={() => handleCardClick(Winner.LEFT)}>
+                        <BoardGameCard
+                            chosen={chosen}
+                            val={Winner.LEFT}
+                            thumbnail={game1.thumbnail}
+                            title={game1.name?.["@_value"] || "Title"}
+                            text={game1.shortDescription}
+                        />
+                    </div>
+                    <div className={styles.vs}>
+                        <Typography variant="h5">
+                            vs.
+                        </Typography>
+                    </div>
+                    <div className={styles.cardContainer}  onClick={() => handleCardClick(Winner.RIGHT)}>
+                        <BoardGameCard
+                            chosen={chosen}
+                            val={Winner.RIGHT}
+                            thumbnail={game2.thumbnail}
+                            title={game2.name?.["@_value"] || "Title"}
+                            text={game2.shortDescription}
+                        />
+                    </div>
                 </div>
+                <div className={styles.next}>
+                    <Button
+                        variant="contained" sx={{marginRight: "20px"}}
+                        onClick={handleModalOpen}
+                    >
+                        Finish and Save
+                    </Button>
+                    <Button
+                        variant="outlined"
+                        onClick={handleNextClick}
+                    >
+                        Next pair
+                    </Button>
+                </div>
+                <FinishAndSaveModal
+                    modalOpen={modalOpen}
+                    setModalOpen={setModalOpen}
+                    handleFinish={finishComparing}
+                />
+                <CompareModal
+                    compareModalOpen={errorModalOpen}
+                    setCompareModalOpen={setErrorModalOpen}
+                    header="Comparing error"
+                    text="Please choose better game"
+                    actionText="Close"
+                    mode="error"
+                />
+                <CompareModal
+                    compareModalOpen={successModalOpen}
+                    setCompareModalOpen={setSuccessModalOpen}
+                    header="Success"
+                    text="The updated ranking has been saved"
+                    actionText="Ok"
+                    mode="success"
+                />
+                <CompareModal
+                    compareModalOpen={saveErrorModalOpen}
+                    setCompareModalOpen={setSaveErrorModalOpen}
+                    header="Saving error"
+                    text="Server couldn't save updated ranking. Please try again later."
+                    actionText="Close"
+                    mode="error"
+                />
             </div>
-            <div className={styles.next}>
-                <Button
-                    variant="contained" sx={{marginRight: "20px"}}
-                    onClick={handleModalOpen}
-                >
-                    Finish and Save
-                </Button>
-                <Button
-                    variant="outlined"
-                    onClick={handleNextClick}
-                >
-                    Next pair
-                </Button>
-            </div>
-            <FinishAndSaveModal
-                modalOpen={modalOpen}
-                setModalOpen={setModalOpen}
-                handleFinish={finishComparing}
-            />
-            <CompareModal
-                compareModalOpen={errorModalOpen}
-                setCompareModalOpen={setErrorModalOpen}
-                header="Comparing error"
-                text="Please choose better game"
-                actionText="Close"
-                mode="error"
-            />
-            <CompareModal
-                compareModalOpen={successModalOpen}
-                setCompareModalOpen={setSuccessModalOpen}
-                header="Success"
-                text="The updated ranking has been saved"
-                actionText="Ok"
-                mode="success"
-            />
-            <CompareModal
-                compareModalOpen={saveErrorModalOpen}
-                setCompareModalOpen={setSaveErrorModalOpen}
-                header="Saving error"
-                text="Server couldn't save updated ranking. Please try again later."
-                actionText="Close"
-                mode="error"
-            />
-        </div>
     )
 }
 
