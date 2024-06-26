@@ -18,6 +18,6 @@ import lombok.NoArgsConstructor;
 public class PostPlayroom {
     private String gameId;
     private String game;
-    private boolean isGlobalTimer;
+    private Boolean isGlobalTimer;
     private Double timer;
 }

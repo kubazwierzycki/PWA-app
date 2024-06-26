@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import pl.edu.pg.eti.playrooms.controller.api.PlayroomController;
+import pl.edu.pg.eti.playrooms.dto.GetPlayrooms;
 import pl.edu.pg.eti.playrooms.dto.PlayroomInfo;
 import pl.edu.pg.eti.playrooms.dto.PostPlayroom;
 import pl.edu.pg.eti.playrooms.entity.Playroom;
@@ -15,6 +16,7 @@ import pl.edu.pg.eti.playrooms.service.api.PlayroomService;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -32,7 +34,40 @@ public class PlayroomDefaultController implements PlayroomController {
 
     @Override
     public ResponseEntity<PlayroomInfo> createNewPlayroom(PostPlayroom request) {
-        return null;
+        Double timer = request.getTimer();
+        if (!request.getIsGlobalTimer()) {
+            timer = null;
+        }
+        UUID playroomId = UUID.randomUUID();
+        playroomService.create(Playroom.builder()
+                .uuid(playroomId)
+                .isGlobalTimer(request.getIsGlobalTimer())
+                .paused(true)
+                .currentPlayer(0)
+                .lastOperationTime(null)
+                .globalTimer(timer)
+                .game(new Playroom.Game(request.getGameId(), request.getGame()))
+                .players(new HashMap<>())
+                .build());
+
+        return ResponseEntity.ok(PlayroomInfo.builder()
+                .uuid(playroomId.toString())
+                .game(request.getGame())
+                .build());
+    }
+
+    @Override
+    public GetPlayrooms getPlayrooms() {
+        List<Playroom> playrooms = playroomService.findAll();
+        return GetPlayrooms.builder()
+                .playrooms(playrooms.stream()
+                        .map(playroom -> GetPlayrooms.Playroom.builder()
+                                .id(playroom.getUuid().toString())
+                                .game(playroom.getGame().getName())
+                                .numOfPlayers(playroom.getPlayers().size())
+                                .build())
+                        .toList())
+                .build();
     }
 
     @Override

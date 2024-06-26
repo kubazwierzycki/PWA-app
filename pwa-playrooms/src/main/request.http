@@ -1,0 +1,10 @@
+### CREATE playroom
+POST http://localhost:8080/api/playrooms
+Content-Type: application/json
+
+{
+  "gameId": "1",
+  "game": "gameName",
+  "isGlobalTimer": true,
+  "timer": 100
+}

@@ -17,6 +17,5 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode
 public class PlayroomInfo {
     private String uuid;
-    private String hostname;
     private String game;
 }

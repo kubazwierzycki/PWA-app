@@ -3,11 +3,13 @@ package pl.edu.pg.eti.playrooms.controller.api;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.socket.WebSocketSession;
+import pl.edu.pg.eti.playrooms.dto.GetPlayrooms;
 import pl.edu.pg.eti.playrooms.dto.PlayroomInfo;
 import pl.edu.pg.eti.playrooms.dto.PostPlayroom;
 import pl.edu.pg.eti.playrooms.entity.Playroom;
@@ -28,6 +30,15 @@ public interface PlayroomController {
     ResponseEntity<PlayroomInfo> createNewPlayroom(
             @RequestBody PostPlayroom request
     );
+
+    /**
+     * Get all active playrooms
+     * @return list of all playrooms
+     */
+    @GetMapping("/api/playrooms")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    GetPlayrooms getPlayrooms();
 
     /**
      * Join the playroom
