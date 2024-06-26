@@ -1,5 +1,6 @@
 package pl.edu.pg.eti.playrooms.controller.impl;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,8 @@ import pl.edu.pg.eti.playrooms.entity.Playroom;
 import pl.edu.pg.eti.playrooms.service.api.PlayroomService;
 
 import java.io.IOException;
+import java.time.Duration;
+import java.time.LocalTime;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -34,10 +37,6 @@ public class PlayroomDefaultController implements PlayroomController {
 
     @Override
     public ResponseEntity<PlayroomInfo> createNewPlayroom(PostPlayroom request) {
-        Double timer = request.getTimer();
-        if (!request.getIsGlobalTimer()) {
-            timer = null;
-        }
         UUID playroomId = UUID.randomUUID();
         playroomService.create(Playroom.builder()
                 .uuid(playroomId)
@@ -45,7 +44,7 @@ public class PlayroomDefaultController implements PlayroomController {
                 .paused(true)
                 .currentPlayer(0)
                 .lastOperationTime(null)
-                .globalTimer(timer)
+                .globalTimer(request.getTimer())
                 .game(new Playroom.Game(request.getGameId(), request.getGame()))
                 .players(new HashMap<>())
                 .build());
@@ -72,12 +71,70 @@ public class PlayroomDefaultController implements PlayroomController {
 
     @Override
     public void joinPlayroom(WebSocketSession webSocketSession, JSONObject message) {
+        String playroomId = getStringValue("playroomId", message);
+        if (playroomId != null) {
+            Playroom playroom = playroomService.find(UUID.fromString(playroomId)).orElse(null);
+            if (playroom != null) {
+                UUID uuid;
+                String uuidValue = getStringValue("id", message.getJSONObject("player"));
+                if (uuidValue == null || "null".equals(uuidValue)) uuid = null;
+                else uuid = UUID.fromString(uuidValue);
+                Playroom.Player newPlayer = new Playroom.Player(
+                        uuid, message.getJSONObject("player").getString("username"),
+                        playroom.getGlobalTimer(), false, false, webSocketSession.getId());
 
+                Map<Integer, Playroom.Player> updatedPlayers = playroom.getPlayers();
+                updatedPlayers.put(updatedPlayers.size() + 1, newPlayer);
+                playroom.setPlayers(updatedPlayers);
+                playroomService.update(playroom);
+                webSocketSessions.put(newPlayer.getWebSocketSessionId(), webSocketSession);
+
+                updateLastModDate(playroom);
+                sendMessagesWithUpdate(playroom.getPlayers(), playroomId);
+            }
+        }
     }
 
     @Override
     public void quitPlayroom(String sessionId, JSONObject message) {
+        Playroom playroom = null;
+        if (message == null) {
+            List<Playroom> playrooms = playroomService.findAll();
+            for (Playroom playroom1 : playrooms) {
+                for (Playroom.Player player : playroom1.getPlayers().values()) {
+                    if (player.getWebSocketSessionId().equals(sessionId)) {
+                        playroom = playroom1;
+                    }
+                }
+            }
+        }
+        else {
+            String playroomId = getStringValue("playroomId", message);
+            if (playroomId != null) {
+                playroom = playroomService.find(UUID.fromString(playroomId)).orElse(null);
+            }
+        }
 
+        if (playroom != null) {
+            Map<Integer, Playroom.Player> players = playroom.getPlayers();
+            List<Integer> playerNumbers = players.keySet().stream().sorted().toList();
+            int k = 1;
+            for (int i = 0; i < players.size(); i++) {
+                Playroom.Player player = players.get(playerNumbers.get(i));
+                if (player.getWebSocketSessionId().equals(sessionId)) {
+                    players.remove(playerNumbers.get(i));
+                } else {
+                    players.put(k, player);
+                }
+                k++;
+            }
+            playroom.setCurrentPlayer((playroom.getCurrentPlayer() % players.size()) + 1);
+            playroom.setPlayers(players);
+            playroomService.update(playroom);
+            sendMessagesWithUpdate(playroom.getPlayers(), playroom.getUuid().toString());
+            updateLastModDate(playroom);
+        }
+        webSocketSessions.remove(sessionId);
     }
 
     @Override
@@ -91,17 +148,28 @@ public class PlayroomDefaultController implements PlayroomController {
     }
 
     @Override
+    public void start(String sessionId, JSONObject message) {
+
+    }
+
+    @Override
+    public void win(String sessionId, JSONObject message) {
+
+    }
+
+    @Override
+    public void endGame(String sessionId, JSONObject message) {
+
+    }
+
+    @Override
     public void status(String sessionId, JSONObject message) {
         String playroomId = getStringValue("playroomId", message);
         if (playroomId != null) {
             Playroom playroom = playroomService.find(UUID.fromString(playroomId)).orElse(null);
             if (playroom != null) {
-                for (int playerNumber: playroom.getPlayers().keySet()) {
-                    WebSocketSession webSocketSession = webSocketSessions.get(
-                            playroom.getPlayers().get(playerNumber).getWebSocketSessionId());
-                    JSONObject gameStatus = getGameStatus(playroomId);
-                    sendMessageJSON(webSocketSession, gameStatus);
-                }
+                sendMessagesWithUpdate(playroom.getPlayers(), playroomId);
+                updateLastModDate(playroom);
             }
         }
     }
@@ -116,6 +184,20 @@ public class PlayroomDefaultController implements PlayroomController {
         }
     }
 
+    private void sendMessagesWithUpdate(Map<Integer, Playroom.Player> players, String playroomId) {
+        JSONObject gameStatus = getGameStatus(playroomId);
+        for (int playerNumber: players.keySet()) {
+            WebSocketSession webSocketSession = webSocketSessions.get(
+                    players.get(playerNumber).getWebSocketSessionId());
+            if (webSocketSession != null) {
+                sendMessageJSON(webSocketSession, gameStatus);
+            }
+            else {
+                players.remove(playerNumber);
+            }
+        }
+    }
+
     private void sendMessageJSON(WebSocketSession webSocketSession, JSONObject message) {
         try {
             webSocketSession.sendMessage(new TextMessage(message.toString()));
@@ -123,6 +205,22 @@ public class PlayroomDefaultController implements PlayroomController {
         catch (IOException ex) {
             System.err.println("Cannot send message: " + message + "\nWebSocketSession: " + webSocketSession.getId());
         }
+    }
+
+    private void updateLastModDate(Playroom playroom) {
+        if (!playroom.isPaused()) {
+            if (playroom.isGlobalTimer()) {
+                playroom.setGlobalTimer(playroom.getGlobalTimer() -
+                        (Duration.between(LocalTime.now(), playroom.getLastOperationTime()).toMillis() / 1000.0));
+            }
+            else {
+                Playroom.Player player = playroom.getPlayers().get(playroom.getCurrentPlayer());
+                player.setTimer(player.getTimer() -
+                        (Duration.between(LocalTime.now(), playroom.getLastOperationTime()).toMillis() / 1000.0));
+
+            }
+        }
+        playroomService.update(playroom);
     }
 
     /**
@@ -174,7 +272,7 @@ public class PlayroomDefaultController implements PlayroomController {
             game.put("name", playroom.getGame().getName());
             gameStatus.put("game", game);
 
-            JSONObject players = new JSONObject();
+            JSONArray players = new JSONArray();
             for (int playerNumber: playroom.getPlayers().keySet()) {
                 JSONObject player = new JSONObject();
                 player.put("queueNumber", playerNumber);
@@ -185,6 +283,7 @@ public class PlayroomDefaultController implements PlayroomController {
                 else {
                     player.put("timer", JSONObject.NULL);
                 }
+                players.put(player);
             }
             gameStatus.put("players", players);
         }

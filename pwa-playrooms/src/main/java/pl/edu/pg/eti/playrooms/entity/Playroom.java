@@ -3,6 +3,7 @@ package pl.edu.pg.eti.playrooms.entity;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -68,7 +69,7 @@ public class Playroom implements Serializable {
     /**
      * Players in the playroom
      */
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private Map<Integer, Player> players;
 
     @Embeddable

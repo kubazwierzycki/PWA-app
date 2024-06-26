@@ -89,11 +89,44 @@ public interface PlayroomController {
     void pause(String sessionId, JSONObject message);
 
     /**
+     * Start the game (or continue after pause)
+     * @param sessionId - websocket session ID
+     * @param message - message with all details
+     *                {
+     *                  "operation": "start",
+     *                  "playroomId": --playroomUUID--
+     *                }
+     */
+    void start(String sessionId, JSONObject message);
+
+    /**
+     * Win the game
+     * @param sessionId - websocket session ID
+     * @param message - message with all details
+     *                {
+     *                  "operation": "win",
+     *                  "playroomId": --playroomUUID--
+     *                }
+     */
+    void win(String sessionId, JSONObject message);
+
+    /**
+     * End the game with a tie
+     * @param sessionId - websocket session ID
+     * @param message - message with all details
+     *                {
+     *                  "operation": "endGame",
+     *                  "playroomId": --playroomUUID--
+     *                }
+     */
+    void endGame(String sessionId, JSONObject message);
+
+    /**
      * Get game status
      * @param sessionId - websocket session ID
      * @param message - message with all details
      *                {
-     *                  "operation": "pause",
+     *                  "operation": "status",
      *                  "playroomId": --playroomUUID--
      *                }
      */

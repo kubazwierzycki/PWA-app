@@ -41,6 +41,7 @@ public class WebSocketConnectionHandler extends TextWebSocketHandler {
             System.err.println("Error after WebSocket connection closed: " + session.getId() + " status: " + status);
             return;
         }
+        playroomController.quitPlayroom(session.getId(), null);
         System.out.println("Disconnected: " + sessionId);
     }
 
@@ -70,6 +71,15 @@ public class WebSocketConnectionHandler extends TextWebSocketHandler {
         }
         else if ("status".equals(messageJSON.get("operation"))) {
             playroomController.status(session.getId(), messageJSON);
+        }
+        else if ("start".equals(messageJSON.get("operation"))) {
+            playroomController.start(session.getId(), messageJSON);
+        }
+        else if ("win".equals(messageJSON.get("operation"))) {
+            playroomController.win(session.getId(), messageJSON);
+        }
+        else if ("endGame".equals(messageJSON.get("operation"))) {
+            playroomController.endGame(session.getId(), messageJSON);
         }
         else {
             System.err.println("Unhandled type of message: \n" + message.getPayload());
