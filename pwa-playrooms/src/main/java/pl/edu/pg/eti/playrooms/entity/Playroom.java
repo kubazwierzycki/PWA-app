@@ -46,6 +46,11 @@ public class Playroom implements Serializable {
     private boolean paused;
 
     /**
+     * If game is ended
+     */
+    private boolean ended;
+
+    /**
      * Player number in the play queue
      */
     private int currentPlayer;
@@ -58,7 +63,7 @@ public class Playroom implements Serializable {
     /**
      * Timer (in seconds) for whole playroom
      */
-    private Double globalTimer;
+    private Double globalTimerValue;
 
     /**
      * Played game
