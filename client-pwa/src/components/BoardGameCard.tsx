@@ -27,13 +27,21 @@ const BoardGameCard = ({chosen, val, thumbnail, title, text}: BoardGameCardProps
                         </div>
                         <div className={styles.title}>
                             <Typography variant="h4">
-                                <b><u>{title}</u></b>
+                                <span
+                                    style={{
+                                        whiteSpace: "nowrap",
+                                        overflow: "auto",
+                                        textOverflow: "auto",
+                                        display: "block"
+                                    }}
+                                >
+                                    <b><u>{title}</u></b>
+                                </span>
                             </Typography>
                         </div>
-                        <div className={styles.text}>
+                        <div className={styles.text} style={{overflow: "auto"}}>
                             <Typography variant="body1">
                                 {text}
-                                The game lets you travel in time to decide the fate of 1930s Germany. Become the leader of a political party and ensure your ascension to power.
                             </Typography>
                         </div>
                     </div>

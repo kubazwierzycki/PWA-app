@@ -73,7 +73,6 @@ const MenuButton = ({menu_item, outlined}: {menu_item: MenuItem, outlined?: bool
 
     const handleClick = ()=> {
         navigate(menu_item.link);
-        console.log("click");
     }
 
     const handleSubItemClick = (link: string)=> {

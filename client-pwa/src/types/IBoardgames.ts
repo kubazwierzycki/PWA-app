@@ -1,4 +1,3 @@
-import {Dispatch, SetStateAction} from "react";
 
 export interface NameType {
     "#text": string
@@ -47,8 +46,9 @@ export interface FiltersState {
     minRating: boolean
 }
 
-export interface BoardgamesContextType {
-    games: BoardGameStub[]
-    setGames: Dispatch<SetStateAction<BoardGameStub[]>>
+// Board game ranking info fetched from backend
+export interface BoardGameRank {
+    gameId: string
+    rating: number
+    numberOfCompares: number
 }
-
