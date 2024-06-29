@@ -4,7 +4,7 @@ import Layout from "./pages/Layout.tsx";
 import About from "./pages/About.tsx";
 import Home from "./pages/Home.tsx";
 import Profile from "./pages/Profile.tsx";
-import Play from "./pages/Play.tsx";
+import PlayroomCreate from "./pages/playroom/PlayroomCreate.tsx";
 import SignIn from "./pages/SignIn.tsx";
 import SignUp from "./pages/SignUp.tsx";
 import CollectionPage from "./pages/boardgame/CollectionPage.tsx";
@@ -19,6 +19,7 @@ import bggService from "./services/bgg.ts";
 import authorisationService from "./services/authorization.ts";
 import ComparingGamesPage from "./pages/boardgame/ComparingGamesPage.tsx";
 import BoardGameDetailsPage from "./pages/boardgame/BoardGameDetailsPage.tsx";
+import PlayroomJoin from "./pages/playroom/PlayroomJoin.tsx";
 
 /**
  * Main app component, controls page routing
@@ -55,7 +56,8 @@ function App(): ReactNode {
                 <Route path="/" element={<Home />}></Route>
                 <Route path="/about" element={<About />}></Route>
                 <Route path="/profile" element={<Profile />}></Route>
-                <Route path="/play" element={<Play />}></Route>
+                <Route path="/play/create" element={<PlayroomCreate />}></Route>
+                <Route path="/play/join" element={<PlayroomJoin />}></Route>
                 <Route path="/signIn" element={<SignIn />}></Route>
                 <Route path="/signUp" element={<SignUp />}></Route>
                 <Route path="/boardgames/collection" element={
