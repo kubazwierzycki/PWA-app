@@ -144,7 +144,17 @@ public class PlayroomDefaultController implements PlayroomController {
 
     @Override
     public void endTurn(String sessionId, JSONObject message) {
+        String playroomId = getStringValue("playroomId", message);
+        if (playroomId != null) {
+            Playroom playroom = playroomService.find(UUID.fromString(playroomId)).orElse(null);
+            if (playroom != null && isPlayerInPlayroom(sessionId, playroom)) {
+                updateLastModDate(playroom);
+                playroom.setCurrentPlayer((playroom.getCurrentPlayer() % playroom.getPlayers().size()) + 1);
 
+                updateLastModDate(playroom);
+                sendMessagesWithUpdate(playroom.getPlayers(), playroomId);
+            }
+        }
     }
 
     @Override
