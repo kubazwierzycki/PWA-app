@@ -5,7 +5,9 @@ import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import {ReactNode} from "react";
+import {ReactNode, useState} from "react";
+import GeneratePlayroomView from "./playroom/GeneratePlayroomView.tsx";
+import styles from "../../styles/createPlayroom.module.css"
 
 // creating playroom steps' labels
 const steps = ['Create a playroom', 'Wait for others to join', 'Choose the game'];
@@ -18,8 +20,26 @@ const steps = ['Create a playroom', 'Wait for others to join', 'Choose the game'
 const CreatePlayroomStepper = (): ReactNode => {
     const [activeStep, setActiveStep] = React.useState(0);
 
+    // code generated for the new playroom
+    const [code, setCode] = useState<string>("");
+
+    // function checking if next is possible
+    const isNextValid = (step: number) => {
+        switch (step) {
+            case 0:
+                return code !== "";
+            default:
+                return true;
+        }
+    }
+
     const handleNext = () => {
-        setActiveStep((prevActiveStep) => prevActiveStep + 1);
+        if (isNextValid(activeStep)) {
+            setActiveStep((prevActiveStep) => prevActiveStep + 1);
+        }
+        else {
+            alert("Can't go next yet");
+        }
     };
 
     const handleBack = () => {
@@ -29,6 +49,24 @@ const CreatePlayroomStepper = (): ReactNode => {
     const handleReset = () => {
         setActiveStep(0);
     };
+
+    const renderStepperContent = () => {
+        switch (activeStep) {
+            case 0:
+                return (
+                    <GeneratePlayroomView
+                        code={code}
+                        setCode={setCode}
+                    />
+                )
+            case 1:
+                return <></>
+            case 2:
+                return <></>
+            default:
+                return <></>
+        }
+    }
 
     return (
         <Box sx={{ width: '100%' }}>
@@ -58,6 +96,15 @@ const CreatePlayroomStepper = (): ReactNode => {
             ) : (
                 <React.Fragment>
                     <Typography sx={{ mt: 2, mb: 1 }}>Step {activeStep + 1}</Typography>
+                    <Box style={{height: "50vh", width: "100%"}}>
+                        {
+                            <div className={styles.container}>
+                                {
+                                    renderStepperContent()
+                                }
+                            </div>
+                        }
+                    </Box>
                     <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
                         <Button
                             color="inherit"

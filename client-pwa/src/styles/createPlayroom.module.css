@@ -1,0 +1,32 @@
+.container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.generateBox {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 5% 0;
+}
+
+@media screen and (min-width: 1000px) {
+
+    .generateBox {
+        width: 60%;
+    }
+
+}
+
+@media screen and (max-width: 1000px) {
+
+    .generateBox {
+        min-width: 80%;
+    }
+
+}
+
