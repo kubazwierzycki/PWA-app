@@ -8,6 +8,8 @@ import Typography from '@mui/material/Typography';
 import {ReactNode, useState} from "react";
 import GeneratePlayroomView from "./playroom/GeneratePlayroomView.tsx";
 import styles from "../../styles/createPlayroom.module.css"
+import AwaitingPlayersView from "./playroom/AwaitingPlayersView.tsx";
+import ChoosingGameView from "./playroom/ChoosingGameView.tsx";
 
 // creating playroom steps' labels
 const steps = ['Create a playroom', 'Wait for others to join', 'Choose the game'];
@@ -60,9 +62,13 @@ const CreatePlayroomStepper = (): ReactNode => {
                     />
                 )
             case 1:
-                return <></>
+                return (
+                    <AwaitingPlayersView code={code}/>
+                )
             case 2:
-                return <></>
+                return (
+                    <ChoosingGameView />
+                )
             default:
                 return <></>
         }
