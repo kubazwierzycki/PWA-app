@@ -1,5 +1,8 @@
 ### CREATE playroom
 POST http://localhost:8080/api/playrooms
+
+### UPDATE playroom
+PUT http://localhost:8080/api/playrooms/a01b15d4-93ab-4dcf-bba2-639a1dce9158
 Content-Type: application/json
 
 {

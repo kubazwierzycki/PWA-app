@@ -10,7 +10,7 @@ import org.springframework.web.socket.WebSocketSession;
 import pl.edu.pg.eti.playrooms.controller.api.PlayroomController;
 import pl.edu.pg.eti.playrooms.dto.GetPlayrooms;
 import pl.edu.pg.eti.playrooms.dto.PlayroomInfo;
-import pl.edu.pg.eti.playrooms.dto.PostPlayroom;
+import pl.edu.pg.eti.playrooms.dto.PutPlayroom;
 import pl.edu.pg.eti.playrooms.entity.Playroom;
 import pl.edu.pg.eti.playrooms.event.api.PlayroomEventRepository;
 import pl.edu.pg.eti.playrooms.service.api.PlayroomService;
@@ -40,27 +40,36 @@ public class PlayroomDefaultController implements PlayroomController {
     }
 
     @Override
-    public ResponseEntity<PlayroomInfo> createNewPlayroom(PostPlayroom request) {
+    public ResponseEntity<PlayroomInfo> createNewPlayroom() {
         UUID playroomId = UUID.randomUUID();
         playroomService.create(Playroom.builder()
                 .uuid(playroomId)
-                .isGlobalTimer(request.getIsGlobalTimer())
-                .paused(true)
-                .ended(false)
-                .currentPlayer(1)
-                .lastOperationTime(LocalTime.now())
-                .globalTimerValue(request.getTimer())
-                .game(new Playroom.Game(request.getGameId(), request.getGame()))
-                .players(new HashMap<>())
                 .build());
-
-        playroomEventRepository.updateGame(request.getGameId(), request.getGame(),
-                !request.getIsGlobalTimer(), request.getTimer().intValue());
 
         return ResponseEntity.ok(PlayroomInfo.builder()
                 .uuid(playroomId.toString())
-                .game(request.getGame())
                 .build());
+    }
+
+    @Override
+    public void updatePlayroom(String playroomId, PutPlayroom request) {
+        Playroom playroom = playroomService.find(UUID.fromString(playroomId)).orElse(null);
+        if (playroom != null) {
+            playroomService.update(Playroom.builder()
+                    .uuid(UUID.fromString(playroomId))
+                    .isGlobalTimer(request.getIsGlobalTimer())
+                    .paused(true)
+                    .ended(false)
+                    .currentPlayer(1)
+                    .lastOperationTime(LocalTime.now())
+                    .globalTimerValue(request.getTimer())
+                    .game(new Playroom.Game(request.getGameId(), request.getGame()))
+                    .players(new HashMap<>())
+                    .build());
+
+            playroomEventRepository.updateGame(request.getGameId(), request.getGame(),
+                    !request.getIsGlobalTimer(), request.getTimer().intValue());
+        }
     }
 
     @Override

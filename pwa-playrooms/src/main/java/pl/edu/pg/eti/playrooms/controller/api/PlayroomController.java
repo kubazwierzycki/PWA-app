@@ -4,14 +4,16 @@ import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.socket.WebSocketSession;
 import pl.edu.pg.eti.playrooms.dto.GetPlayrooms;
 import pl.edu.pg.eti.playrooms.dto.PlayroomInfo;
-import pl.edu.pg.eti.playrooms.dto.PostPlayroom;
+import pl.edu.pg.eti.playrooms.dto.PutPlayroom;
 import pl.edu.pg.eti.playrooms.entity.Playroom;
 
 /**
@@ -21,14 +23,24 @@ public interface PlayroomController {
 
     /**
      * POST request to create a new playroom
-     * @param request - playroom details {@link PostPlayroom}
      * @return general playroom info
      */
     @PostMapping("/api/playrooms")
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
-    ResponseEntity<PlayroomInfo> createNewPlayroom(
-            @RequestBody PostPlayroom request
+    ResponseEntity<PlayroomInfo> createNewPlayroom();
+
+    /**
+     * PUT request to update the playroom details
+     * @param playroomId - playroom ID
+     * @param request - playroom details {@link PutPlayroom}
+     */
+    @PutMapping("/api/playrooms/{playroomId}")
+    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseBody
+    void updatePlayroom(
+            @PathVariable("playroomId") String playroomId,
+            @RequestBody PutPlayroom request
     );
 
     /**

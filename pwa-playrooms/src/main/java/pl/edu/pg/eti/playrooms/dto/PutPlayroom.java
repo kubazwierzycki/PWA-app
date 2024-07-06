@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @EqualsAndHashCode
-public class PostPlayroom {
+public class PutPlayroom {
     private String gameId;
     private String game;
     private Boolean isGlobalTimer;
