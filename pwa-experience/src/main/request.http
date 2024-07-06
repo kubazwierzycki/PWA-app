@@ -10,11 +10,11 @@ GET localhost:8080/api/experience/1?type=game
 ### GET statistic for specific game and user
 GET localhost:8080/api/experience/e3320aaa-3aaa-4aaa-aaaa-f5300509faaa/1
 
-### PUT update on statistics
-PUT localhost:8080/api/experience/e3320aaa-3aaa-4aaa-aaaa-f5300509faaa/1?rating=5.0
+### POST update on statistics
+POST localhost:8080/api/experience/e3320aaa-3aaa-4aaa-aaaa-f5300509faaa/1?rating=5.0
 
-### PATCH update on statistics
-PATCH localhost:8080/api/experience/e3320aaa-3aaa-4aaa-aaaa-f5300509faaa/1?win=1
+### PUT update on statistics
+PUT localhost:8080/api/experience/e3320aaa-3aaa-4aaa-aaaa-f5300509faaa/1?win=1
 
 ### DELETE statistic
 DELETE localhost:8080/api/experience/f0e06aaa-eaaa-4aaa-aaaa-a276cfdb2aaa

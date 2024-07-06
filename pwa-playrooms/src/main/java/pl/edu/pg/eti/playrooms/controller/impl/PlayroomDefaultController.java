@@ -12,6 +12,7 @@ import pl.edu.pg.eti.playrooms.dto.GetPlayrooms;
 import pl.edu.pg.eti.playrooms.dto.PlayroomInfo;
 import pl.edu.pg.eti.playrooms.dto.PostPlayroom;
 import pl.edu.pg.eti.playrooms.entity.Playroom;
+import pl.edu.pg.eti.playrooms.event.api.PlayroomEventRepository;
 import pl.edu.pg.eti.playrooms.service.api.PlayroomService;
 
 import java.io.IOException;
@@ -28,11 +29,14 @@ public class PlayroomDefaultController implements PlayroomController {
 
     private final PlayroomService playroomService;
     private final Map<String, WebSocketSession> webSocketSessions;
+    private final PlayroomEventRepository playroomEventRepository;
 
     @Autowired
-    public PlayroomDefaultController(PlayroomService playroomService) {
+    public PlayroomDefaultController(PlayroomService playroomService,
+                                     PlayroomEventRepository playroomEventRepository) {
         this.playroomService = playroomService;
-        webSocketSessions = Collections.synchronizedMap(new HashMap<>());
+        this.webSocketSessions = Collections.synchronizedMap(new HashMap<>());
+        this.playroomEventRepository = playroomEventRepository;
     }
 
     @Override
@@ -49,6 +53,9 @@ public class PlayroomDefaultController implements PlayroomController {
                 .game(new Playroom.Game(request.getGameId(), request.getGame()))
                 .players(new HashMap<>())
                 .build());
+
+        playroomEventRepository.updateGame(request.getGameId(), request.getGame(),
+                !request.getIsGlobalTimer(), request.getTimer().intValue());
 
         return ResponseEntity.ok(PlayroomInfo.builder()
                 .uuid(playroomId.toString())
@@ -92,6 +99,10 @@ public class PlayroomDefaultController implements PlayroomController {
 
                 updateLastModDate(playroom);
                 sendMessagesWithUpdate(playroom.getPlayers(), playroomId);
+
+                if (newPlayer.getUuid() != null) {
+                    playroomEventRepository.createExperience(newPlayer.getUuid().toString(), playroom.getGame().getId());
+                }
             }
         }
     }
