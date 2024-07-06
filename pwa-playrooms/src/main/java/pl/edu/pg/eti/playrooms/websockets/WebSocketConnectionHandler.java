@@ -81,6 +81,12 @@ public class WebSocketConnectionHandler extends TextWebSocketHandler {
         else if ("endGame".equals(messageJSON.get("operation"))) {
             playroomController.endGame(session.getId(), messageJSON);
         }
+        else if ("joinWaitingRoom".equals(messageJSON.get("operation"))) {
+            playroomController.joinWaitingRoom(session, messageJSON);
+        }
+        else if ("finishWaitingRoom".equals(messageJSON.get("operation"))) {
+            playroomController.finishWaitingRoom(session.getId(), messageJSON);
+        }
         else {
             System.err.println("Unhandled type of message: \n" + message.getPayload());
         }

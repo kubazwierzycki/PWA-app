@@ -53,6 +53,32 @@ public interface PlayroomController {
     GetPlayrooms getPlayrooms();
 
     /**
+     * Join the waiting room
+     * @param webSocketSession - communication client-server
+     * @param message - message with all details
+     *                {
+     *                  "operation": "joinWaitingRoom",
+     *                  "playroomId": --playroomUUID--,
+     *                  "player": {
+     *                      "id": --userUID-- (null if not registered),
+     *                      "username": --username--
+     *                  }
+     *                }
+     */
+    void joinWaitingRoom(WebSocketSession webSocketSession, JSONObject message);
+
+    /**
+     * Finish the waiting room and go to the playroom
+     * @param sessionId - websocket session ID
+     * @param message - message with all details
+     *                {
+     *                  "operation": "finishWaitingRoom",
+     *                  "playroomId": --playroomUUID--
+     *                }
+     */
+    void finishWaitingRoom(String sessionId, JSONObject message);
+
+    /**
      * Join the playroom
      * @param webSocketSession - communication client-server
      * @param message - message with all details

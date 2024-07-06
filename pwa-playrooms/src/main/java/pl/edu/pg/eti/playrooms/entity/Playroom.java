@@ -76,6 +76,12 @@ public class Playroom implements Serializable {
     @ElementCollection(fetch = FetchType.EAGER)
     private Map<Integer, Player> players;
 
+    /**
+     * Players in the waiting room
+     */
+    @ElementCollection(fetch = FetchType.EAGER)
+    private Map<String, Player> playersWaitingRoom;
+
     @Embeddable
     @Getter
     @Setter
@@ -83,8 +89,14 @@ public class Playroom implements Serializable {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class Player {
+
         /**
-         * User ID
+         * Player ID - it is not the same as User ID
+         */
+        private UUID playerId;
+
+        /**
+         * User ID - associated with user account
          * null if guest
          */
         private UUID uuid;

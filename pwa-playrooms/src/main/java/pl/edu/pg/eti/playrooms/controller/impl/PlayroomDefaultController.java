@@ -87,6 +87,56 @@ public class PlayroomDefaultController implements PlayroomController {
     }
 
     @Override
+    public void joinWaitingRoom(WebSocketSession webSocketSession, JSONObject message) {
+        String playroomId = getStringValue("playroomId", message);
+        if (playroomId != null) {
+            Playroom playroom = playroomService.find(UUID.fromString(playroomId)).orElse(null);
+            if (playroom != null) {
+                UUID uuid;
+                boolean guest = false;
+                String uuidValue = getStringValue("id", message.getJSONObject("player"));
+                if (uuidValue == null || "null".equals(uuidValue)) {
+                    uuid = null;
+                    guest = true;
+                }
+                else {
+                    uuid = UUID.fromString(uuidValue);
+                }
+                Playroom.Player newPlayer = new Playroom.Player(
+                        UUID.randomUUID(), uuid, message.getJSONObject("player").getString("username"),
+                        null, false, guest, webSocketSession.getId());
+
+                Map<String, Playroom.Player> updatedPlayers = playroom.getPlayersWaitingRoom();
+                updatedPlayers.put(webSocketSession.getId(), newPlayer);
+                playroom.setPlayersWaitingRoom(updatedPlayers);
+                playroomService.update(playroom);
+                webSocketSessions.put(newPlayer.getWebSocketSessionId(), webSocketSession);
+
+                JSONObject status = getWaitingRoomStatus(playroom);
+
+                for (String sessionId : playroom.getPlayersWaitingRoom().keySet()) {
+                    sendMessageJSON(webSocketSessions.get(sessionId), status);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void finishWaitingRoom(String sessionId, JSONObject message) {
+        String playroomId = getStringValue("playroomId", message);
+        if (playroomId != null) {
+            Playroom playroom = playroomService.find(UUID.fromString(playroomId)).orElse(null);
+            if (playroom != null) {
+                JSONObject status = getGeneralPlayroomData(playroom, "ready");
+
+                for (String session : playroom.getPlayersWaitingRoom().keySet()) {
+                    sendMessageJSON(webSocketSessions.get(session), status);
+                }
+            }
+        }
+    }
+
+    @Override
     public void joinPlayroom(WebSocketSession webSocketSession, JSONObject message) {
         String playroomId = getStringValue("playroomId", message);
         if (playroomId != null) {
@@ -97,7 +147,7 @@ public class PlayroomDefaultController implements PlayroomController {
                 if (uuidValue == null || "null".equals(uuidValue)) uuid = null;
                 else uuid = UUID.fromString(uuidValue);
                 Playroom.Player newPlayer = new Playroom.Player(
-                        uuid, message.getJSONObject("player").getString("username"),
+                        UUID.randomUUID(), uuid, message.getJSONObject("player").getString("username"),
                         playroom.getGlobalTimerValue(), false, false, webSocketSession.getId());
 
                 Map<Integer, Playroom.Player> updatedPlayers = playroom.getPlayers();
@@ -319,6 +369,84 @@ public class PlayroomDefaultController implements PlayroomController {
     }
 
     /**
+     * Get information about waiting room with specific ID
+     * @param playroom - playroom
+     * @return JSON Object represents waiting room
+     * {
+     *     "playroomId": --playroomId--,
+     *     "players": [
+     *          {
+     *              "playerId": --playerId--,
+     *              "username": --username--,
+     *              "userId": --userID-- (null if guests)
+     *          },
+     *          {
+     *              "playerId": --playerId--,
+     *              "username": --username--,
+     *              "userId": --userID-- (null if guests)
+     *          },
+     *          ...
+     *     ]
+     * }
+     */
+    private JSONObject getWaitingRoomStatus(Playroom playroom) {
+        JSONObject status = new JSONObject();
+        status.put("playroomId", playroom.getUuid());
+        JSONArray players = new JSONArray();
+        for (Playroom.Player player: playroom.getPlayersWaitingRoom().values()) {
+            JSONObject player1 = new JSONObject();
+            player1.put("playerId", player.getPlayerId());
+            player1.put("username", player.getUsername());
+            player1.put("userId", player.getPlayerId());
+            players.put(player1);
+        }
+        status.put("players", players);
+
+        return status;
+    }
+
+    /**
+     * Get general information about playroom
+     * @param playroom - playroom
+     * @param requiredAction - information why message is sent
+     * @return JSON Object represents playroom
+     * {
+     *      "requiredAction": --requiredAction--,
+     *      "playroomId": --playroomId--,
+     *      "timer": {
+     *          "type": --global/local--,
+     *          "time": --time-- (in seconds)
+     *      },
+     *      "game": {
+     *          "gameId": --gameId--,
+     *          "name": --game name--
+     *      }
+     * }
+     */
+    private JSONObject getGeneralPlayroomData(Playroom playroom, String requiredAction) {
+        JSONObject status = new JSONObject();
+        status.put("requiredAction", requiredAction);
+        status.put("playroomId", playroom.getUuid());
+
+        JSONObject timer = new JSONObject();
+        if (playroom.isGlobalTimer()) {
+            timer.put("type", "global");
+        }
+        else {
+            timer.put("type", "local");
+        }
+        timer.put("time", playroom.getGlobalTimerValue());
+        status.put("timer", timer);
+
+        JSONObject game = new JSONObject();
+        game.put("gameId", playroom.getGame().getId());
+        game.put("name", playroom.getGame().getName());
+        status.put("game", game);
+
+        return status;
+    }
+
+    /**
      * Get information about playroom with specific ID
      * @param uuid - playroom ID
      * @return JSON Object represents playroom (empty object if not exists)
@@ -333,12 +461,14 @@ public class PlayroomDefaultController implements PlayroomController {
      *     },
      *     "players": [
      *         {
-     *             "queueNumber": 1
+     *             "queueNumber": 1,
+     *             "playerId": --playerId--,
      *             "name": --playerName--,
      *             "timer": --playerTimer-- (null if timer is global)
      *         },
      *         {
-     *             "queueNumber": 2
+     *             "queueNumber": 2,
+     *             "playerId": --playerId--,
      *             "name": --playerName--,
      *             "timer": --playerTimer-- (null if timer is global)
      *         },
@@ -373,6 +503,7 @@ public class PlayroomDefaultController implements PlayroomController {
             for (int playerNumber: playroom.getPlayers().keySet()) {
                 JSONObject player = new JSONObject();
                 player.put("queueNumber", playerNumber);
+                player.put("playerId", playroom.getPlayers().get(playerNumber).getPlayerId());
                 player.put("name", playroom.getPlayers().get(playerNumber).getUsername());
                 if (!playroom.isGlobalTimer()) {
                     player.put("timer", playroom.getPlayers().get(playerNumber).getTimer());
