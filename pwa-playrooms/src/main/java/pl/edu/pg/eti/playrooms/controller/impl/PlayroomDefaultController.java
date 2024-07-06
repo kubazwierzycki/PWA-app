@@ -147,7 +147,8 @@ public class PlayroomDefaultController implements PlayroomController {
         String playroomId = getStringValue("playroomId", message);
         if (playroomId != null) {
             Playroom playroom = playroomService.find(UUID.fromString(playroomId)).orElse(null);
-            if (playroom != null && isPlayerInPlayroom(sessionId, playroom)) {
+            if (playroom != null && isPlayerInPlayroom(sessionId, playroom) &&
+                    playroom.getPlayers().get(playroom.getCurrentPlayer()).getWebSocketSessionId().equals(sessionId)) {
                 updateLastModDate(playroom);
                 playroom.setCurrentPlayer((playroom.getCurrentPlayer() % playroom.getPlayers().size()) + 1);
 
