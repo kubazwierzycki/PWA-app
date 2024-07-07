@@ -84,11 +84,7 @@ public interface PlayroomController {
      * @param message - message with all details
      *                {
      *                  "operation": "joinPlayroom",
-     *                  "playroomId": --playroomUUID--,
-     *                  "player": {
-     *                      "id": --userUID-- (null if not registered),
-     *                      "username": --username--
-     *                  }
+     *                  "playroomId": --playroomUUID--
      *                }
      */
     void joinPlayroom(WebSocketSession webSocketSession, JSONObject message);
