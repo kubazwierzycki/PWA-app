@@ -4,6 +4,8 @@ import StyledToggleButtonGroup from "../../controls/StyledToggleButtonGroup.tsx"
 import ToggleButton from "@mui/material/ToggleButton";
 import Paper from "@mui/material/Paper";
 import * as React from "react";
+import WizardGameSelect from "./WizardGameSelect.tsx";
+import SearchGameSelect from "./SearchGameSelect.tsx";
 
 enum SELECTION_MODES {
     WIZARD,
@@ -57,7 +59,12 @@ const ChoosingGameView = (): ReactNode => {
             </div>
             <div className={styles.gameSelectWindow}>
                 <Paper style={{height: "100%"}}>
-                    {selectionMode === SELECTION_MODES.WIZARD ? "wizard" : "search"}
+                    {
+                        selectionMode === SELECTION_MODES.WIZARD ?
+                            <WizardGameSelect />
+                            :
+                            <SearchGameSelect />
+                    }
                 </Paper>
             </div>
         </div>
