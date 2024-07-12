@@ -4,6 +4,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-direction: column;
 }
 
 .generateBox {
@@ -52,6 +53,17 @@
     text-align: center;
 }
 
+
+
+.gameSelectWindow {
+    width: 60%;
+    min-height: 350px;
+    margin-top: 20px;
+}
+
+
+
+
 @media screen and (min-width: 1000px) {
 
     .generateBox {
@@ -65,6 +77,10 @@
 }
 
 @media screen and (max-width: 1000px) {
+
+    .container {
+        flex-direction: column;
+    }
 
     .generateBox {
         min-width: 80%;

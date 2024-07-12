@@ -101,8 +101,7 @@ const CreatePlayroomStepper = (): ReactNode => {
                 </React.Fragment>
             ) : (
                 <React.Fragment>
-                    <Typography sx={{ mt: 2, mb: 1 }}>Step {activeStep + 1}</Typography>
-                    <Box style={{height: "50vh", width: "100%"}}>
+                    <Box style={{height: "60vh", width: "100%"}}>
                         {
                             <div className={styles.container}>
                                 {
