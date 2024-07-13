@@ -3,8 +3,8 @@ package pl.edu.pg.eti.experience.controller.api;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -56,16 +56,16 @@ public interface ExperienceController {
     );
 
     /**
-     * PUT request to create or update statistics
+     * POST request to create or update statistics
      * (increment number of plays and update dates)
      * @param userUUID - user UUID
      * @param gameID - game ID
      * @param win (optional) - 1 if player won
      * @param rating (optional) - 1-10 play rating
      */
-    @PutMapping("api/experience/{userUUID}/{gameID}")
+    @PostMapping("api/experience/{userUUID}/{gameID}")
     @ResponseStatus(HttpStatus.CREATED)
-    void putExperience(
+    void postExperience(
             @PathVariable("userUUID") String userUUID,
             @PathVariable("gameID") String gameID,
             @RequestParam(value="win", required=false) String win,
@@ -73,7 +73,7 @@ public interface ExperienceController {
     );
 
     /**
-     * PATCH request to update statistics
+     * PUT request to update statistics
      * (update a statistic only with param values -
      * don't update number of plays or play dates,
      * should be used after the above PUT request)
@@ -82,7 +82,7 @@ public interface ExperienceController {
      * @param win (optional) - 1 if player won
      * @param rating (optional) - 1-10 play rating
      */
-    @PatchMapping("api/experience/{userUUID}/{gameID}")
+    @PutMapping("api/experience/{userUUID}/{gameID}")
     @ResponseStatus(HttpStatus.CREATED)
     void updateExperience(
             @PathVariable("userUUID") String userUUID,

@@ -142,7 +142,7 @@ public class ExperienceDefaultController implements ExperienceController {
     }
 
     @Override
-    public void putExperience(String userUUID, String gameID, String win, String rating) {
+    public void postExperience(String userUUID, String gameID, String win, String rating) {
         User user = userService.find(UUID.fromString(userUUID)).orElse(null);
         Game game = gameService.findById(gameID).orElse(null);
 
