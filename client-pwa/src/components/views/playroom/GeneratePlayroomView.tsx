@@ -1,5 +1,5 @@
-import {Button, Card, Input, Typography} from "@mui/material";
-import {Dispatch, ReactNode, SetStateAction} from "react";
+import {Alert, Button, Card, Input, Snackbar, Typography} from "@mui/material";
+import {Dispatch, ReactNode, SetStateAction, SyntheticEvent, useState} from "react";
 import styles from "../../../styles/createPlayroom.module.css"
 
 
@@ -15,6 +15,20 @@ interface IGeneratePlayroomProps {
  * @returns {ReactNode}
  */
 const GeneratePlayroomView = ({code, setCode}: IGeneratePlayroomProps): ReactNode => {
+
+    // has the playroom been created already
+    const [created, setCreated] = useState(false);
+
+    // is snackbar info open
+    const [open, setOpen] = useState(false);
+
+    const handleClose = (_event: SyntheticEvent | Event, reason?: string) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+
+        setOpen(false);
+    };
 
     /**
      * Function generating playroom code for a new playroom
@@ -34,6 +48,8 @@ const GeneratePlayroomView = ({code, setCode}: IGeneratePlayroomProps): ReactNod
             code += characters.charAt(randomIndex);
         }
         setCode(code);
+        setOpen(true);
+        setCreated(true);
     }
 
     return (
@@ -42,18 +58,46 @@ const GeneratePlayroomView = ({code, setCode}: IGeneratePlayroomProps): ReactNod
                 variant="contained"
                 onClick={generateCode}
                 style={{marginBottom: "20px"}}
+                disabled={created}
             >
-                Generate Playroom Code
+                Create your playroom
             </Button>
             <Input
                 disabled={true}
                 value={"Code: \t\t" + code}
                 size="medium"
-                style={{width: "80%", marginBottom: "10px"}}
+                style={{width: "80%", marginBottom: "15px"}}
             />
-            <Typography>
-                Please generate code and choose next when ready
+            {
+                code !== "" ?
+                    <div>
+                        <Typography
+                            variant="body2"
+                            style={{marginBottom: "15px"}}
+                            color={"success.main"}
+                        >
+                            You've successfully created a playroom
+                        </Typography>
+                    </div> :
+                    <></>
+            }
+            <Typography variant="body2">
+                Please request creating new playroom to generate code and choose next when ready
             </Typography>
+            <Snackbar
+                open={open}
+                autoHideDuration={6000}
+                onClose={handleClose}
+            >
+                <Alert
+                    onClose={handleClose}
+                    severity="success"
+                    variant="filled"
+                    sx={{ width: '100%' }}
+                >
+                    Playroom has been created
+                </Alert>
+            </Snackbar>
         </Card>
     )
 }

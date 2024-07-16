@@ -84,6 +84,7 @@
 
     .generateBox {
         min-width: 80%;
+        padding: 10% 5%;
     }
 
     .awaitBox {

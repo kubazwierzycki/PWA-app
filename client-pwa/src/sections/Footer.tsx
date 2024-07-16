@@ -39,7 +39,7 @@ const Footer = (): ReactNode => {
                                                 sx={{color: 'text.primary', marginRight: '3px'}}
                                                 className={styles.footerText}
                                             />
-                                            <Typography variant="body1" color="text.primary" className={styles.footerText}>
+                                            <Typography variant="body2" color="text.primary" className={styles.footerText}>
                                                 Github page
                                             </Typography>
                                         </Stack>
@@ -47,13 +47,13 @@ const Footer = (): ReactNode => {
                                 </div>
                                 <div className={styles.infoElement}>
                                     <Link to={"/about"}>
-                                        <Typography align={"left"} color={"text.primary"}>
+                                        <Typography variant="body2" align={"left"} color={"text.primary"}>
                                             About
                                         </Typography>
                                     </Link>
                                 </div>
                                 <div className={styles.infoElement}>
-                                    <Typography variant="body1" color="text.primary">
+                                    <Typography variant="body2" color="text.primary">
                                         CoGame &copy; 2024
                                     </Typography>
                                 </div>
