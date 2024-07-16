@@ -23,6 +23,9 @@ const NestedMenu = ({ closeDrawer }: { closeDrawer: () => void }): ReactNode => 
 
     const { uuid } = useAuth();
 
+    // array of menu items not present in top menu navbar
+    const topNavExcluded: string[] = ["Sign In", "Sign Up", "Profile"];
+
     /**
      * Function to handle nested menu links
      * @param {string} item - name of menu item element
@@ -49,52 +52,57 @@ const NestedMenu = ({ closeDrawer }: { closeDrawer: () => void }): ReactNode => 
     return (
         <List sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }} component="nav">
             {menu_structure.map((element) =>
-                !(uuid !== "" && (element.name === "Sign In" || element.name === "Sign Up")) ? (
-                    <div key={element.name}>
-                        <ListItemButton
-                            key={element.name}
-                            onClick={() =>
-                                handleClick(element.name, element.sub.length > 0, element.link)
-                            }
-                        >
-                            <ListItemIcon>{getMenuItemIcon(element.name)}</ListItemIcon>
-                            <ListItemText primary={element.name} />
-                            {element.sub.length > 0 ? (
-                                expandedItems.get(element.name) ? (
-                                    <ExpandLess />
-                                ) : (
-                                    <ExpandMore />
-                                )
-                            ) : (
-                                <></>
-                            )}
-                        </ListItemButton>
-                        {element.sub.length > 0 && (
-                            <Collapse
-                                in={expandedItems.get(element.name)}
-                                timeout="auto"
-                                unmountOnExit
-                            >
-                                <List component="div" disablePadding>
-                                    {element.sub.map((subElement) => (
-                                        <ListItemButton
-                                            sx={{ pl: 4 }}
-                                            key={subElement.name}
-                                            onClick={() =>
-                                                handleClick(subElement.name, false, subElement.link)
-                                            }
-                                        >
-                                            <ListItemText primary={subElement.name} />
-                                        </ListItemButton>
-                                    ))}
-                                </List>
-                            </Collapse>
-                        )}
-                    </div>
-                ) : (
-                    <></>
-                )
-            )}
+                {
+                    if (topNavExcluded.includes(element.name)) return <div></div>;
+                    else return (
+                        !(uuid !== "" && (element.name === "Sign In" || element.name === "Sign Up")) ? (
+                            <div key={element.name}>
+                                <ListItemButton
+                                    key={element.name}
+                                    onClick={() =>
+                                        handleClick(element.name, element.sub.length > 0, element.link)
+                                    }
+                                >
+                                    <ListItemIcon>{getMenuItemIcon(element.name)}</ListItemIcon>
+                                    <ListItemText primary={element.name} />
+                                    {element.sub.length > 0 ? (
+                                        expandedItems.get(element.name) ? (
+                                            <ExpandLess />
+                                        ) : (
+                                            <ExpandMore />
+                                        )
+                                    ) : (
+                                        <></>
+                                    )}
+                                </ListItemButton>
+                                {element.sub.length > 0 && (
+                                    <Collapse
+                                        in={expandedItems.get(element.name)}
+                                        timeout="auto"
+                                        unmountOnExit
+                                    >
+                                        <List component="div" disablePadding>
+                                            {element.sub.map((subElement) => (
+                                                <ListItemButton
+                                                    sx={{ pl: 4 }}
+                                                    key={subElement.name}
+                                                    onClick={() =>
+                                                        handleClick(subElement.name, false, subElement.link)
+                                                    }
+                                                >
+                                                    <ListItemText primary={subElement.name} />
+                                                </ListItemButton>
+                                            ))}
+                                        </List>
+                                    </Collapse>
+                                )}
+                            </div>
+                        ) : (
+                            <></>
+                        )
+                    )}
+                    )
+                }
         </List>
     );
 };

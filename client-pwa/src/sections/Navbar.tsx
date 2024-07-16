@@ -3,13 +3,13 @@ import {AppBar, Toolbar, styled, Button} from "@mui/material";
 import {ReactNode} from "react";
 import DrawerMenu from "./DrawerMenu.tsx";
 import NavMenuButtons from "../components/nav/NavMenuButtons.tsx";
-import LogoText from "../components/logo/LogoText.tsx";
 import ColorModeToggle from "../components/controls/ColorModeToggle.tsx";
 import MenuIcon from "@mui/icons-material/Menu";
 import {useColorMode} from "../contexts/ThemeContext.tsx";
 import UserAvatar from "../components/nav/UserAvatar.tsx";
 import {useNavContext} from "../contexts/NavbarContext.tsx";
 import UserInterfacePopover from "../components/nav/UserInterfacePopover.tsx";
+import Logo from "../components/logo/LogoHourglass.tsx";
 
 
 /**
@@ -46,7 +46,12 @@ const Navbar = (): ReactNode => {
                     <div className={styles.navbarContainer}>
                         <div className={styles.centerPanel}>
                             <div className={styles.logoContainer}>
-                                <LogoText/>
+                                <div className={styles.navLogo}>
+                                    <Logo/>
+                                    <div className={styles.logoTextNavbar}>
+                                        CoGame
+                                    </div>
+                                </div>
                             </div>
                             <NavMenuButtons
                                 vertical={false}
