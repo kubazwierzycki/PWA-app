@@ -17,7 +17,7 @@ const AwaitingPlayersView = ({code}: {code: string}): ReactNode => {
                 {
                     [1,2,3,4,5].map(value => {
                         return (
-                            <Card sx={{marginTop: "10px", padding: "5px"}}>
+                            <Card sx={{marginTop: "10px", padding: "5px"}} key={value}>
                                 <Stack direction="row">
                                     <Avatar />
                                     <Typography sx={{marginLeft: "10px"}}>

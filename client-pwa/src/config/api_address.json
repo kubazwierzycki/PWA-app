@@ -1,0 +1,4 @@
+{
+  "bgg": "https://boardgamegeek.com/xmlapi2",
+  "backend": "http://localhost:8080/api"
+}

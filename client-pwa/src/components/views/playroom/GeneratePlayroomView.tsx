@@ -1,6 +1,7 @@
 import {Alert, Button, Card, Input, Snackbar, Typography} from "@mui/material";
 import {Dispatch, ReactNode, SetStateAction, SyntheticEvent, useState} from "react";
 import styles from "../../../styles/createPlayroom.module.css"
+import {createPlayroom} from "../../../services/playroom.ts";
 
 
 interface IGeneratePlayroomProps {
@@ -35,18 +36,10 @@ const GeneratePlayroomView = ({code, setCode}: IGeneratePlayroomProps): ReactNod
      * Assumes 16 characters long code
      * Uses numbers, upper and lower case letters
      * Sets resulting code to state
-     * @returns {void}
+     * @returns {Promise<void>}
      */
-    const generateCode = (): void => {
-        // code length
-        const length = 16;
-        // possible characters
-        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        let code = '';
-        for (let i = 0; i < length; i++) {
-            const randomIndex = Math.floor(Math.random() * characters.length);
-            code += characters.charAt(randomIndex);
-        }
+    const generateCode = async (): Promise<void> => {
+        const code = await createPlayroom();
         setCode(code);
         setOpen(true);
         setCreated(true);
