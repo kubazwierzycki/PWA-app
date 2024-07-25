@@ -76,7 +76,7 @@ const CreatePlayroomStepper = (): ReactNode => {
 
     return (
         <Box sx={{ width: '100%' }}>
-            <Stepper activeStep={activeStep}>
+            <Stepper activeStep={activeStep} sx={{height: "fit-content"}}>
                 {steps.map((label) => {
                     const stepProps: { completed?: boolean } = {};
                     const labelProps: {

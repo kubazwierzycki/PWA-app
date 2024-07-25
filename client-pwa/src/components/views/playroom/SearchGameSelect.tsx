@@ -3,6 +3,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import React, {ReactNode, useState} from "react";
 import {useBoardgamesContext} from "../../../contexts/BoardgamesContext.tsx";
 import {BoardGameStub} from "../../../types/IBoardgames.ts";
+import GameSearchResult from "./GameSearchResult.tsx";
 
 
 const Search = styled('div')(({theme}) => ({
@@ -40,7 +41,7 @@ const StyledInputBase = styled(InputBase)(({theme}) => ({
         transition: theme.transitions.create('width'),
         width: '100%',
         [theme.breakpoints.up('md')]: {
-            width: '20ch',
+            width: '100%',
         },
     },
 }));
@@ -80,7 +81,7 @@ const SearchGameSelect = (): ReactNode => {
     }
 
     return (
-        <div>
+        <div style={{height: "100%"}}>
             <Search>
                 <SearchIconWrapper>
                     <SearchIcon />
@@ -92,7 +93,7 @@ const SearchGameSelect = (): ReactNode => {
                     onChange={handleInputChange}
                 />
             </Search>
-            <div>
+            <div style={{height: "90%", overflowY: "auto"}}>
                 {
                     results.length === 0 ?
                         <Typography>
@@ -100,9 +101,7 @@ const SearchGameSelect = (): ReactNode => {
                         </Typography>
                         :
                         results.map(game => (
-                            <div>
-                                {game.name["#text"]}
-                            </div>
+                            <GameSearchResult game={game} key={game.name["#text"]}/>
                         ))
                 }
             </div>
