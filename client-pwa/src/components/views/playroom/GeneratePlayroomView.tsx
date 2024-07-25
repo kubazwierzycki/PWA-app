@@ -75,7 +75,7 @@ const GeneratePlayroomView = ({code, setCode}: IGeneratePlayroomProps): ReactNod
                     <></>
             }
             <Typography variant="body2">
-                Please request creating new playroom to generate code and choose next when ready
+                Please request creating new playroom to generate code and <b>choose next when ready</b>
             </Typography>
             <Snackbar
                 open={open}

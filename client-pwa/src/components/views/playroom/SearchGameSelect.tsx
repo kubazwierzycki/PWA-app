@@ -1,8 +1,11 @@
-import {alpha, InputBase, styled} from "@mui/material";
+import {alpha, InputBase, styled, Typography} from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
+import React, {ReactNode, useState} from "react";
+import {useBoardgamesContext} from "../../../contexts/BoardgamesContext.tsx";
+import {BoardGameStub} from "../../../types/IBoardgames.ts";
 
 
-const Search = styled('div')(({ theme }) => ({
+const Search = styled('div')(({theme}) => ({
     position: 'relative',
     borderRadius: theme.shape.borderRadius,
     backgroundColor: alpha(theme.palette.common.white, 0.15),
@@ -18,7 +21,7 @@ const Search = styled('div')(({ theme }) => ({
     },
 }));
 
-const SearchIconWrapper = styled('div')(({ theme }) => ({
+const SearchIconWrapper = styled('div')(({theme}) => ({
     padding: theme.spacing(0, 2),
     height: '100%',
     position: 'absolute',
@@ -28,7 +31,7 @@ const SearchIconWrapper = styled('div')(({ theme }) => ({
     justifyContent: 'center',
 }));
 
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
+const StyledInputBase = styled(InputBase)(({theme}) => ({
     color: 'inherit',
     '& .MuiInputBase-input': {
         padding: theme.spacing(1, 1, 1, 0),
@@ -43,9 +46,38 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 
-const SearchGameSelect = () => {
+/**
+ * View presenting searchbar functionality as means of choosing game to play in a playroom
+ * (Alternative to wizard choice)
+ * @returns {ReactNode}
+ */
+const SearchGameSelect = (): ReactNode => {
 
+    // user games available from context
+    const {games} = useBoardgamesContext();
 
+    // search bar current input
+    const [input, setInput] = useState<string>("");
+
+    const [results, setResults] = useState<BoardGameStub[]>([] as BoardGameStub[]);
+
+    // finds games that contain part of input name
+    const searchInGames = () => {
+        setResults(
+            games.filter(value =>
+                value.name["#text"]
+                    .toLowerCase()
+                    .includes(input.toLowerCase())
+            )
+        );
+    }
+
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        // change input state
+        setInput(event.currentTarget.value);
+        // update results
+        searchInGames();
+    }
 
     return (
         <div>
@@ -56,8 +88,24 @@ const SearchGameSelect = () => {
                 <StyledInputBase
                     placeholder="Search…"
                     inputProps={{ 'aria-label': 'search' }}
+                    value={input}
+                    onChange={handleInputChange}
                 />
             </Search>
+            <div>
+                {
+                    results.length === 0 ?
+                        <Typography>
+                            No results
+                        </Typography>
+                        :
+                        results.map(game => (
+                            <div>
+                                {game.name["#text"]}
+                            </div>
+                        ))
+                }
+            </div>
         </div>
     )
 }
