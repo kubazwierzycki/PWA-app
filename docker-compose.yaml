@@ -34,3 +34,15 @@ services:
       context: ./pwa-experience
       dockerfile: Dockerfile
     restart: always
+
+  pwa-gameplays:
+    build:
+      context: ./pwa-gameplays
+      dockerfile: Dockerfile
+    restart: always
+
+  pwa-playrooms:
+    build:
+      context: ./pwa-playrooms
+      dockerfile: Dockerfile
+    restart: always
