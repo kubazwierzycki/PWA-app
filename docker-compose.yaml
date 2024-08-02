@@ -9,6 +9,7 @@ services:
       GAMEPLAYS_URL: "http://pwa-gameplays:8082"
       GAMES_URL: "http://pwa-games:8083"
       PLAYROOMS_URL: "http://pwa-playrooms:8084"
+      WS_PLAYROOMS: "ws://pwa-playrooms:8084"
       EXPERIENCE_URL: "http://pwa-experience:8085"
     ports:
       - "8080:8080"
@@ -46,3 +47,6 @@ services:
       context: ./pwa-playrooms
       dockerfile: Dockerfile
     restart: always
+    environment:
+      GAMES_URL: "http://pwa-games:8083"
+      EXPERIENCE_URL: "http://pwa-experience:8085"
