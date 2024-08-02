@@ -5,7 +5,7 @@ COPY src ./src
 RUN mvn clean package -DskipTests
 
 FROM eclipse-temurin:17
-EXPOSE 8085
+EXPOSE 8084
 WORKDIR /app
-COPY --from=build /app/target/pwa-experience-1.0-SNAPSHOT.jar pwa-experience.jar
-CMD ["java", "-jar", "pwa-experience.jar"]
+COPY --from=build /app/target/pwa-playrooms-1.0-SNAPSHOT.jar pwa-playrooms.jar
+CMD ["java", "-jar", "pwa-playrooms.jar"]
