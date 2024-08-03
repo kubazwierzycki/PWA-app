@@ -76,7 +76,7 @@ const CreatePlayroomStepper = (): ReactNode => {
 
     return (
         <Box sx={{ width: '100%' }}>
-            <Stepper activeStep={activeStep} sx={{height: "fit-content"}}>
+            <Stepper activeStep={activeStep} sx={{height: "fit-content", marginBottom: "20px"}}>
                 {steps.map((label) => {
                     const stepProps: { completed?: boolean } = {};
                     const labelProps: {
@@ -101,7 +101,7 @@ const CreatePlayroomStepper = (): ReactNode => {
                 </React.Fragment>
             ) : (
                 <React.Fragment>
-                    <Box style={{height: "60vh", width: "100%"}}>
+                    <Box style={{width: "100%"}}>
                         {
                             <div className={styles.container}>
                                 {
