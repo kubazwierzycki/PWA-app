@@ -62,6 +62,9 @@ const SearchGameSelect = (): ReactNode => {
 
     const [results, setResults] = useState<BoardGameStub[]>([] as BoardGameStub[]);
 
+    // game choice state
+    const [choice, setChoice] = useState("");
+
     // finds games that contain part of input name
     const searchInGames = () => {
         setResults(
@@ -101,7 +104,12 @@ const SearchGameSelect = (): ReactNode => {
                         </Typography>
                         :
                         results.map(game => (
-                            <GameSearchResult game={game} key={game.name["#text"]}/>
+                            <GameSearchResult
+                                game={game}
+                                key={game.name["#text"]}
+                                choice={choice}
+                                setChoice={setChoice}
+                            />
                         ))
                 }
             </div>
