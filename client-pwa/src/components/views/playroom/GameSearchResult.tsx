@@ -9,24 +9,31 @@ interface SearchResultProps {
     game: BoardGameStub
     choice: string
     setChoice: Dispatch<SetStateAction<string>>
+    setName: Dispatch<SetStateAction<string>>
 }
 
 /**
  * View component presenting single game search result
  * @param {@link BoardGameStub} game - game info object
  * @param {number} choice - game choice state (game id)
- * @param {Dispatch<SetStateAction<number>>} setChoice - game choice change callback
+ * @param {Dispatch<SetStateAction<number>>} setChoice - game choice id change callback
+ * @param {Dispatch<SetStateAction<string>>} setName - game choice name change callback
  * @returns {ReactNode}
  */
-const GameSearchResult = ({game, choice, setChoice}: SearchResultProps): ReactNode => {
+const GameSearchResult = ({game, choice, setChoice, setName}: SearchResultProps): ReactNode => {
 
     const gameId = game["@_objectid"];
+
+    const handleClick = () => {
+        setChoice(gameId);
+        setName(game.name["#text"]);
+    }
 
     return (
         <div
             className={styles.searchResultContainer}
             style={choice === gameId ? {border: "1px solid green"} : {}}
-            onClick={() => setChoice(gameId)}
+            onClick={handleClick}
         >
             <img src={game.thumbnail} alt={game.name["#text"]} height="75px"/>
             <div className={styles.searchResultTitle}>

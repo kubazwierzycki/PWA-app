@@ -6,6 +6,7 @@ import Paper from "@mui/material/Paper";
 import * as React from "react";
 import WizardGameSelect from "./WizardGameSelect.tsx";
 import SearchGameSelect from "./SearchGameSelect.tsx";
+import {TextField} from "@mui/material";
 
 enum SELECTION_MODES {
     WIZARD,
@@ -17,6 +18,9 @@ enum SELECTION_MODES {
  * @returns {ReactNode}
  */
 const ChoosingGameView = (): ReactNode => {
+
+    // current chosen game name
+    const [name, setName] = useState<string>("");
 
     // chosen method of selecting game to play
     const [selectionMode, setSelectionMode] =
@@ -31,7 +35,7 @@ const ChoosingGameView = (): ReactNode => {
 
     return (
         <div className={styles.container}>
-            <div>
+            <div className={styles.chooseGameTopBar}>
                 <Paper
                     elevation={0}
                     sx={{
@@ -56,6 +60,15 @@ const ChoosingGameView = (): ReactNode => {
                         </ToggleButton>
                     </StyledToggleButtonGroup>
                 </Paper>
+                <div className={styles.gameChoiceNameField}>
+                    <TextField
+                        id="chosen-game-name"
+                        label={name}
+                        variant="filled"
+                        disabled={true}
+                        style={name !== "" ? {border: "2px solid green", borderRadius: "5px"} : {}}
+                    />
+                </div>
             </div>
             <div className={styles.gameSelectWindow}>
                 <Paper style={{height: "100%"}}>
@@ -63,7 +76,7 @@ const ChoosingGameView = (): ReactNode => {
                         selectionMode === SELECTION_MODES.WIZARD ?
                             <WizardGameSelect />
                             :
-                            <SearchGameSelect />
+                            <SearchGameSelect setName={setName} />
                     }
                 </Paper>
             </div>

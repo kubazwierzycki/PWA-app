@@ -79,6 +79,15 @@
     flex: 0;
 }
 
+.chooseGameTopBar {
+    display: flex;
+    flex-direction: row;
+}
+
+.gameChoiceNameField {
+    margin-left: 20px;
+    box-sizing: border-box;
+}
 
 
 
@@ -123,6 +132,14 @@
 
     .nickInput {
         flex-direction: column;
+    }
+
+    .chooseGameTopBar {
+        flex-direction: column;
+    }
+
+    .gameChoiceNameField {
+        margin-top: 20px;
     }
 
 }

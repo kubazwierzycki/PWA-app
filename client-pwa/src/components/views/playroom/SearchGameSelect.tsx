@@ -1,6 +1,6 @@
 import {alpha, InputBase, styled, Typography} from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
-import React, {ReactNode, useState} from "react";
+import React, {Dispatch, ReactNode, SetStateAction, useState} from "react";
 import {useBoardgamesContext} from "../../../contexts/BoardgamesContext.tsx";
 import {BoardGameStub} from "../../../types/IBoardgames.ts";
 import GameSearchResult from "./GameSearchResult.tsx";
@@ -50,9 +50,10 @@ const StyledInputBase = styled(InputBase)(({theme}) => ({
 /**
  * View presenting searchbar functionality as means of choosing game to play in a playroom
  * (Alternative to wizard choice)
+ * @param {Dispatch<SetStateAction<string>>} setName - callback for game choice info
  * @returns {ReactNode}
  */
-const SearchGameSelect = (): ReactNode => {
+const SearchGameSelect = ({setName}: {setName: Dispatch<SetStateAction<string>>}): ReactNode => {
 
     // user games available from context
     const {games} = useBoardgamesContext();
@@ -109,6 +110,7 @@ const SearchGameSelect = (): ReactNode => {
                                 key={game.name["#text"]}
                                 choice={choice}
                                 setChoice={setChoice}
+                                setName={setName}
                             />
                         ))
                 }
