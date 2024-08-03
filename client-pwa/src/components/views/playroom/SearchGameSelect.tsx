@@ -97,10 +97,10 @@ const SearchGameSelect = ({setName}: {setName: Dispatch<SetStateAction<string>>}
                     onChange={handleInputChange}
                 />
             </Search>
-            <div style={{height: "90%", overflowY: "auto"}}>
+            <div style={{height: "85%", overflowY: "auto", boxSizing: "border-box"}}>
                 {
                     results.length === 0 ?
-                        <Typography>
+                        <Typography width="100%" textAlign="center">
                             No results
                         </Typography>
                         :

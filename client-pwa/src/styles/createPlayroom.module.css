@@ -89,6 +89,17 @@
     box-sizing: border-box;
 }
 
+.stepperWrapper {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+.bottomPanel {
+    width: 60%;
+    justify-self: center;
+    padding: 0 5%;
+}
 
 
 @media screen and (min-width: 1000px) {
@@ -134,6 +145,10 @@
         flex-direction: column;
     }
 
+    .gameSelectWindow {
+        width: 80%;
+    }
+
 }
 
 @media screen and (max-width: 700px) {
@@ -141,6 +156,14 @@
     .container {
         height: 500px;
     }
+
+    .gameSelectWindow {
+        width: 100%;
+    }
+
+}
+
+@media screen and (max-width: 500px) {
 
     .chooseGameTopBar {
         flex-direction: column;

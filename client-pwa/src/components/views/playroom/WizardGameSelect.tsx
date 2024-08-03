@@ -1,3 +1,4 @@
+import {Typography} from "@mui/material";
 
 
 const WizardGameSelect = () => {
@@ -5,7 +6,9 @@ const WizardGameSelect = () => {
 
     return (
         <div>
-            Wizard
+            <Typography width="100%" textAlign="center" lineHeight="100px">
+                Wizard
+            </Typography>
             {
                 // TODO: interface for game selection wizard
             }

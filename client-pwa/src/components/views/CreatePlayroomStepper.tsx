@@ -75,8 +75,8 @@ const CreatePlayroomStepper = (): ReactNode => {
     }
 
     return (
-        <Box sx={{ width: '100%' }}>
-            <Stepper activeStep={activeStep} sx={{height: "fit-content", marginBottom: "20px"}}>
+        <Box sx={{ width: '100%' }} className={styles.stepperWrapper}>
+            <Stepper activeStep={activeStep} sx={{height: "fit-content", marginBottom: "20px", width: "100%"}}>
                 {steps.map((label) => {
                     const stepProps: { completed?: boolean } = {};
                     const labelProps: {
@@ -110,18 +110,22 @@ const CreatePlayroomStepper = (): ReactNode => {
                             </div>
                         }
                     </Box>
-                    <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+                    <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }} className={styles.bottomPanel}>
                         <Button
                             color="inherit"
                             disabled={activeStep === 0}
                             onClick={handleBack}
                             sx={{ mr: 1 }}
+                            variant="outlined"
                         >
                             Back
                         </Button>
                         <Box sx={{ flex: '1 1 auto' }} />
-                        <Button onClick={handleNext}>
-                            {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
+                        <Button
+                            onClick={handleNext}
+                            variant={activeStep === steps.length - 1 ? "contained" : "outlined"}
+                        >
+                            {activeStep === steps.length - 1 ? 'Start' : 'Next'}
                         </Button>
                     </Box>
                 </React.Fragment>
