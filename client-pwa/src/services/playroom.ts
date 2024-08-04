@@ -49,5 +49,6 @@ export const updatePlayroom = async (id: string, body: PutPlayroom):Promise<bool
     });
 
     const response = await request;
-    return response.status == 200;
+    console.log(response.status)
+    return response.status === 201;
 }
