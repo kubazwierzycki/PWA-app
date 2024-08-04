@@ -1,4 +1,4 @@
-import {ReactNode, useState} from "react";
+import {Dispatch, ReactNode, SetStateAction, useState} from "react";
 import styles from "../../../styles/createPlayroom.module.css";
 import StyledToggleButtonGroup from "../../controls/StyledToggleButtonGroup.tsx";
 import ToggleButton from "@mui/material/ToggleButton";
@@ -13,14 +13,22 @@ enum SELECTION_MODES {
     SEARCH
 }
 
+interface ChoosingViewProps {
+    name: string
+    setName: Dispatch<SetStateAction<string>>
+    choice: string
+    setChoice: Dispatch<SetStateAction<string>>
+}
+
 /**
  * View component enabling choosing the right game to play in the playroom
+ * @param {string} name - state with chosen game name
+ * @param {Dispatch<SetStateAction<string>>} setName - chosen game change callback
+ * @param {string} choice - chosen game id
+ * @param {Dispatch<SetStateAction<string>>} setChoice - chosen game id change callback
  * @returns {ReactNode}
  */
-const ChoosingGameView = (): ReactNode => {
-
-    // current chosen game name
-    const [name, setName] = useState<string>("");
+const ChoosingGameView = ({name, setName, choice, setChoice}: ChoosingViewProps): ReactNode => {
 
     // chosen method of selecting game to play
     const [selectionMode, setSelectionMode] =
@@ -76,7 +84,7 @@ const ChoosingGameView = (): ReactNode => {
                         selectionMode === SELECTION_MODES.WIZARD ?
                             <WizardGameSelect />
                             :
-                            <SearchGameSelect setName={setName} />
+                            <SearchGameSelect setName={setName} choice={choice} setChoice={setChoice}/>
                     }
                 </Paper>
             </div>

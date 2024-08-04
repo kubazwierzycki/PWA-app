@@ -10,6 +10,7 @@ import GeneratePlayroomView from "./playroom/GeneratePlayroomView.tsx";
 import styles from "../../styles/createPlayroom.module.css"
 import AwaitingPlayersView from "./playroom/AwaitingPlayersView.tsx";
 import ChoosingGameView from "./playroom/ChoosingGameView.tsx";
+import {PutPlayroom, updatePlayroom} from "../../services/playroom.ts";
 
 // creating playroom steps' labels
 const steps = ['Create a playroom', 'Wait for others to join', 'Choose the game'];
@@ -20,6 +21,13 @@ const steps = ['Create a playroom', 'Wait for others to join', 'Choose the game'
  * @returns {ReactNode}
  */
 const CreatePlayroomStepper = (): ReactNode => {
+
+    // current chosen game name
+    const [name, setName] = useState<string>("");
+
+    // current chosen game id
+    const [choice, setChoice] = useState("");
+
     const [activeStep, setActiveStep] = React.useState(0);
 
     // code generated for the new playroom
@@ -44,6 +52,37 @@ const CreatePlayroomStepper = (): ReactNode => {
         }
     };
 
+    const handleUpdate = async () => {
+        if (code === "") return;
+        const body: PutPlayroom = {
+            gameId: choice,
+            game: name,
+            isGlobalTimer: true, // TODO: to be replaced with correct value
+            timer: 100 // TODO: also temporary
+        }
+        const success = await updatePlayroom(code, body);
+        if (success) {
+            // playroom creation completed
+            setActiveStep((prevActiveStep) => prevActiveStep + 1);
+        }
+        else {
+            alert("Error: Updating playroom failed. Please try again");
+        }
+    }
+
+    const handleStart = () => {
+        if (name === "") {
+            // game not chosen yet
+            alert("Please choose a game to be played");
+        }
+        else {
+            // game chosen - ready to play
+            // TODO: real playroom view transition
+            // send update request about the playroom
+            handleUpdate().then();
+        }
+    }
+
     const handleBack = () => {
         setActiveStep((prevActiveStep) => prevActiveStep - 1);
     };
@@ -67,7 +106,12 @@ const CreatePlayroomStepper = (): ReactNode => {
                 )
             case 2:
                 return (
-                    <ChoosingGameView />
+                    <ChoosingGameView
+                        name={name}
+                        setName={setName}
+                        choice={choice}
+                        setChoice={setChoice}
+                    />
                 )
             default:
                 return <></>
@@ -92,7 +136,7 @@ const CreatePlayroomStepper = (): ReactNode => {
             {activeStep === steps.length ? (
                 <React.Fragment>
                     <Typography sx={{ mt: 2, mb: 1 }}>
-                        All steps completed - you&apos;re finished
+                        All steps completed - playroom is ready to for the game
                     </Typography>
                     <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
                         <Box sx={{ flex: '1 1 auto' }} />
@@ -122,7 +166,7 @@ const CreatePlayroomStepper = (): ReactNode => {
                         </Button>
                         <Box sx={{ flex: '1 1 auto' }} />
                         <Button
-                            onClick={handleNext}
+                            onClick={activeStep === steps.length - 1 ? handleStart : handleNext}
                             variant={activeStep === steps.length - 1 ? "contained" : "outlined"}
                         >
                             {activeStep === steps.length - 1 ? 'Start' : 'Next'}

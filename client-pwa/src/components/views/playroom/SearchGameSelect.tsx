@@ -46,14 +46,21 @@ const StyledInputBase = styled(InputBase)(({theme}) => ({
     },
 }));
 
+interface SearchSelectProps {
+    setName: Dispatch<SetStateAction<string>>
+    choice: string
+    setChoice: Dispatch<SetStateAction<string>>
+}
 
 /**
  * View presenting searchbar functionality as means of choosing game to play in a playroom
  * (Alternative to wizard choice)
  * @param {Dispatch<SetStateAction<string>>} setName - callback for game choice info
+ * @param {string} choice - id of chosen game
+ * @param {Dispatch<SetStateAction<string>>} setChoice - id of chosen game change callback
  * @returns {ReactNode}
  */
-const SearchGameSelect = ({setName}: {setName: Dispatch<SetStateAction<string>>}): ReactNode => {
+const SearchGameSelect = ({setName, choice, setChoice}: SearchSelectProps): ReactNode => {
 
     // user games available from context
     const {games} = useBoardgamesContext();
@@ -62,9 +69,6 @@ const SearchGameSelect = ({setName}: {setName: Dispatch<SetStateAction<string>>}
     const [input, setInput] = useState<string>("");
 
     const [results, setResults] = useState<BoardGameStub[]>([] as BoardGameStub[]);
-
-    // game choice state
-    const [choice, setChoice] = useState("");
 
     // finds games that contain part of input name
     const searchInGames = () => {
