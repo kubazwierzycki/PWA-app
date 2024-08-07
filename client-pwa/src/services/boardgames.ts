@@ -2,8 +2,9 @@ import axios from "axios";
 import {parseXml} from "../utils/XMLToJSON.ts";
 import {BoardGameDetails} from "../types/IBoardgames.ts";
 import {clearCharEntities, getShortDescription} from "../utils/DescriptionParser.ts";
+import apiAddress from "../config/api_address.json"
 
-const baseApiAddress: string = 'https://boardgamegeek.com/xmlapi2';
+const baseApiAddress: string = apiAddress.bgg;
 
 
 /**

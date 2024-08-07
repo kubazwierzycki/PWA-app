@@ -31,7 +31,6 @@ const CollectionPage = (): ReactNode => {
     // Aldie
     // goluch
     const { user } = useAuth();
-    const username: string = user.bggUsername;
 
     const baseApiAddress: string = "https://boardgamegeek.com/xmlapi2";
 
@@ -124,7 +123,7 @@ const CollectionPage = (): ReactNode => {
 
             urlParams += parameters.join("&");
 
-            const url = `${baseApiAddress}/collection?username=${username}&stats=1${urlParams}`;
+            const url = `${baseApiAddress}/collection?username=${user.bggUsername}&stats=1${urlParams}`;
             const collectionResponse = await axios.get(url);
 
             if (collectionResponse.status === 200) {

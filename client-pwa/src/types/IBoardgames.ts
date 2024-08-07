@@ -20,6 +20,7 @@ export interface BoardGameDetails {
 export interface BoardGameUsersDetails {
     comment: string
     stats: {rating: {"@_value": string}}
+    thumbnail: string
 }
 
 export interface BoardGameStats {

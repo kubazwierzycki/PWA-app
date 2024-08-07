@@ -40,11 +40,13 @@
     flex-direction: row;
     flex: 1;
     justify-content: center;
+    align-items: center;
 }
 
 .rightPanel {
     display: flex;
     flex-direction: row;
+    align-items: center;
 }
 
 .menuToggle {
@@ -75,9 +77,24 @@
     height: 60px;
 }
 
-.logoText {
+.logoTextDrawer {
     margin-left: 15px;
     font-size: 1.5rem;
+}
+
+.logoTextNavbar {
+    margin-left: 15px;
+    font-size: 1.5rem;
+}
+
+.navLogo {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.navLogo img {
+    height: 60px;
 }
 
 @media screen and (max-width: 850px) {
@@ -91,6 +108,7 @@
     }
 
     .navbarContainer {
+        padding: 15px 0;
         justify-content: space-between;
     }
 
@@ -100,6 +118,14 @@
 
     .menuToggle {
         display: block;
+    }
+
+}
+
+@media screen and (max-width: 550px) {
+
+    .logoTextNavbar {
+        display: none;
     }
 
 }

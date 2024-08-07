@@ -22,7 +22,7 @@ const DrawerMenu = ({drawerOpen, setDrawerOpen}: DrawerState): ReactNode => {
             <div className={styles.drawerContainer}>
                 <div className={styles.drawerLogo}>
                     <Logo />
-                    <div className={styles.logoText}>
+                    <div className={styles.logoTextDrawer}>
                         CoGame
                     </div>
                 </div>

@@ -1,0 +1,177 @@
+.container {
+    width: 100%;
+    height: 400px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.generateBox {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 5% 0;
+}
+
+.awaitBox {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+}
+
+.joinedList {
+    width: 40%;
+    max-height: 300px;
+    overflow: auto;
+}
+
+.joinedInfo {
+    width: 60%;
+    max-height: 300px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 0 20px;
+}
+
+.infoElement {
+    margin-top: 10px;
+}
+
+
+
+.nickInput {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    text-align: center;
+}
+
+
+
+.gameSelectWindow {
+    width: 60%;
+    min-height: 320px;
+    margin-top: 20px;
+}
+
+
+.searchResultContainer {
+    display: flex;
+    padding: 5px 20px;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+.searchResultTitle {
+    flex: 1;
+}
+
+.chosenResultTick {
+    align-self: center;
+    justify-self: flex-end;
+    flex: 0;
+}
+
+.chooseGameTopBar {
+    display: flex;
+    flex-direction: row;
+}
+
+.gameChoiceNameField {
+    margin-left: 20px;
+    box-sizing: border-box;
+}
+
+.stepperWrapper {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+.bottomPanel {
+    width: 60%;
+    justify-self: center;
+    padding: 0 5%;
+}
+
+
+@media screen and (min-width: 1000px) {
+
+    .generateBox {
+        width: 60%;
+    }
+
+    .awaitBox {
+        width: 70%;
+    }
+
+}
+
+@media screen and (max-width: 1000px) {
+
+    .container {
+        flex-direction: column;
+    }
+
+    .generateBox {
+        min-width: 80%;
+        padding: 10% 5%;
+    }
+
+    .awaitBox {
+        min-width: 90%;
+        flex-direction: column;
+    }
+
+    .joinedList {
+        width: 100%;
+        max-height: 300px;
+        overflow: auto;
+    }
+
+    .joinedInfo {
+        width: 100%;
+        max-height: 300px;
+    }
+
+    .nickInput {
+        flex-direction: column;
+    }
+
+    .gameSelectWindow {
+        width: 80%;
+    }
+
+}
+
+@media screen and (max-width: 700px) {
+
+    .container {
+        height: 500px;
+    }
+
+    .gameSelectWindow {
+        width: 100%;
+    }
+
+}
+
+@media screen and (max-width: 500px) {
+
+    .chooseGameTopBar {
+        flex-direction: column;
+    }
+
+    .gameChoiceNameField {
+        margin-top: 20px;
+    }
+
+}
+

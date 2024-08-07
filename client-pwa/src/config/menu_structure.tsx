@@ -13,7 +13,7 @@ import { ReactNode } from "react";
  * @property {string} link - routing link for menu button
  * @property {MenuItem[]} sub - list of submenu items
  */
-interface MenuItem {
+export interface MenuItem {
     name: string;
     link: string;
     sub: MenuItem[];
@@ -57,7 +57,18 @@ export const menu_structure: MenuItem[] = [
     {
         name: "Play",
         link: "/play",
-        sub: [],
+        sub: [
+            {
+                name: "Create playroom",
+                link: "/play/create",
+                sub: [],
+            },
+            {
+                name: "Join playroom",
+                link: "/play/join",
+                sub: [],
+            },
+        ],
     },
     {
         name: "Profile",
