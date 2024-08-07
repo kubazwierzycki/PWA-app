@@ -13,7 +13,7 @@ import { ReactNode } from "react";
  * @property {string} link - routing link for menu button
  * @property {MenuItem[]} sub - list of submenu items
  */
-interface MenuItem {
+export interface MenuItem {
     name: string;
     link: string;
     sub: MenuItem[];

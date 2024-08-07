@@ -6,7 +6,7 @@ import Collapse from "@mui/material/Collapse";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import { ReactNode, useState } from "react";
-import { getMenuItemIcon, menu_structure } from "../../config/menu_structure.tsx";
+import {getMenuItemIcon, menu_structure, MenuItem} from "../../config/menu_structure.tsx";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext.tsx";
 
@@ -49,56 +49,72 @@ const NestedMenu = ({ closeDrawer }: { closeDrawer: () => void }): ReactNode => 
         }
     };
 
+    const MenuListItemButton = ({name, sub, link}: MenuItem): ReactNode => {
+        return (
+            <ListItemButton
+                key={name}
+                onClick={() =>
+                    handleClick(name, sub.length > 0, link)
+                }
+            >
+                <ListItemIcon>{getMenuItemIcon(name)}</ListItemIcon>
+                <ListItemText primary={name} />
+                {sub.length > 0 && (
+                    expandedItems.get(name) ? (
+                        <ExpandLess />
+                    ) : (
+                        <ExpandMore />
+                    )
+                )}
+            </ListItemButton>
+        )
+    }
+
+    const MenuCollapse = (element: MenuItem): ReactNode => {
+        return (
+            <Collapse
+                in={expandedItems.get(element.name)}
+                timeout="auto"
+                unmountOnExit
+            >
+                <List component="div" disablePadding>
+                    {element.sub.map((subElement) => (
+                        <ListItemButton
+                            sx={{ pl: 4 }}
+                            key={subElement.name}
+                            onClick={() =>
+                                handleClick(subElement.name, false, subElement.link)
+                            }
+                        >
+                            <ListItemText primary={subElement.name} />
+                        </ListItemButton>
+                    ))}
+                </List>
+            </Collapse>
+        )
+    }
+
     return (
         <List sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }} component="nav">
             {menu_structure.map((element) =>
                 {
                     if (topNavExcluded.includes(element.name)) return <div></div>;
                     else return (
-                        !(uuid !== "" && (element.name === "Sign In" || element.name === "Sign Up")) ? (
+                        !(uuid !== "" && (element.name === "Sign In" || element.name === "Sign Up")) && (
                             <div key={element.name}>
-                                <ListItemButton
-                                    key={element.name}
-                                    onClick={() =>
-                                        handleClick(element.name, element.sub.length > 0, element.link)
-                                    }
-                                >
-                                    <ListItemIcon>{getMenuItemIcon(element.name)}</ListItemIcon>
-                                    <ListItemText primary={element.name} />
-                                    {element.sub.length > 0 ? (
-                                        expandedItems.get(element.name) ? (
-                                            <ExpandLess />
-                                        ) : (
-                                            <ExpandMore />
-                                        )
-                                    ) : (
-                                        <></>
-                                    )}
-                                </ListItemButton>
+                                <MenuListItemButton
+                                    name={element.name}
+                                    link={element.link}
+                                    sub={element.sub}
+                                />
                                 {element.sub.length > 0 && (
-                                    <Collapse
-                                        in={expandedItems.get(element.name)}
-                                        timeout="auto"
-                                        unmountOnExit
-                                    >
-                                        <List component="div" disablePadding>
-                                            {element.sub.map((subElement) => (
-                                                <ListItemButton
-                                                    sx={{ pl: 4 }}
-                                                    key={subElement.name}
-                                                    onClick={() =>
-                                                        handleClick(subElement.name, false, subElement.link)
-                                                    }
-                                                >
-                                                    <ListItemText primary={subElement.name} />
-                                                </ListItemButton>
-                                            ))}
-                                        </List>
-                                    </Collapse>
+                                    <MenuCollapse
+                                        name={element.name}
+                                        link={element.link}
+                                        sub={element.sub}
+                                    />
                                 )}
                             </div>
-                        ) : (
-                            <></>
                         )
                     )}
                     )
