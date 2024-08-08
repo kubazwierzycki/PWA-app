@@ -56,6 +56,16 @@ public class Playroom implements Serializable {
     private int currentPlayer;
 
     /**
+     * Host ID
+     */
+    private UUID hostId;
+
+    /**
+     * True if waiting room is closed for joining new players
+     */
+    private boolean isWaitingRoomClosed;
+
+    /**
      * The time of last operation
      */
     private LocalTime lastOperationTime;

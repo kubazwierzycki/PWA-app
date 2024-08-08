@@ -57,40 +57,43 @@ public class WebSocketConnectionHandler extends TextWebSocketHandler {
 
         JSONObject messageJSON = new JSONObject(message.getPayload().toString());
 
-        if ("endTurn".equals(messageJSON.get("operation"))) {
-            playroomController.endTurn(session.getId(), messageJSON);
+        switch (messageJSON.get("operation").toString()) {
+            case "endTurn":
+                playroomController.endTurn(session.getId(), messageJSON);
+                break;
+            case "pause":
+                playroomController.pause(session.getId(), messageJSON);
+                break;
+            case "joinPlayroom":
+                playroomController.joinPlayroom(session, messageJSON);
+                break;
+            case "quitPlayroom":
+                playroomController.quitPlayroom(session.getId(), messageJSON);
+                break;
+            case "status":
+                playroomController.status(session.getId(), messageJSON);
+                break;
+            case "start":
+                playroomController.start(session.getId(), messageJSON);
+                break;
+            case "win":
+                playroomController.win(session.getId(), messageJSON);
+                break;
+            case "endGame":
+                playroomController.endGame(session.getId(), messageJSON);
+                break;
+            case "joinWaitingRoom":
+                playroomController.joinWaitingRoom(session, messageJSON);
+                break;
+            case "finishWaitingRoom":
+                playroomController.finishWaitingRoom(session.getId(), messageJSON);
+                break;
+            case "closeWaitingRoom":
+                playroomController.closeWaitingRoom(session.getId(), messageJSON);
+                break;
+            default:
+                System.err.println("Unhandled type of message: \n" + message.getPayload());
         }
-        else if ("pause".equals(messageJSON.get("operation"))) {
-            playroomController.pause(session.getId(), messageJSON);
-        }
-        else if ("joinPlayroom".equals(messageJSON.get("operation"))) {
-            playroomController.joinPlayroom(session, messageJSON);
-        }
-        else if ("quitPlayroom".equals(messageJSON.get("operation"))) {
-            playroomController.quitPlayroom(session.getId(), messageJSON);
-        }
-        else if ("status".equals(messageJSON.get("operation"))) {
-            playroomController.status(session.getId(), messageJSON);
-        }
-        else if ("start".equals(messageJSON.get("operation"))) {
-            playroomController.start(session.getId(), messageJSON);
-        }
-        else if ("win".equals(messageJSON.get("operation"))) {
-            playroomController.win(session.getId(), messageJSON);
-        }
-        else if ("endGame".equals(messageJSON.get("operation"))) {
-            playroomController.endGame(session.getId(), messageJSON);
-        }
-        else if ("joinWaitingRoom".equals(messageJSON.get("operation"))) {
-            playroomController.joinWaitingRoom(session, messageJSON);
-        }
-        else if ("finishWaitingRoom".equals(messageJSON.get("operation"))) {
-            playroomController.finishWaitingRoom(session.getId(), messageJSON);
-        }
-        else {
-            System.err.println("Unhandled type of message: \n" + message.getPayload());
-        }
-
     }
 
 }

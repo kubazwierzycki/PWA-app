@@ -44,6 +44,16 @@ public class PlayroomDefaultController implements PlayroomController {
         UUID playroomId = UUID.randomUUID();
         playroomService.create(Playroom.builder()
                 .uuid(playroomId)
+                .paused(true)
+                .ended(false)
+                .currentPlayer(1)
+                .hostId(null)
+                .isWaitingRoomClosed(false)
+                .lastOperationTime(LocalTime.now())
+                .globalTimerValue(null)
+                .game(null)
+                .players(new HashMap<>())
+                .playersWaitingRoom(new HashMap<>())
                 .build());
 
         return ResponseEntity.ok(PlayroomInfo.builder()
@@ -53,19 +63,15 @@ public class PlayroomDefaultController implements PlayroomController {
 
     @Override
     public void updatePlayroom(String playroomId, PutPlayroom request) {
-        Playroom playroom = playroomService.find(UUID.fromString(playroomId)).orElse(null);
+        Playroom playroom = this.getPlayroom(playroomId);
+
         if (playroom != null) {
-            playroomService.update(Playroom.builder()
-                    .uuid(UUID.fromString(playroomId))
-                    .isGlobalTimer(request.getIsGlobalTimer())
-                    .paused(true)
-                    .ended(false)
-                    .currentPlayer(1)
-                    .lastOperationTime(LocalTime.now())
-                    .globalTimerValue(request.getTimer())
-                    .game(new Playroom.Game(request.getGameId(), request.getGame()))
-                    .players(new HashMap<>())
-                    .build());
+            playroom.setGlobalTimer(request.getIsGlobalTimer());
+            playroom.setGame(new Playroom.Game(request.getGameId(), request.getGame()));
+            playroom.setGlobalTimerValue(request.getTimer());
+
+            playroom.setLastOperationTime(LocalTime.now());
+            playroomService.update(playroom);
 
             playroomEventRepository.updateGame(request.getGameId(), request.getGame(),
                     !request.getIsGlobalTimer(), request.getTimer().intValue());
@@ -88,120 +94,111 @@ public class PlayroomDefaultController implements PlayroomController {
 
     @Override
     public void joinWaitingRoom(WebSocketSession webSocketSession, JSONObject message) {
-        String playroomId = getStringValue("playroomId", message);
-        if (playroomId != null) {
-            Playroom playroom = playroomService.find(UUID.fromString(playroomId)).orElse(null);
-            if (playroom != null) {
-                UUID uuid;
-                boolean guest = false;
-                String uuidValue = getStringValue("id", message.getJSONObject("player"));
-                if (uuidValue == null || "null".equals(uuidValue)) {
-                    uuid = null;
-                    guest = true;
-                }
-                else {
-                    uuid = UUID.fromString(uuidValue);
-                }
-                Playroom.Player newPlayer = new Playroom.Player(
-                        UUID.randomUUID(), uuid, message.getJSONObject("player").getString("username"),
-                        null, false, guest, webSocketSession.getId());
+        Playroom playroom = this.getPlayroom(getStringValue("playroomId", message));
 
-                Map<String, Playroom.Player> updatedPlayers = playroom.getPlayersWaitingRoom();
-                updatedPlayers.put(webSocketSession.getId(), newPlayer);
-                playroom.setPlayersWaitingRoom(updatedPlayers);
-                playroomService.update(playroom);
-                webSocketSessions.put(newPlayer.getWebSocketSessionId(), webSocketSession);
+        if (playroom != null && !playroom.isWaitingRoomClosed()) {
+            UUID uuid;
+            boolean guest;
+            String uuidValue = getStringValue("id", message.getJSONObject("player"));
+            if (uuidValue == null || "null".equals(uuidValue)) {
+                uuid = null;
+                guest = true;
+            } else {
+                uuid = UUID.fromString(uuidValue);
+                guest = false;
+            }
+            Playroom.Player newPlayer = new Playroom.Player(
+                    UUID.randomUUID(), uuid, message.getJSONObject("player").getString("username"),
+                    null, false, guest, webSocketSession.getId());
 
-                JSONObject status = getWaitingRoomStatus(playroom);
+            Map<String, Playroom.Player> updatedPlayers = playroom.getPlayersWaitingRoom();
+            updatedPlayers.put(webSocketSession.getId(), newPlayer);
+            playroom.setPlayersWaitingRoom(updatedPlayers);
+            playroomService.update(playroom);
+            webSocketSessions.put(newPlayer.getWebSocketSessionId(), webSocketSession);
 
-                for (String sessionId : playroom.getPlayersWaitingRoom().keySet()) {
-                    sendMessageJSON(webSocketSessions.get(sessionId), status);
-                }
+            JSONObject status = getWaitingRoomStatus(playroom);
+
+            for (String sessionId : playroom.getPlayersWaitingRoom().keySet()) {
+                sendMessageJSON(webSocketSessions.get(sessionId), status);
             }
         }
     }
 
     @Override
     public void finishWaitingRoom(String sessionId, JSONObject message) {
-        String playroomId = getStringValue("playroomId", message);
-        if (playroomId != null) {
-            Playroom playroom = playroomService.find(UUID.fromString(playroomId)).orElse(null);
-            if (playroom != null) {
-                JSONObject status = getGeneralPlayroomData(playroom, "ready");
+        Playroom playroom = this.getPlayroom(getStringValue("playroomId", message));
 
-                for (String session : playroom.getPlayersWaitingRoom().keySet()) {
-                    sendMessageJSON(webSocketSessions.get(session), status);
-                }
+        if (playroom != null) {
+            // TODO move players to playroom and send update
+        }
+    }
+
+    @Override
+    public void closeWaitingRoom(String sessionId, JSONObject message) {
+        Playroom playroom = this.getPlayroom(getStringValue("playroomId", message));
+
+        if (playroom != null) {
+            playroom.setWaitingRoomClosed(true);
+
+            this.playroomService.update(playroom);
+
+            JSONObject status = getWaitingRoomStatus(playroom);
+
+            for (String session : playroom.getPlayersWaitingRoom().keySet()) {
+                sendMessageJSON(webSocketSessions.get(session), status);
             }
         }
     }
 
     @Override
     public void joinPlayroom(WebSocketSession webSocketSession, JSONObject message) {
-        String playroomId = getStringValue("playroomId", message);
-        if (playroomId != null) {
-            Playroom playroom = playroomService.find(UUID.fromString(playroomId)).orElse(null);
-            if (playroom != null) {
-                Playroom.Player newPlayer = playroom.getPlayersWaitingRoom().get(webSocketSession.getId());
-                if (newPlayer == null) {
-                    System.err.println("Player does not exist! - session: " + webSocketSession.getId());
-                    return;
-                }
-                if (!playroom.isGlobalTimer()) {
-                    newPlayer.setTimer(playroom.getGlobalTimerValue());
-                }
+        Playroom playroom = this.getPlayroom(getStringValue("playroomId", message));
 
-                Map<Integer, Playroom.Player> updatedPlayers = playroom.getPlayers();
-                updatedPlayers.put(updatedPlayers.size() + 1, newPlayer);
-                playroom.setPlayers(updatedPlayers);
-                playroomService.update(playroom);
-                webSocketSessions.put(newPlayer.getWebSocketSessionId(), webSocketSession);
-
-                updateLastModDate(playroom);
-                sendMessagesWithUpdate(playroom.getPlayers(), playroomId);
-
-                if (newPlayer.getUuid() != null) {
-                    playroomEventRepository.createExperience(newPlayer.getUuid().toString(), playroom.getGame().getId());
-                }
-            }
+        if (playroom != null && playroom.isWaitingRoomClosed()) {
+            // TODO reconnect playroom (only registered users) - unique user ID
         }
     }
 
     @Override
     public void quitPlayroom(String sessionId, JSONObject message) {
-        Playroom playroom = null;
+        Playroom playroom;
         if (message == null) {
             playroom = getPlayroomByPlayerSession(sessionId);
         }
         else {
-            String playroomId = getStringValue("playroomId", message);
-            if (playroomId != null) {
-                playroom = playroomService.find(UUID.fromString(playroomId)).orElse(null);
-            }
+            playroom = this.getPlayroom(getStringValue("playroomId", message));
         }
 
         if (playroom != null) {
-            Map<Integer, Playroom.Player> players = playroom.getPlayers();
-            Map<String, Playroom.Player> playersWaitingRoom = playroom.getPlayersWaitingRoom();
-            List<Integer> playerNumbers = players.keySet().stream().sorted().toList();
-            int k = 1;
-            for (int i = 0; i < players.size(); i++) {
-                Playroom.Player player = players.get(playerNumbers.get(i));
-                if (player.getWebSocketSessionId().equals(sessionId)) {
-                    players.remove(playerNumbers.get(i));
-                } else {
-                    players.put(k, player);
+            if (playroom.isWaitingRoomClosed()) {
+                Map<Integer, Playroom.Player> players = playroom.getPlayers();
+                List<Integer> playerNumbers = players.keySet().stream().sorted().toList();
+
+                int k = 1;
+                for (int i = 0; i < players.size(); i++) {
+                    Playroom.Player player = players.get(playerNumbers.get(i));
+                    if (player.getWebSocketSessionId().equals(sessionId)) {
+                        players.remove(playerNumbers.get(i));
+                    } else {
+                        players.put(k, player);
+                    }
+                    k++;
                 }
-                k++;
+                playroom.setPlayers(players);
+
+                if (!players.isEmpty()) {
+                    playroom.setCurrentPlayer((playroom.getCurrentPlayer() % players.size()) + 1);
+                }
             }
-            playersWaitingRoom.remove(sessionId);
-            playroom.setPlayers(players);
-            playroom.setPlayersWaitingRoom(playersWaitingRoom);
-            if (!players.isEmpty()) {
-                playroom.setCurrentPlayer((playroom.getCurrentPlayer() % players.size()) + 1);
+            else {
+                Map<String, Playroom.Player> playersWaitingRoom = playroom.getPlayersWaitingRoom();
+                playersWaitingRoom.remove(sessionId);
+                playroom.setPlayersWaitingRoom(playersWaitingRoom);
             }
+
             playroomService.update(playroom);
-            if (playroom.getPlayers().isEmpty()) {
+            if (!playroom.isWaitingRoomClosed()) {
                 for (String session: playroom.getPlayersWaitingRoom().keySet()) {
                     sendMessageJSON(webSocketSessions.get(session), getWaitingRoomStatus(playroom));
                 }
@@ -226,46 +223,43 @@ public class PlayroomDefaultController implements PlayroomController {
     @Override
     public void endTurn(String sessionId, JSONObject message) {
         String playroomId = getStringValue("playroomId", message);
-        if (playroomId != null) {
-            Playroom playroom = playroomService.find(UUID.fromString(playroomId)).orElse(null);
-            if (playroom != null && isPlayerInPlayroom(sessionId, playroom) &&
-                    playroom.getPlayers().get(playroom.getCurrentPlayer()).getWebSocketSessionId().equals(sessionId)) {
-                updateLastModDate(playroom);
-                playroom.setCurrentPlayer((playroom.getCurrentPlayer() % playroom.getPlayers().size()) + 1);
+        Playroom playroom = this.getPlayroom(playroomId);
 
-                updateLastModDate(playroom);
-                sendMessagesWithUpdate(playroom.getPlayers(), playroomId);
-            }
+        if (playroom != null && isPlayerInPlayroom(sessionId, playroom) &&
+                playroom.getPlayers().get(playroom.getCurrentPlayer()).getWebSocketSessionId().equals(sessionId)) {
+            updateLastModDate(playroom);
+            playroom.setCurrentPlayer((playroom.getCurrentPlayer() % playroom.getPlayers().size()) + 1);
+
+            updateLastModDate(playroom);
+            sendMessagesWithUpdate(playroom.getPlayers(), playroomId);
         }
     }
 
     @Override
     public void pause(String sessionId, JSONObject message) {
         String playroomId = getStringValue("playroomId", message);
-        if (playroomId != null) {
-            Playroom playroom = playroomService.find(UUID.fromString(playroomId)).orElse(null);
-            if (playroom != null && isPlayerInPlayroom(sessionId, playroom)) {
-                updateLastModDate(playroom);
-                playroom.setPaused(true);
+        Playroom playroom = this.getPlayroom(playroomId);
 
-                updateLastModDate(playroom);
-                sendMessagesWithUpdate(playroom.getPlayers(), playroomId);
-            }
+        if (playroom != null && isPlayerInPlayroom(sessionId, playroom)) {
+            updateLastModDate(playroom);
+            playroom.setPaused(true);
+
+            updateLastModDate(playroom);
+            sendMessagesWithUpdate(playroom.getPlayers(), playroomId);
         }
     }
 
     @Override
     public void start(String sessionId, JSONObject message) {
         String playroomId = getStringValue("playroomId", message);
-        if (playroomId != null) {
-            Playroom playroom = playroomService.find(UUID.fromString(playroomId)).orElse(null);
-            if (playroom != null && isPlayerInPlayroom(sessionId, playroom)) {
-                updateLastModDate(playroom);
-                playroom.setPaused(false);
+        Playroom playroom = this.getPlayroom(playroomId);
 
-                updateLastModDate(playroom);
-                sendMessagesWithUpdate(playroom.getPlayers(), playroomId);
-            }
+        if (playroom != null && isPlayerInPlayroom(sessionId, playroom)) {
+            updateLastModDate(playroom);
+            playroom.setPaused(false);
+
+            updateLastModDate(playroom);
+            sendMessagesWithUpdate(playroom.getPlayers(), playroomId);
         }
     }
 
@@ -277,33 +271,38 @@ public class PlayroomDefaultController implements PlayroomController {
     @Override
     public void endGame(String sessionId, JSONObject message) {
         String playroomId = getStringValue("playroomId", message);
-        if (playroomId != null) {
-            Playroom playroom = playroomService.find(UUID.fromString(playroomId)).orElse(null);
-            if (playroom != null && isPlayerInPlayroom(sessionId, playroom)) {
-                playroom.setEnded(true);
-                updateLastModDate(playroom);
-                sendMessagesWithUpdate(playroom.getPlayers(), playroomId);
+        Playroom playroom = this.getPlayroom(playroomId);
 
-                for (Playroom.Player player: playroom.getPlayers().values()) {
-                    quitPlayroom(player.getWebSocketSessionId(), new JSONObject()
-                            .put("operation", "quitPlayroom")
-                            .put("playroomId", playroomId));
-                }
-                playroomService.delete(UUID.fromString(playroomId));
+        if (playroom != null && isPlayerInPlayroom(sessionId, playroom)) {
+            playroom.setEnded(true);
+            updateLastModDate(playroom);
+            sendMessagesWithUpdate(playroom.getPlayers(), playroomId);
+
+            for (Playroom.Player player : playroom.getPlayers().values()) {
+                quitPlayroom(player.getWebSocketSessionId(), new JSONObject()
+                        .put("operation", "quitPlayroom")
+                        .put("playroomId", playroomId));
             }
+            playroomService.delete(UUID.fromString(playroomId));
         }
     }
 
     @Override
     public void status(String sessionId, JSONObject message) {
         String playroomId = getStringValue("playroomId", message);
-        if (playroomId != null) {
-            Playroom playroom = playroomService.find(UUID.fromString(playroomId)).orElse(null);
-            if (playroom != null) {
-                sendMessagesWithUpdate(playroom.getPlayers(), playroomId);
-                updateLastModDate(playroom);
-            }
+        Playroom playroom = this.getPlayroom(playroomId);
+
+        if (playroom != null) {
+            sendMessagesWithUpdate(playroom.getPlayers(), playroomId);
+            updateLastModDate(playroom);
         }
+    }
+
+    private Playroom getPlayroom(String playroomId) {
+        if (playroomId == null) {
+            return null;
+        }
+        return playroomService.find(UUID.fromString(playroomId)).orElse(null);
     }
 
     private boolean isPlayerInPlayroom(String sessionId, Playroom playroom) {
@@ -386,6 +385,7 @@ public class PlayroomDefaultController implements PlayroomController {
      * {
      *     "type": "waitingRoom",
      *     "playroomId": --playroomId--,
+     *     "isClosed": --true/false--,
      *     "players": [
      *          {
      *              "playerId": --playerId--,
@@ -405,6 +405,7 @@ public class PlayroomDefaultController implements PlayroomController {
         JSONObject status = new JSONObject();
         status.put("type", "waitingRoom");
         status.put("playroomId", playroom.getUuid());
+        status.put("isClosed", playroom.isWaitingRoomClosed());
         JSONArray players = new JSONArray();
         for (Playroom.Player player: playroom.getPlayersWaitingRoom().values()) {
             JSONObject player1 = new JSONObject();
