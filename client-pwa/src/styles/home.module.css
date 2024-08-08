@@ -10,6 +10,7 @@
 
 .banner {
     flex: 7;
+    background-color: #e9f3ff;
 }
 
 .bannerOverlay {

@@ -3,6 +3,7 @@ import banner from "../../public/banner1.jpg"
 import styles from "../styles/home.module.css"
 import Box from "@mui/material/Box";
 import {styled} from "@mui/material";
+import GameOfTheDay from "../components/home/GameOfTheDay.tsx";
 
 
 const OverlayBox = styled(Box)(({ theme }) => ({
@@ -30,6 +31,9 @@ const Home = (): ReactNode => {
                 <div className={styles.banner}>
                     <img src={banner} alt={"CoGame banner"} width={"100%"}/>
                 </div>
+            </div>
+            <div>
+                <GameOfTheDay />
             </div>
         </div>
     )

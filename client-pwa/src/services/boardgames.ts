@@ -1,6 +1,6 @@
 import axios from "axios";
 import {parseXml} from "../utils/XMLToJSON.ts";
-import {BoardGameDetails} from "../types/IBoardgames.ts";
+import {BoardGameDetails, TopBoardGame} from "../types/IBoardgames.ts";
 import {clearCharEntities, getShortDescription} from "../utils/DescriptionParser.ts";
 import apiAddress from "../config/api_address.json"
 
@@ -40,5 +40,18 @@ export const getGameDetails = async (gameId: string | undefined): Promise<BoardG
     gameDetails[0].shortDescription = getShortDescription(correctedDescription);
 
     return gameDetails;
+}
+
+/**
+ * Function fetching currently "hottest" BGG games list
+ * Used for game of the day homepage view
+ * @returns {Promise<TopBoardGame[]>}
+ */
+export const getTopGames = async (): Promise<TopBoardGame[]> => {
+
+    const url = `${baseApiAddress}/hot/type=boardgame`;
+
+    const response = await axios.get(url);
+    return parseXml(response.data).items.item;
 }
 

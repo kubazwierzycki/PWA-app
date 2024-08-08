@@ -53,3 +53,10 @@ export interface BoardGameRank {
     rating: number
     numberOfCompares: number
 }
+
+export interface TopBoardGame {
+    "@_rank": string
+    name: {"@_value": string}
+    thumbnail: {"@_value": string}
+    yearpublished: {"@_value": string}
+}
