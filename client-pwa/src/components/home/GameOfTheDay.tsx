@@ -1,6 +1,7 @@
 import {useEffect, useState} from "react";
 import {getTopGames} from "../../services/boardgames.ts";
 import {TopBoardGame} from "../../types/IBoardgames.ts";
+import styles from "../../styles/home.module.css"
 
 
 const GameOfTheDay = () => {
@@ -17,7 +18,7 @@ const GameOfTheDay = () => {
     }, []);
 
     return (
-        <div>
+        <div className={styles.gameOfTheDay}>
             <div>
                 {gameOfTheDay?.name?.["@_value"] ?? ""}
             </div>

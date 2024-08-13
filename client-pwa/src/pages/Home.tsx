@@ -4,6 +4,7 @@ import styles from "../styles/home.module.css"
 import Box from "@mui/material/Box";
 import {styled} from "@mui/material";
 import GameOfTheDay from "../components/home/GameOfTheDay.tsx";
+import CapabilitiesSlider from "../components/home/CapabilitiesSlider.tsx";
 
 
 const OverlayBox = styled(Box)(({ theme }) => ({
@@ -32,7 +33,8 @@ const Home = (): ReactNode => {
                     <img src={banner} alt={"CoGame banner"} width={"100%"}/>
                 </div>
             </div>
-            <div>
+            <div className={styles.rowWrapper}>
+                <CapabilitiesSlider />
                 <GameOfTheDay />
             </div>
         </div>
