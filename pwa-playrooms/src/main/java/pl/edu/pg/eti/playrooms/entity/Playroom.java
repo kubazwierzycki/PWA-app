@@ -122,9 +122,9 @@ public class Playroom implements Serializable {
         private Double timer;
 
         /**
-         * If player is host of playroom
+         * If player is skipped in the game
          */
-        private boolean host;
+        private boolean skip;
 
         /**
          * If user is not registered
