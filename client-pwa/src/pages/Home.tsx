@@ -10,7 +10,8 @@ import CapabilitiesSlider from "../components/home/CapabilitiesSlider.tsx";
 const OverlayBox = styled(Box)(({ theme }) => ({
     backgroundColor: theme.palette.background.paper,
     width: "100%",
-    height: "100%"
+    height: "100%",
+    border: `2px solid ${theme.palette.divider}`
 }));
 
 

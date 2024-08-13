@@ -11,7 +11,8 @@ const OverlayBox = styled(Box)(({ theme }) => ({
     height: "100%",
     padding: "10px",
     display: "flex",
-    flexDirection: "column"
+    flexDirection: "column",
+    border: `2px solid ${theme.palette.divider}`
 }));
 
 const GameOfTheDay = () => {

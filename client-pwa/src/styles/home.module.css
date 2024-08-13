@@ -44,3 +44,26 @@
     padding: 10px 0;
     flex: 1;
 }
+
+
+@media screen and (max-width: 650px) {
+
+    .bannerWrapper {
+        flex-direction: column-reverse;
+    }
+
+    .rowWrapper {
+        flex-direction: column;
+    }
+
+    .gameOfTheDay {
+        padding-left: 15%;
+        padding-right: 15%;
+        margin-top: 20px;
+    }
+
+    .bannerOverlay div {
+        min-height: 250px;
+    }
+
+}
