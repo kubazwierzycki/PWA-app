@@ -35,3 +35,12 @@
     flex: 3;
     min-height: 400px;
 }
+
+.thumbnail {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 0;
+    flex: 1;
+}
