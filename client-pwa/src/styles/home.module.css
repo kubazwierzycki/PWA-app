@@ -29,6 +29,20 @@
     flex: 7;
     min-height: 400px;
     background-color: #e9f3ff;
+    flex-direction: column;
+}
+
+.tabs {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    flex: 0;
+}
+
+.tabContent {
+    width: 100%;
+    flex: 1;
+    background-color: aqua;
 }
 
 .gameOfTheDay {
