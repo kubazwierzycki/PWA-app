@@ -51,10 +51,13 @@ const Home = (): ReactNode => {
                 </div>
                 <div className={styles.banner}>
                     <img src={banner} alt={"CoGame banner"} width={"100%"}/>
+                    <a href="http://www.freepik.com" className={styles.attribution} style={{float: "right", paddingRight: "10px"}}>
+                        Designed by Freepik
+                    </a>
                 </div>
             </div>
             <div className={styles.rowWrapper}>
-                <CapabilitiesSlider />
+                <CapabilitiesSlider/>
                 <GameOfTheDay />
             </div>
         </div>
