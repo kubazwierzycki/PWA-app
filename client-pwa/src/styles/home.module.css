@@ -26,6 +26,7 @@
 }
 
 .contents {
+    display: flex;
     flex: 7;
     min-height: 400px;
     background-color: #e9f3ff;
@@ -42,7 +43,8 @@
 .tabContent {
     width: 100%;
     flex: 1;
-    background-color: aqua;
+    box-sizing: border-box;
+    padding: 20px;
 }
 
 .gameOfTheDay {
@@ -78,6 +80,19 @@
 .bannerText {
     padding: 0 30px;
     box-sizing: border-box;
+}
+
+.tabContainer {
+    display: flex;
+    flex-direction: row;
+}
+
+.tabImg {
+    width: 40%;
+}
+
+.tabText {
+    width: 60%;
 }
 
 
