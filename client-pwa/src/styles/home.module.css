@@ -116,7 +116,23 @@
 }
 
 
-@media screen and (max-width: 650px) {
+@media screen and (max-width: 1250px) {
+
+    .bannerInnerBox {
+        height: 100%;
+        padding: 10px;
+    }
+
+    .banner {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+    }
+
+}
+
+@media screen and (max-width: 750px) {
 
     .bannerWrapper {
         flex-direction: column-reverse;
@@ -132,8 +148,26 @@
         margin-top: 20px;
     }
 
-    .bannerOverlay div {
-        min-height: 250px;
+    .bannerInnerBox {
+        padding: 30px 0;
     }
 
 }
+
+@media screen and (max-width: 550px) {
+
+    .tabContainer {
+        flex-direction: column;
+    }
+
+    .tabImg {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .tabText {
+        width: 100%;
+    }
+
+}
+

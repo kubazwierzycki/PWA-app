@@ -24,7 +24,6 @@ const GameOfTheDay = () => {
         let dayNumber = new Date().getDate();
 
         getTopGames().then((value) => {
-            console.log(gameOfTheDay)
             setGameOfTheDay(value[dayNumber - 1]);
         });
     }, []);
