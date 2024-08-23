@@ -1,10 +1,19 @@
 import axios from "axios";
 import {parseXml} from "../utils/XMLToJSON.ts";
-import {BoardGameDetails, TopBoardGame} from "../types/IBoardgames.ts";
+import {BoardGameDetails, BoardGameStub, TopBoardGame} from "../types/IBoardgames.ts";
 import {clearCharEntities, getShortDescription} from "../utils/DescriptionParser.ts";
 import apiAddress from "../config/api_address.json"
+import axiosRetry from "axios-retry";
 
 const baseApiAddress: string = apiAddress.bgg;
+
+
+// Configure axios to retry up to 3 times with a 2-second delay between retries
+axiosRetry(axios, {
+    retries: 5,
+    retryDelay: (retryCount: number) => retryCount * 1000, // 1 second delay
+    retryCondition: (error) => error.response?.status === 202, // retry only for 202 status
+});
 
 
 /**
@@ -40,6 +49,35 @@ export const getGameDetails = async (gameId: string | undefined): Promise<BoardG
     gameDetails[0].shortDescription = getShortDescription(correctedDescription);
 
     return gameDetails;
+}
+
+
+/**
+ * Function fetching list of board games in a collection
+ * @param {string} bggUsername - BGG username of collection owner (current user)
+ * @param {string} urlParams - request additional params as & connected string
+ * @returns {@link Promise<BoardGameStub[]>}
+ */
+export const getGames = async (bggUsername: string, urlParams: string): Promise<BoardGameStub[]> => {
+
+    const url = `${baseApiAddress}/collection?username=${bggUsername}&stats=1${urlParams}`;
+    const collectionResponse = await axios.get(url);
+
+    if (collectionResponse.status === 200) {
+        const parsedData = parseXml(collectionResponse.data);
+
+        let gamesData: BoardGameStub[] = [] as BoardGameStub[];
+
+        // wrap in array if only one item present
+        if (parsedData.items["@_totalitems"] == 1) {
+            gamesData.push(parsedData.items.item);
+        } else {
+            gamesData = parsedData.items.item;
+        }
+
+        return gamesData;
+    }
+    return [] as BoardGameStub[];
 }
 
 /**
