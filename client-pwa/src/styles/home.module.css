@@ -1,0 +1,173 @@
+.container {
+    width: 100%;
+}
+
+.bannerWrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+}
+
+.banner {
+    flex: 7;
+    background-color: #e9f3ff;
+}
+
+.bannerOverlay {
+    flex: 3;
+}
+
+.rowWrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    height: auto;
+    margin-top: 20px;
+}
+
+.contents {
+    display: flex;
+    flex: 7;
+    min-height: 400px;
+    background-color: #e9f3ff;
+    flex-direction: column;
+}
+
+.tabs {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    flex: 0;
+}
+
+.tabContent {
+    width: 100%;
+    flex: 1;
+    box-sizing: border-box;
+    padding: 20px;
+}
+
+.gameOfTheDay {
+    flex: 3;
+    min-height: 400px;
+}
+
+.thumbnail {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 0;
+    flex: 1;
+}
+
+.bannerInnerBox {
+    width: 100%;
+    height: 50%;
+    align-self: center;
+}
+
+.logoBox {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.logoBox img {
+    height: 100px;
+}
+
+.bannerText {
+    padding: 0 30px;
+    box-sizing: border-box;
+}
+
+.tabContainer {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+}
+
+.tabImg {
+    width: 40%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #bbdefb;
+    margin: 0 10px;
+    box-sizing: border-box;
+    flex-direction: column;
+}
+
+.tabImg img {
+    width: 90%;
+    height: auto;
+}
+
+.attribution {
+    font-size: 8px;
+    color: black;
+    text-decoration: none;
+}
+
+.tabText {
+    width: 60%;
+}
+
+
+@media screen and (max-width: 1250px) {
+
+    .bannerInnerBox {
+        height: 100%;
+        padding: 10px;
+    }
+
+    .banner {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+    }
+
+}
+
+@media screen and (max-width: 750px) {
+
+    .bannerWrapper {
+        flex-direction: column-reverse;
+    }
+
+    .rowWrapper {
+        flex-direction: column;
+    }
+
+    .gameOfTheDay {
+        padding-left: 15%;
+        padding-right: 15%;
+        margin-top: 20px;
+    }
+
+    .bannerInnerBox {
+        padding: 30px 0;
+    }
+
+}
+
+@media screen and (max-width: 550px) {
+
+    .tabContainer {
+        flex-direction: column;
+    }
+
+    .tabImg {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .tabText {
+        width: 100%;
+    }
+
+}
+
