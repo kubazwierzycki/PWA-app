@@ -15,6 +15,19 @@ import pl.edu.pg.eti.playrooms.controller.api.PlayroomController;
 @Component
 public class WebSocketConnectionHandler extends TextWebSocketHandler {
 
+    public static final String END_TURN = "endTurn";
+    public static final String PAUSE = "pause";
+    public static final String JOIN_PLAYROOM = "joinPlayroom";
+    public static final String QUIT_PLAYROOM = "quitPlayroom";
+    public static final String STATUS = "status";
+    public static final String START = "start";
+    public static final String WIN = "win";
+    public static final String END_GAME = "endGame";
+    public static final String JOIN_WAITING_ROOM = "joinWaitingRoom";
+    public static final String FINISH_WAITING_ROOM = "finishWaitingRoom";
+    public static final String CLOSE_WAITING_ROOM = "closeWaitingRoom";
+    public static final String CONFIRM = "confirm";
+
     private final PlayroomController playroomController;
 
     public WebSocketConnectionHandler(PlayroomController playroomController) {
@@ -58,38 +71,41 @@ public class WebSocketConnectionHandler extends TextWebSocketHandler {
         JSONObject messageJSON = new JSONObject(message.getPayload().toString());
 
         switch (messageJSON.get("operation").toString()) {
-            case "endTurn":
+            case END_TURN:
                 playroomController.endTurn(session.getId(), messageJSON);
                 break;
-            case "pause":
+            case PAUSE:
                 playroomController.pause(session.getId(), messageJSON);
                 break;
-            case "joinPlayroom":
+            case JOIN_PLAYROOM:
                 playroomController.joinPlayroom(session, messageJSON);
                 break;
-            case "quitPlayroom":
+            case QUIT_PLAYROOM:
                 playroomController.quitPlayroom(session.getId(), messageJSON);
                 break;
-            case "status":
+            case STATUS:
                 playroomController.status(session.getId(), messageJSON);
                 break;
-            case "start":
+            case START:
                 playroomController.start(session.getId(), messageJSON);
                 break;
-            case "win":
+            case WIN:
                 playroomController.win(session.getId(), messageJSON);
                 break;
-            case "endGame":
+            case END_GAME:
                 playroomController.endGame(session.getId(), messageJSON);
                 break;
-            case "joinWaitingRoom":
+            case JOIN_WAITING_ROOM:
                 playroomController.joinWaitingRoom(session, messageJSON);
                 break;
-            case "finishWaitingRoom":
+            case FINISH_WAITING_ROOM:
                 playroomController.finishWaitingRoom(session.getId(), messageJSON);
                 break;
-            case "closeWaitingRoom":
+            case CLOSE_WAITING_ROOM:
                 playroomController.closeWaitingRoom(session.getId(), messageJSON);
+                break;
+            case CONFIRM:
+                playroomController.confirm(session.getId(), messageJSON);
                 break;
             default:
                 System.err.println("Unhandled type of message: \n" + message.getPayload());

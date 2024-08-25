@@ -177,4 +177,16 @@ public interface PlayroomController {
      */
     void status(String sessionId, JSONObject message);
 
+    /**
+     * Confirm the operation
+     * @param sessionId - websocket session ID
+     * @param message - message with all details
+     *                {
+     *                  "operation": "confirm",
+     *                  "playroomId": --playroomUUID--,
+     *                  "operationId": --operationID--
+     *                }
+     */
+    void confirm(String sessionId, JSONObject message);
+
 }

@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static pl.edu.pg.eti.playrooms.websockets.WebSocketConnectionHandler.END_GAME;
+
 @Controller
 public class PlayroomDefaultController implements PlayroomController {
 
@@ -140,6 +142,9 @@ public class PlayroomDefaultController implements PlayroomController {
 
             int k = 1;
             for (Playroom.Player player: waitingRoomPlayers.values()) {
+                if (!playroom.isGlobalTimer()) {
+                    player.setTimer(playroom.getGlobalTimerValue());
+                }
                 players.put(k, player);
                 k++;
 
@@ -176,7 +181,18 @@ public class PlayroomDefaultController implements PlayroomController {
         Playroom playroom = this.getPlayroom(getStringValue("playroomId", message));
 
         if (playroom != null && playroom.isWaitingRoomClosed()) {
-            // TODO reconnect playroom (only registered users) - unique user ID
+            String userId = getStringValue("id", message.getJSONObject("player"));
+            for (Playroom.Player player: playroom.getPlayersWaitingRoom().values()) {
+                if (player.getUuid().toString().equals(userId) &&
+                        !isPlayerInPlayroomByUuid(player.getUuid(), playroom)) {
+                    Map<Integer, Playroom.Player> newPlayersMap = playroom.getPlayers();
+                    if (!playroom.isGlobalTimer()) {
+                        player.setTimer(playroom.getGlobalTimerValue());
+                        // TODO create algorithm to assign player's timer fair enough
+                    }
+                    newPlayersMap.put(newPlayersMap.size() + 1, player);
+                }
+            }
         }
     }
 
@@ -192,7 +208,7 @@ public class PlayroomDefaultController implements PlayroomController {
 
         if (playroom != null) {
             if (sessionId.equals(playroom.getHostId().toString())) {
-                endGame(sessionId, message);
+                endGameRequest(playroom);
                 return;
             }
 
@@ -255,7 +271,7 @@ public class PlayroomDefaultController implements PlayroomController {
         String playroomId = getStringValue("playroomId", message);
         Playroom playroom = this.getPlayroom(playroomId);
 
-        if (playroom != null && isPlayerInPlayroom(sessionId, playroom) &&
+        if (playroom != null && isPlayerInPlayroomBySession(sessionId, playroom) &&
                 playroom.getPlayers().get(playroom.getCurrentPlayer()).getWebSocketSessionId().equals(sessionId)) {
             updateLastModDate(playroom);
             do {
@@ -272,7 +288,7 @@ public class PlayroomDefaultController implements PlayroomController {
         String playroomId = getStringValue("playroomId", message);
         Playroom playroom = this.getPlayroom(playroomId);
 
-        if (playroom != null && isPlayerInPlayroom(sessionId, playroom)) {
+        if (playroom != null && isPlayerInPlayroomBySession(sessionId, playroom)) {
             updateLastModDate(playroom);
             playroom.setPaused(true);
 
@@ -286,7 +302,7 @@ public class PlayroomDefaultController implements PlayroomController {
         String playroomId = getStringValue("playroomId", message);
         Playroom playroom = this.getPlayroom(playroomId);
 
-        if (playroom != null && isPlayerInPlayroom(sessionId, playroom)) {
+        if (playroom != null && isPlayerInPlayroomBySession(sessionId, playroom)) {
             updateLastModDate(playroom);
             playroom.setPaused(false);
 
@@ -305,8 +321,11 @@ public class PlayroomDefaultController implements PlayroomController {
         String playroomId = getStringValue("playroomId", message);
         Playroom playroom = this.getPlayroom(playroomId);
 
-        if (playroom != null && isPlayerInPlayroom(sessionId, playroom)) {
-            endGameRequest(playroom);
+        if (playroom != null && isPlayerInPlayroomBySession(sessionId, playroom)) {
+            UUID operationId = UUID.randomUUID();
+            operationsToConfirm.put(operationId, END_GAME);
+
+            askForConfirmation(sessionId, "Please confirm if the game is ended.", playroom, operationId);
         }
     }
 
@@ -318,6 +337,27 @@ public class PlayroomDefaultController implements PlayroomController {
         if (playroom != null) {
             sendMessagesWithUpdate(playroom.getPlayers(), playroomId);
             updateLastModDate(playroom);
+        }
+    }
+
+    @Override
+    public void confirm(String sessionId, JSONObject message) {
+        String playroomId = getStringValue("playroomId", message);
+        Playroom playroom = this.getPlayroom(playroomId);
+
+        if (playroom != null && isPlayerInPlayroomBySession(sessionId, playroom)) {
+            String operationId = getStringValue("operationId", message);
+
+            if (operationId != null) {
+                String function = operationsToConfirm.get(UUID.fromString(operationId));
+                operationsToConfirm.remove(UUID.fromString(operationId));
+
+                switch (function) {
+                    case END_GAME:
+                        endGameRequest(playroom);
+                        break;
+                }
+            }
         }
     }
 
@@ -341,9 +381,18 @@ public class PlayroomDefaultController implements PlayroomController {
         return playroomService.find(UUID.fromString(playroomId)).orElse(null);
     }
 
-    private boolean isPlayerInPlayroom(String sessionId, Playroom playroom) {
+    private boolean isPlayerInPlayroomBySession(String sessionId, Playroom playroom) {
         for (Playroom.Player player: playroom.getPlayers().values()) {
             if (player.getWebSocketSessionId().equals(sessionId)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isPlayerInPlayroomByUuid(UUID uuid, Playroom playroom) {
+        for (Playroom.Player player: playroom.getPlayers().values()) {
+            if (player.getUuid().equals(uuid)) {
                 return true;
             }
         }
@@ -420,6 +469,31 @@ public class PlayroomDefaultController implements PlayroomController {
         }
         playroom.setLastOperationTime(LocalTime.now());
         playroomService.update(playroom);
+    }
+
+    /**
+     *
+     * @param sessionId - websocket session ID
+     * @param question - question to display
+     * @param playroom - playroom
+     * @param operationId - operation UUID
+     *
+     * @implNote - message to send:
+     * {
+     *      "type": "confirmOperation",
+     *      "operationId": --operationUUID--,
+     *      "question": --question--
+     * }
+     */
+    private void askForConfirmation(String sessionId, String question, Playroom playroom, UUID operationId) {
+        for (Playroom.Player player: playroom.getPlayers().values()) {
+            if (!player.getWebSocketSessionId().equals(sessionId)) {
+                JSONObject message = new JSONObject();
+                message.put("type", "confirmOperation");
+                message.put("operationId", operationId.toString());
+                message.put("question", question);
+            }
+        }
     }
 
     /**
