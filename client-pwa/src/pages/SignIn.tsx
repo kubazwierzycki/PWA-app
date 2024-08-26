@@ -1,5 +1,6 @@
 import {ReactNode} from "react";
 import SignInForm from "../components/forms/SignInForm.tsx";
+import styles from "../styles/home.module.css"
 
 
 /**
@@ -10,8 +11,7 @@ const SignIn = (): ReactNode => {
 
 
     return (
-        <div>
-            Sign In 
+        <div className={styles.centered}>
             <SignInForm/>
         </div>
     )
