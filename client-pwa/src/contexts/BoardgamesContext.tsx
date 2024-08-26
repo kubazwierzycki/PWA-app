@@ -2,10 +2,12 @@ import {
     createContext, Dispatch,
     ReactElement,
     ReactNode, SetStateAction,
-    useContext,
+    useContext, useEffect,
     useState
 } from "react";
 import {BoardGameRank, BoardGameStub} from "../types/IBoardgames.ts";
+import {useAuth} from "./AuthContext.tsx";
+import {getGames} from "../services/boardgames.ts";
 
 interface BoardgamesContextType {
     games: BoardGameStub[]
@@ -28,6 +30,13 @@ export const BoardgamesContextProvider = ({children}: {children: ReactElement}):
 
     // ranking list from backend
     const [ranking, setRanking] = useState<BoardGameRank[]>([] as BoardGameRank[]);
+
+    const {user} = useAuth();
+
+    useEffect(() => {
+        getGames(user.bggUsername, "")
+            .then(value => setGames(value));
+    }, [user.bggUsername]);
 
     return (
         <BoardgamesContext.Provider value={{

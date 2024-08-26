@@ -31,11 +31,8 @@ const AuthContext = createContext<UserAuthContextType>(
  * @param {ReactElement} children - elements within context
  * @returns {ReactNode}
  */
-export const AuthProvider = ({
-    children,
-}: {
-    children: ReactElement;
-}): ReactNode => {
+export const AuthProvider = ({children}: {children: ReactElement}): ReactNode => {
+
     const [uuid, setUuid] = useState("");
     const [token, setToken] = useState("");
     const [user, setUser] = useState<User>({

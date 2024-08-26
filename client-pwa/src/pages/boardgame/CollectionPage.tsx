@@ -4,7 +4,6 @@ import styles from "../../styles/collections.module.css";
 import BoardGameTile from "../../components/BoardGameTile.tsx";
 import { Pagination } from "@mui/material";
 import axios from "axios";
-import { parseXml } from "../../utils/XMLToJSON.ts";
 import {
     clearCharEntities,
     getShortDescription,
@@ -14,7 +13,7 @@ import axiosRetry from "axios-retry";
 import { useCollectionViewContext } from "../../contexts/CollectionViewContext.tsx";
 import { useAuth } from "../../contexts/AuthContext.tsx";
 import {useBoardgamesContext} from "../../contexts/BoardgamesContext.tsx";
-import {getGameDetails} from "../../services/boardgames.ts";
+import {getGameDetails, getGames} from "../../services/boardgames.ts";
 import {BoardGameItem, BoardGameStub, FiltersState} from "../../types/IBoardgames.ts";
 import LoadingProgress from "../../components/LoadingProgress.tsx";
 
@@ -26,17 +25,11 @@ import LoadingProgress from "../../components/LoadingProgress.tsx";
  * @returns {ReactNode}
  */
 const CollectionPage = (): ReactNode => {
-    // FOR TESTING
-    // bhr_79
-    // Aldie
-    // goluch
-    const { user } = useAuth();
 
-    const baseApiAddress: string = "https://boardgamegeek.com/xmlapi2";
+    const { user } = useAuth();
 
     const {games, setGames} = useBoardgamesContext();
 
-    //const [games, setGames] = useState<BoardGameStub[]>([]);
     const [shownGames, setShownGames] = useState<BoardGameItem[]>([]);
     const [numGames, setNumberGames] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
@@ -123,46 +116,37 @@ const CollectionPage = (): ReactNode => {
 
             urlParams += parameters.join("&");
 
-            const url = `${baseApiAddress}/collection?username=${user.bggUsername}&stats=1${urlParams}`;
-            const collectionResponse = await axios.get(url);
+            let gamesData = await getGames(user.bggUsername, urlParams);
 
-            if (collectionResponse.status === 200) {
-                const parsedData = parseXml(collectionResponse.data);
-
-                // check number of items
-                const totalItems: number = parsedData.items["@_totalitems"];
-                setNumberGames(totalItems);
-
-                if (totalItems == 0) {
-                    setGames([]);
-                    setShownGames([]);
-                    return;
-                }
-
-                let gamesData = [];
-
-                // wrap in array if only one item present
-                if (totalItems == 1) {
-                    gamesData.push(parsedData.items.item);
-                } else {
-                    gamesData = parsedData.items.item;
-                }
-
-                // sorting games according to ordering
-                if (ordering === "ranking") {
-                    // TODO: sorting by ranking from backend, makes sense after full ranking functionality present
-                } else {
-                    // alphabetical
-                    // sort with name comparator
-                    gamesData.sort((a: BoardGameStub, b: BoardGameStub) => {
-                        const nameA = a.name["#text"];
-                        const nameB = b.name["#text"];
-                        return nameA.localeCompare(nameB);
-                    });
-                }
-
-                setGames(gamesData);
+            if (gamesData === undefined) {
+                return;
             }
+
+            // check number of items
+            const totalItems: number = gamesData.length;
+            setNumberGames(totalItems);
+
+            if (totalItems == 0) {
+                setGames([]);
+                setShownGames([]);
+                return;
+            }
+
+            // sorting games according to ordering
+            if (ordering === "ranking") {
+                // TODO: sorting by ranking from backend, makes sense after full ranking functionality present
+            } else {
+                // alphabetical
+                // sort with name comparator
+                gamesData.sort((a: BoardGameStub, b: BoardGameStub) => {
+                    const nameA = a.name["#text"];
+                    const nameB = b.name["#text"];
+                    return nameA.localeCompare(nameB);
+                });
+            }
+
+            setGames(gamesData);
+
         } catch (error) {
             console.error("Error fetching data:", error);
         }
