@@ -30,7 +30,8 @@ const CollectionToggle = (): ReactNode => {
         filtersOpen,
         setFiltersOpen,
         filtersAnchorEl,
-        setFiltersAnchorEl
+        setFiltersAnchorEl,
+        setLoading
     } = useCollectionViewContext();
 
     const handleType = (
@@ -38,6 +39,7 @@ const CollectionToggle = (): ReactNode => {
         newType: string
     ) => {
         setType(newType);
+        setLoading(true);
     };
 
     const handleOrdering = (
@@ -45,6 +47,7 @@ const CollectionToggle = (): ReactNode => {
         newOrdering: string
     ) => {
         setOrdering(newOrdering);
+        setLoading(true);
     }
 
     const handleFilterClick = (event: React.MouseEvent<HTMLElement>) => {

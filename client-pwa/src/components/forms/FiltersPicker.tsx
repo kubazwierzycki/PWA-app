@@ -22,7 +22,8 @@ const FiltersPicker = ({anchorEl}: {anchorEl: HTMLElement | null}): ReactNode =>
         setFiltersOpen,
         filtersState,
         setFiltersState,
-        setMinRating
+        setMinRating,
+        setLoading
     } = useCollectionViewContext();
 
     // popover filters state
@@ -60,6 +61,7 @@ const FiltersPicker = ({anchorEl}: {anchorEl: HTMLElement | null}): ReactNode =>
         });
         setFiltersOpen(false);
         setMinRating(sliderValue);
+        setLoading(true);
     }
 
     const handleSliderChange = (_event: Event, newValue: number | number[]) => {

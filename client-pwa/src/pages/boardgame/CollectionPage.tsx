@@ -42,7 +42,8 @@ const CollectionPage = (): ReactNode => {
         useCollectionViewContext();
 
     // state should be true when data not ready yet
-    const [loading, setLoading] = useState<boolean>(true);
+    const {loading, setLoading} = useCollectionViewContext();
+    //const [loading, setLoading] = useState<boolean>(true);
 
     const fetchDetails = async () => {
         if (games.length === 0) return;
