@@ -78,61 +78,55 @@ const BoardGameTile = ({data}: {data: BoardGameItem}): ReactNode => {
                     <div className={styles.expandedContent} style={{display: expanded ? "block" : "none"}}>
                         <hr/>
                         <div className={styles.infoCards}>
-                            <div>
-                                <Card className={styles.card}>
+                            <Card className={styles.card}>
+                                <Typography variant="h5">
+                                    {data.details.yearpublished["@_value"]}
+                                </Typography>
+                            </Card>
+                            <Card className={styles.card}>
+                                <Stack direction="row" useFlexGap>
+                                    <PersonIcon fontSize="large"/>
                                     <Typography variant="h5">
-                                        {data.details.yearpublished["@_value"]}
+                                        {data.details.minplayers["@_value"]} - {data.details.maxplayers["@_value"]}
                                     </Typography>
-                                </Card>
-                            </div>
-                            <div>
-                                <Card className={styles.card}>
-                                    <Stack direction="row" useFlexGap>
-                                        <PersonIcon fontSize="large"/>
-                                        <Typography variant="h5">
-                                            {data.details.minplayers["@_value"]} - {data.details.maxplayers["@_value"]}
-                                        </Typography>
-                                    </Stack>
-                                    <Stack direction="row" useFlexGap>
-                                        <SentimentSatisfiedAltIcon fontSize="large"/>
-                                        <Typography variant="h5">
-                                            {data.details.minage["@_value"]}+
-                                        </Typography>
-                                    </Stack>
-                                    <Stack direction="row" useFlexGap>
-                                        <AccessTimeIcon fontSize="large"/>
-                                        <Typography variant="h5">
-                                            {data.details.playingtime["@_value"]} min
-                                        </Typography>
-                                    </Stack>
-                                </Card>
-                            </div>
-                            <div>
-                                <Card className={styles.card}>
-                                    <Stack direction="row" useFlexGap>
-                                        <MilitaryTechIcon fontSize="large"/>
-                                        <Typography variant="h5" sx={{marginRight:"20px"}}>
-                                            BGG community:
-                                        </Typography>
-                                        <Typography variant="h5">
-                                            <b>
-                                            <span style={{color: getRatingColor(parseFloat(rating))}}>
-                                                {rating}
-                                            </span>
-                                            </b>
-                                            {
-                                                renderStar(parseFloat(rating), getRatingColor(parseFloat(rating)))
-                                            }
-                                        </Typography>
-                                    </Stack>
-                                    <Stack direction="row" useFlexGap>
-                                        <NumbersIcon fontSize="large"/>
-                                        <Typography variant="h5">
-                                            {rank}
-                                        </Typography>
-                                    </Stack>
-                                </Card>
-                            </div>
+                                </Stack>
+                                <Stack direction="row" useFlexGap>
+                                    <SentimentSatisfiedAltIcon fontSize="large"/>
+                                    <Typography variant="h5">
+                                        {data.details.minage["@_value"]}+
+                                    </Typography>
+                                </Stack>
+                                <Stack direction="row" useFlexGap>
+                                    <AccessTimeIcon fontSize="large"/>
+                                    <Typography variant="h5">
+                                        {data.details.playingtime["@_value"]} min
+                                    </Typography>
+                                </Stack>
+                            </Card>
+                            <Card className={styles.card}>
+                                <Stack direction="row" useFlexGap>
+                                    <MilitaryTechIcon fontSize="large"/>
+                                    <Typography variant="h5" sx={{marginRight:"20px"}}>
+                                        BGG community:
+                                    </Typography>
+                                    <Typography variant="h5">
+                                        <b>
+                                        <span style={{color: getRatingColor(parseFloat(rating))}}>
+                                            {rating}
+                                        </span>
+                                        </b>
+                                        {
+                                            renderStar(parseFloat(rating), getRatingColor(parseFloat(rating)))
+                                        }
+                                    </Typography>
+                                </Stack>
+                                <Stack direction="row" useFlexGap>
+                                    <NumbersIcon fontSize="large"/>
+                                    <Typography variant="h5">
+                                        {rank}
+                                    </Typography>
+                                </Stack>
+                            </Card>
                         </div>
                         <div>
                             {shortDescription}

@@ -45,10 +45,8 @@ const BoardGameDetailsPage = (): ReactNode => {
         const _game = games.filter((value: BoardGameStub) =>
             value["@_objectid"] === gameId
         )[0];
-        console.log(_game)
         const commentText = _game?.comment || "";
         setComment(clearCharEntities(commentText));
-        console.log(_game?.stats?.rating?.["@_value"])
         setUserBGGgrade(_game?.stats?.rating?.["@_value"] || "N/A");
     }, [game]);
 

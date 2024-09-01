@@ -2,6 +2,7 @@ import { ReactNode, useState } from "react";
 import UserDetailsUpdateForm from "../components/forms/UserDetailsUpdateForm";
 import UserDetails from "../components/UserDetails";
 import Box from "@mui/material/Box";
+import styles from "../styles/home.module.css";
 
 /**
  * User profile and settings page
@@ -10,7 +11,7 @@ import Box from "@mui/material/Box";
 const Profile = (): ReactNode => {
     const [choice, setChoice] = useState("");
     return (
-        <div>
+        <div className={styles.centered}>
             <Box
                 sx={{
                     display: "flex",

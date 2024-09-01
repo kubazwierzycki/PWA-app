@@ -98,7 +98,7 @@ const NestedMenu = ({ closeDrawer }: { closeDrawer: () => void }): ReactNode => 
         <List sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }} component="nav">
             {menu_structure.map((element) =>
                 {
-                    if (topNavExcluded.includes(element.name)) return <div></div>;
+                    if (topNavExcluded.includes(element.name)) return <div key={element.name}></div>;
                     else return (
                         !(uuid !== "" && (element.name === "Sign In" || element.name === "Sign Up")) && (
                             <div key={element.name}>
