@@ -68,6 +68,17 @@ public interface PlayroomController {
     void joinWaitingRoom(WebSocketSession webSocketSession, JSONObject message);
 
     /**
+     * Close the waiting room for joining new players
+     * @param sessionId - websocket session ID
+     * @param message - message with all details
+     *                {
+     *                  "operation": "closeWaitingRoom",
+     *                  "playroomId": --playroomUUID--
+     *                }
+     */
+    void closeWaitingRoom(String sessionId, JSONObject message);
+
+    /**
      * Finish the waiting room and go to the playroom
      * @param sessionId - websocket session ID
      * @param message - message with all details
@@ -165,5 +176,17 @@ public interface PlayroomController {
      *                }
      */
     void status(String sessionId, JSONObject message);
+
+    /**
+     * Confirm the operation
+     * @param sessionId - websocket session ID
+     * @param message - message with all details
+     *                {
+     *                  "operation": "confirm",
+     *                  "playroomId": --playroomUUID--,
+     *                  "operationId": --operationID--
+     *                }
+     */
+    void confirm(String sessionId, JSONObject message);
 
 }
