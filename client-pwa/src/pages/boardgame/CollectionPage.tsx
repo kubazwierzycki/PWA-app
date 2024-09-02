@@ -1,20 +1,17 @@
-import { ChangeEvent, ReactNode, useEffect, useState } from "react";
+import {ChangeEvent, ReactNode, useEffect, useState} from "react";
 import CollectionToggle from "../../components/CollectionToggle.tsx";
 import styles from "../../styles/collections.module.css";
 import BoardGameTile from "../../components/BoardGameTile.tsx";
-import { Pagination } from "@mui/material";
+import {Pagination} from "@mui/material";
 import axios from "axios";
-import {
-    clearCharEntities,
-    getShortDescription,
-} from "../../utils/DescriptionParser.ts";
+import {clearCharEntities, getShortDescription,} from "../../utils/DescriptionParser.ts";
 import axiosRetry from "axios-retry";
 
-import { useCollectionViewContext } from "../../contexts/CollectionViewContext.tsx";
-import { useAuth } from "../../contexts/AuthContext.tsx";
+import {useCollectionViewContext} from "../../contexts/CollectionViewContext.tsx";
+import {useAuth} from "../../contexts/AuthContext.tsx";
 import {useBoardgamesContext} from "../../contexts/BoardgamesContext.tsx";
 import {getGameDetails, getGames} from "../../services/boardgames.ts";
-import {BoardGameItem, BoardGameStub, FiltersState} from "../../types/IBoardgames.ts";
+import {BoardGameItem, BoardGameRank, BoardGameStub, FiltersState} from "../../types/IBoardgames.ts";
 import LoadingProgress from "../../components/LoadingProgress.tsx";
 
 
@@ -28,7 +25,7 @@ const CollectionPage = (): ReactNode => {
 
     const { user } = useAuth();
 
-    const {games, setGames} = useBoardgamesContext();
+    const {games, setGames, ranking} = useBoardgamesContext();
 
     const [shownGames, setShownGames] = useState<BoardGameItem[]>([]);
     const [numGames, setNumberGames] = useState(0);
@@ -86,7 +83,26 @@ const CollectionPage = (): ReactNode => {
         setShownGames(chosenGames);
     };
 
+    /**
+     * Function mapping board games data to obtained ranking
+     * Assumes valid data with matching ids
+     * @param {@link BoardGameStub[]} gamesData
+     * @param {@link BoardGameRank[]} ranking
+     * @returns {@link BoardGameStub[]}
+     */
+    const sortGamesByRanking = (gamesData: BoardGameStub[], ranking: BoardGameRank[]): BoardGameStub[] => {
+
+        if (gamesData.length === 0) return [] as BoardGameStub[];
+
+        // create a map from gameId to the corresponding game data
+        const gamesMap = new Map(gamesData.map(game => [game["@_objectid"], game]));
+
+        // map the ranking array to the sorted games data array
+        return ranking.map(rank => gamesMap.get(rank.gameId) ?? {} as BoardGameStub);
+    };
+
     const fetchGames = async () => {
+        console.log('fetching games')
         try {
             let urlParams: string = "&";
             let parameters: string[] = [];
@@ -120,6 +136,7 @@ const CollectionPage = (): ReactNode => {
             let gamesData = await getGames(user.bggUsername, urlParams);
 
             if (gamesData === undefined) {
+                console.log('undefined')
                 return;
             }
 
@@ -136,6 +153,10 @@ const CollectionPage = (): ReactNode => {
             // sorting games according to ordering
             if (ordering === "ranking") {
                 // TODO: sorting by ranking from backend, makes sense after full ranking functionality present
+                console.log(ranking)
+                console.log(games)
+                gamesData = sortGamesByRanking(games, ranking);
+                console.log(gamesData)
             } else {
                 // alphabetical
                 // sort with name comparator
