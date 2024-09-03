@@ -11,6 +11,7 @@ import NumbersIcon from '@mui/icons-material/Numbers';
 import MilitaryTechIcon from '@mui/icons-material/MilitaryTech';
 import {Link} from "react-router-dom";
 import {BoardGameItem} from "../types/IBoardgames.ts";
+import {useBoardgamesContext} from "../contexts/BoardgamesContext.tsx";
 
 
 /**
@@ -23,21 +24,34 @@ const BoardGameTile = ({data}: {data: BoardGameItem}): ReactNode => {
 
     const [expanded, setExpanded] = useState(false);
 
-    //const [description, setDescription] = useState("");
     const [shortDescription, setShortDescription] = useState("");
-    const [rating, setRating] = useState("0.00");
+    const [communityRating, setCommunityRating] = useState("0.00");
     const [rank, setRank] = useState("");
+
+    const [gameRating, setGameRating] = useState<string>("0.00");
+
+    const {ranking} = useBoardgamesContext();
 
     useEffect(() => {
         //setDescription(data?.details?.description || "");
         setShortDescription(data?.details?.shortDescription || "");
-        let rating = data?.details?.statistics?.ratings?.average?.["@_value"] || "0";
-        let ratingNum = parseFloat(rating);
-        rating = ratingNum.toFixed(2);
-        setRating(rating);
+        let bggRating = data?.details?.statistics?.ratings?.average?.["@_value"] || "0";
+        let bbgRatingNum = parseFloat(bggRating);
+        bggRating = bbgRatingNum.toFixed(2);
+        setCommunityRating(bggRating);
         let rank = data?.details?.statistics?.ratings?.ranks?.rank[0]?.["@_value"] || "Not ranked";
         setRank(rank);
     }, [data.details]);
+
+    useEffect(() => {
+        const item = ranking.filter(item => item.gameId === data["@_objectid"])[0];
+        if (item !== undefined) {
+            let ratingNum = parseFloat(item.rating.toString());
+            setGameRating(
+                ratingNum.toFixed(2)
+            );
+        }
+    }, [ranking]);
 
     const toggleExpanded = () => {
         setExpanded(!expanded);
@@ -63,12 +77,12 @@ const BoardGameTile = ({data}: {data: BoardGameItem}): ReactNode => {
                         </div>
                         <div className={styles.rating}>
                             <b>
-                                <span style={{color: getRatingColor(parseFloat(rating))}}>
-                                    {rating}
+                                <span style={{color: getRatingColor(parseFloat(gameRating))}}>
+                                    {gameRating}
                                 </span>
                             </b>
                             {
-                                renderStar(parseFloat(rating), getRatingColor(parseFloat(rating)))
+                                renderStar(parseFloat(gameRating), getRatingColor(parseFloat(gameRating)))
                             }
                         </div>
                         <div className={styles.expand}>
@@ -111,12 +125,12 @@ const BoardGameTile = ({data}: {data: BoardGameItem}): ReactNode => {
                                     </Typography>
                                     <Typography variant="h5">
                                         <b>
-                                        <span style={{color: getRatingColor(parseFloat(rating))}}>
-                                            {rating}
+                                        <span style={{color: getRatingColor(parseFloat(communityRating))}}>
+                                            {communityRating}
                                         </span>
                                         </b>
                                         {
-                                            renderStar(parseFloat(rating), getRatingColor(parseFloat(rating)))
+                                            renderStar(parseFloat(communityRating), getRatingColor(parseFloat(communityRating)))
                                         }
                                     </Typography>
                                 </Stack>

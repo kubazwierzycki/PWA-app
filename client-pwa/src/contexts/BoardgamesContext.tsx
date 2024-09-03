@@ -35,14 +35,14 @@ export const BoardgamesContextProvider = ({children}: {children: ReactElement}):
     const {user, uuid} = useAuth();
 
     useEffect(() => {
+        if (uuid === "" || user.bggUsername === '') {
+            return;
+        }
         getGames(user.bggUsername, "")
             .then(value => setGames(value));
-    }, [user.bggUsername]);
-
-    useEffect(() => {
         getRanking(uuid)
             .then(value => setRanking(value));
-    }, [games]);
+    }, [user.bggUsername]);
 
     return (
         <BoardgamesContext.Provider value={{
