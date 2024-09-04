@@ -106,7 +106,6 @@ const CollectionPage = (): ReactNode => {
         let result = [];
         // map the ranking array to the sorted games data array
         for (let rank of ranking) {
-            if (rank.gameId === '2655') console.log(gamesMap.get(rank.gameId))
             let game = gamesMap.get(rank.gameId);
             if (game !== undefined) {
                 result.push(game);
