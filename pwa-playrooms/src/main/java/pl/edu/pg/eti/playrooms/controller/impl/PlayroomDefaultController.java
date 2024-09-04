@@ -252,6 +252,7 @@ public class PlayroomDefaultController implements PlayroomController {
 
                 if (playroom.getPlayers().isEmpty()) {
                     deletePlayroom(playroom);
+                    return;
                 }
                 else {
                     playroom.setCurrentPlayer((playroom.getCurrentPlayer() % newPlayers.size()) + 1);
@@ -264,6 +265,7 @@ public class PlayroomDefaultController implements PlayroomController {
 
                 if (playroom.getPlayersWaitingRoom().isEmpty()) {
                     deletePlayroom(playroom);
+                    return;
                 }
             }
 
@@ -753,8 +755,8 @@ public class PlayroomDefaultController implements PlayroomController {
             }
 
             JSONObject game = new JSONObject();
-            game.put("gameID", playroom.getGame().getId());
-            game.put("name", playroom.getGame().getName());
+            game.put("gameID", playroom.getGame() != null ? playroom.getGame().getId() : null);
+            game.put("name", playroom.getGame() != null ? playroom.getGame().getName() : null);
             gameStatus.put("game", game);
 
             JSONArray players = new JSONArray();
