@@ -107,3 +107,28 @@
     justify-content: right;
     padding: 0 5%;
 }
+
+
+
+@media screen and (max-width: 1000px) {
+
+    .container {
+        flex-direction: column;
+    }
+
+    .infoCards {
+        flex-direction: column;
+    }
+
+    .card {
+        flex-direction: column;
+        width: 100%;
+        padding: 15px 0;
+    }
+
+    .card div {
+        margin: 10px 0;
+    }
+
+}
+

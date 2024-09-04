@@ -20,7 +20,9 @@ type CollectionContextType = {
     filtersState: FiltersState,
     setFiltersState: Dispatch<SetStateAction<FiltersState>>,
     minRating: number,
-    setMinRating: Dispatch<SetStateAction<number>>
+    setMinRating: Dispatch<SetStateAction<number>>,
+    loading: boolean,
+    setLoading: Dispatch<SetStateAction<boolean>>
 }
 
 interface FiltersState {
@@ -47,6 +49,9 @@ export const CollectionContextProvider = ({children}: {children: ReactElement}):
     const [filtersOpen, setFiltersOpen] = useState(false);
     const [filtersAnchorEl, setFiltersAnchorEl] = useState<HTMLElement | null>(null);
 
+    // stated if loaders need to be displayed
+    const [loading, setLoading] = useState(true);
+
     // filters state
     const [filtersState, setFiltersState] = useState<FiltersState>({
         rated: false,
@@ -68,7 +73,9 @@ export const CollectionContextProvider = ({children}: {children: ReactElement}):
             filtersState,
             setFiltersState,
             minRating,
-            setMinRating
+            setMinRating,
+            loading,
+            setLoading
         }}>
             {children}
         </CollectionViewContext.Provider>

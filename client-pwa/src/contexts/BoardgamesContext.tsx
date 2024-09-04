@@ -8,6 +8,7 @@ import {
 import {BoardGameRank, BoardGameStub} from "../types/IBoardgames.ts";
 import {useAuth} from "./AuthContext.tsx";
 import {getGames} from "../services/boardgames.ts";
+import {getRanking} from "../services/rankings.ts";
 
 interface BoardgamesContextType {
     games: BoardGameStub[]
@@ -31,11 +32,16 @@ export const BoardgamesContextProvider = ({children}: {children: ReactElement}):
     // ranking list from backend
     const [ranking, setRanking] = useState<BoardGameRank[]>([] as BoardGameRank[]);
 
-    const {user} = useAuth();
+    const {user, uuid} = useAuth();
 
     useEffect(() => {
+        if (uuid === "" || user.bggUsername === '') {
+            return;
+        }
         getGames(user.bggUsername, "")
             .then(value => setGames(value));
+        getRanking(uuid)
+            .then(value => setRanking(value));
     }, [user.bggUsername]);
 
     return (

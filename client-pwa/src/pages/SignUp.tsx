@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import SignUpForm from "../components/forms/SignUpForm.tsx";
+import styles from "../styles/home.module.css"
 
 /**
  * SignUp page
@@ -7,8 +8,7 @@ import SignUpForm from "../components/forms/SignUpForm.tsx";
  */
 const SignUp = (): ReactNode => {
     return (
-        <div>
-            Sign Up
+        <div className={styles.centered}>
             <SignUpForm />
         </div>
     );

@@ -28,9 +28,20 @@
     flex: 1;
     padding-bottom: 20px;
     box-sizing: border-box;
+    z-index: 10;
 }
 
 .footerContainer {
     flex: 0 0 auto;
     width: 100%;
+    z-index: 100;
 }
+
+@media screen and (max-height: 700px) {
+
+    .pageContent {
+        padding: 10% 0;
+    }
+
+}
+

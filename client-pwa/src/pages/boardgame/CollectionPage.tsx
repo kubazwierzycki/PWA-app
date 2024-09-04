@@ -1,20 +1,17 @@
-import { ChangeEvent, ReactNode, useEffect, useState } from "react";
+import {ChangeEvent, ReactNode, useEffect, useState} from "react";
 import CollectionToggle from "../../components/CollectionToggle.tsx";
 import styles from "../../styles/collections.module.css";
 import BoardGameTile from "../../components/BoardGameTile.tsx";
-import { Pagination } from "@mui/material";
+import {Pagination} from "@mui/material";
 import axios from "axios";
-import {
-    clearCharEntities,
-    getShortDescription,
-} from "../../utils/DescriptionParser.ts";
+import {clearCharEntities, getShortDescription,} from "../../utils/DescriptionParser.ts";
 import axiosRetry from "axios-retry";
 
-import { useCollectionViewContext } from "../../contexts/CollectionViewContext.tsx";
-import { useAuth } from "../../contexts/AuthContext.tsx";
+import {useCollectionViewContext} from "../../contexts/CollectionViewContext.tsx";
+import {useAuth} from "../../contexts/AuthContext.tsx";
 import {useBoardgamesContext} from "../../contexts/BoardgamesContext.tsx";
 import {getGameDetails, getGames} from "../../services/boardgames.ts";
-import {BoardGameItem, BoardGameStub, FiltersState} from "../../types/IBoardgames.ts";
+import {BoardGameItem, BoardGameRank, BoardGameStub, FiltersState} from "../../types/IBoardgames.ts";
 import LoadingProgress from "../../components/LoadingProgress.tsx";
 
 
@@ -28,7 +25,10 @@ const CollectionPage = (): ReactNode => {
 
     const { user } = useAuth();
 
-    const {games, setGames} = useBoardgamesContext();
+    const {games, setGames, ranking} = useBoardgamesContext();
+
+    // view of the collection sorted according to chosen constraints
+    const [sortedCollection, setSortedCollection] = useState([] as BoardGameStub[]);
 
     const [shownGames, setShownGames] = useState<BoardGameItem[]>([]);
     const [numGames, setNumberGames] = useState(0);
@@ -42,17 +42,21 @@ const CollectionPage = (): ReactNode => {
         useCollectionViewContext();
 
     // state should be true when data not ready yet
-    const [loading, setLoading] = useState<boolean>(true);
+    const {loading, setLoading} = useCollectionViewContext();
 
     const fetchDetails = async () => {
-        if (games.length === 0) return;
+
+        if (sortedCollection === undefined || sortedCollection.length === 0) {
+            setShownGames([]);
+            return;
+        }
 
         // get list of required games
         const ids: string[] = [];
         let start = (currentPage - 1) * perPage;
         // add ids to list
-        for (let i = start; i < start + perPage && i < games.length; i++) {
-            ids.push(games[i]["@_objectid"]);
+        for (let i = start; i < start + perPage && i < sortedCollection.length; i++) {
+            ids.push(sortedCollection[i]["@_objectid"]);
         }
 
         const idsList = ids.join(",");
@@ -71,7 +75,7 @@ const CollectionPage = (): ReactNode => {
         }
 
         let counter = -1;
-        const chosenGames: BoardGameItem[] = games
+        const chosenGames: BoardGameItem[] = sortedCollection
             .slice(start, start + perPage)
             .map((stub) => {
                 counter++;
@@ -83,6 +87,31 @@ const CollectionPage = (): ReactNode => {
             });
 
         setShownGames(chosenGames);
+    };
+
+    /**
+     * Function mapping board games data to obtained ranking
+     * Assumes valid data with matching ids
+     * @param {@link BoardGameStub[]} gamesData
+     * @param {@link BoardGameRank[]} ranking
+     * @returns {@link BoardGameStub[]}
+     */
+    const sortGamesByRanking = (gamesData: BoardGameStub[], ranking: BoardGameRank[]): BoardGameStub[] => {
+
+        if (gamesData === undefined || gamesData.length === 0) return [] as BoardGameStub[];
+
+        // create a map from gameId to the corresponding game data
+        const gamesMap = new Map(gamesData.map(game => [game["@_objectid"], game]));
+
+        let result = [];
+        // map the ranking array to the sorted games data array
+        for (let rank of ranking) {
+            let game = gamesMap.get(rank.gameId);
+            if (game !== undefined) {
+                result.push(game);
+            }
+        }
+        return result;
     };
 
     const fetchGames = async () => {
@@ -119,6 +148,7 @@ const CollectionPage = (): ReactNode => {
             let gamesData = await getGames(user.bggUsername, urlParams);
 
             if (gamesData === undefined) {
+                setShownGames([]);
                 return;
             }
 
@@ -130,19 +160,6 @@ const CollectionPage = (): ReactNode => {
                 setGames([]);
                 setShownGames([]);
                 return;
-            }
-
-            // sorting games according to ordering
-            if (ordering === "ranking") {
-                // TODO: sorting by ranking from backend, makes sense after full ranking functionality present
-            } else {
-                // alphabetical
-                // sort with name comparator
-                gamesData.sort((a: BoardGameStub, b: BoardGameStub) => {
-                    const nameA = a.name["#text"];
-                    const nameB = b.name["#text"];
-                    return nameA.localeCompare(nameB);
-                });
             }
 
             setGames(gamesData);
@@ -159,6 +176,23 @@ const CollectionPage = (): ReactNode => {
         retryCondition: (error) => error.response?.status === 202, // retry only for 202 status
     });
 
+    const sortGames = () => {
+        let gamesData = [...games];
+        // sorting games according to ordering
+        if (ordering === "ranking") {
+            gamesData = sortGamesByRanking(games, ranking);
+        }
+        else {
+            // alphabetical sort with name comparator
+            gamesData.sort((a: BoardGameStub, b: BoardGameStub) => {
+                const nameA = a.name["#text"];
+                const nameB = b.name["#text"];
+                return nameA.localeCompare(nameB);
+            });
+        }
+        setSortedCollection(gamesData);
+    }
+
     // update games list effect
     useEffect(() => {
         fetchGames().then();
@@ -166,8 +200,19 @@ const CollectionPage = (): ReactNode => {
 
     // update shownGames effect
     useEffect(() => {
+        if (games === undefined || games.length === 0) {
+            return;
+        }
         fetchDetails().then(() => setLoading(false));
-    }, [games, currentPage]);
+    }, [currentPage, sortedCollection]);
+
+    // sorting games when games ready
+    useEffect(() => {
+        if (games === undefined || games.length === 0) {
+            return;
+        }
+        sortGames();
+    }, [games]);
 
 
     return (

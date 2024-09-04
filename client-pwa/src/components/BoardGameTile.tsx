@@ -11,6 +11,7 @@ import NumbersIcon from '@mui/icons-material/Numbers';
 import MilitaryTechIcon from '@mui/icons-material/MilitaryTech';
 import {Link} from "react-router-dom";
 import {BoardGameItem} from "../types/IBoardgames.ts";
+import {useBoardgamesContext} from "../contexts/BoardgamesContext.tsx";
 
 
 /**
@@ -23,21 +24,34 @@ const BoardGameTile = ({data}: {data: BoardGameItem}): ReactNode => {
 
     const [expanded, setExpanded] = useState(false);
 
-    //const [description, setDescription] = useState("");
     const [shortDescription, setShortDescription] = useState("");
-    const [rating, setRating] = useState("0.00");
+    const [communityRating, setCommunityRating] = useState("0.00");
     const [rank, setRank] = useState("");
+
+    const [gameRating, setGameRating] = useState<string>("0.00");
+
+    const {ranking} = useBoardgamesContext();
 
     useEffect(() => {
         //setDescription(data?.details?.description || "");
         setShortDescription(data?.details?.shortDescription || "");
-        let rating = data?.details?.statistics?.ratings?.average?.["@_value"] || "0";
-        let ratingNum = parseFloat(rating);
-        rating = ratingNum.toFixed(2);
-        setRating(rating);
+        let bggRating = data?.details?.statistics?.ratings?.average?.["@_value"] || "0";
+        let bbgRatingNum = parseFloat(bggRating);
+        bggRating = bbgRatingNum.toFixed(2);
+        setCommunityRating(bggRating);
         let rank = data?.details?.statistics?.ratings?.ranks?.rank[0]?.["@_value"] || "Not ranked";
         setRank(rank);
     }, [data.details]);
+
+    useEffect(() => {
+        const item = ranking.filter(item => item.gameId === data["@_objectid"])[0];
+        if (item !== undefined) {
+            let ratingNum = parseFloat(item.rating.toString());
+            setGameRating(
+                ratingNum.toFixed(2)
+            );
+        }
+    }, [ranking]);
 
     const toggleExpanded = () => {
         setExpanded(!expanded);
@@ -63,12 +77,12 @@ const BoardGameTile = ({data}: {data: BoardGameItem}): ReactNode => {
                         </div>
                         <div className={styles.rating}>
                             <b>
-                                <span style={{color: getRatingColor(parseFloat(rating))}}>
-                                    {rating}
+                                <span style={{color: getRatingColor(parseFloat(gameRating))}}>
+                                    {gameRating}
                                 </span>
                             </b>
                             {
-                                renderStar(parseFloat(rating), getRatingColor(parseFloat(rating)))
+                                renderStar(parseFloat(gameRating), getRatingColor(parseFloat(gameRating)))
                             }
                         </div>
                         <div className={styles.expand}>
@@ -78,61 +92,55 @@ const BoardGameTile = ({data}: {data: BoardGameItem}): ReactNode => {
                     <div className={styles.expandedContent} style={{display: expanded ? "block" : "none"}}>
                         <hr/>
                         <div className={styles.infoCards}>
-                            <div>
-                                <Card className={styles.card}>
+                            <Card className={styles.card}>
+                                <Typography variant="h5">
+                                    {data.details.yearpublished["@_value"]}
+                                </Typography>
+                            </Card>
+                            <Card className={styles.card}>
+                                <Stack direction="row" useFlexGap>
+                                    <PersonIcon fontSize="large"/>
                                     <Typography variant="h5">
-                                        {data.details.yearpublished["@_value"]}
+                                        {data.details.minplayers["@_value"]} - {data.details.maxplayers["@_value"]}
                                     </Typography>
-                                </Card>
-                            </div>
-                            <div>
-                                <Card className={styles.card}>
-                                    <Stack direction="row" useFlexGap>
-                                        <PersonIcon fontSize="large"/>
-                                        <Typography variant="h5">
-                                            {data.details.minplayers["@_value"]} - {data.details.maxplayers["@_value"]}
-                                        </Typography>
-                                    </Stack>
-                                    <Stack direction="row" useFlexGap>
-                                        <SentimentSatisfiedAltIcon fontSize="large"/>
-                                        <Typography variant="h5">
-                                            {data.details.minage["@_value"]}+
-                                        </Typography>
-                                    </Stack>
-                                    <Stack direction="row" useFlexGap>
-                                        <AccessTimeIcon fontSize="large"/>
-                                        <Typography variant="h5">
-                                            {data.details.playingtime["@_value"]} min
-                                        </Typography>
-                                    </Stack>
-                                </Card>
-                            </div>
-                            <div>
-                                <Card className={styles.card}>
-                                    <Stack direction="row" useFlexGap>
-                                        <MilitaryTechIcon fontSize="large"/>
-                                        <Typography variant="h5" sx={{marginRight:"20px"}}>
-                                            BGG community:
-                                        </Typography>
-                                        <Typography variant="h5">
-                                            <b>
-                                            <span style={{color: getRatingColor(parseFloat(rating))}}>
-                                                {rating}
-                                            </span>
-                                            </b>
-                                            {
-                                                renderStar(parseFloat(rating), getRatingColor(parseFloat(rating)))
-                                            }
-                                        </Typography>
-                                    </Stack>
-                                    <Stack direction="row" useFlexGap>
-                                        <NumbersIcon fontSize="large"/>
-                                        <Typography variant="h5">
-                                            {rank}
-                                        </Typography>
-                                    </Stack>
-                                </Card>
-                            </div>
+                                </Stack>
+                                <Stack direction="row" useFlexGap>
+                                    <SentimentSatisfiedAltIcon fontSize="large"/>
+                                    <Typography variant="h5">
+                                        {data.details.minage["@_value"]}+
+                                    </Typography>
+                                </Stack>
+                                <Stack direction="row" useFlexGap>
+                                    <AccessTimeIcon fontSize="large"/>
+                                    <Typography variant="h5">
+                                        {data.details.playingtime["@_value"]} min
+                                    </Typography>
+                                </Stack>
+                            </Card>
+                            <Card className={styles.card}>
+                                <Stack direction="row" useFlexGap>
+                                    <MilitaryTechIcon fontSize="large"/>
+                                    <Typography variant="h5" sx={{marginRight:"20px"}}>
+                                        BGG community:
+                                    </Typography>
+                                    <Typography variant="h5">
+                                        <b>
+                                        <span style={{color: getRatingColor(parseFloat(communityRating))}}>
+                                            {communityRating}
+                                        </span>
+                                        </b>
+                                        {
+                                            renderStar(parseFloat(communityRating), getRatingColor(parseFloat(communityRating)))
+                                        }
+                                    </Typography>
+                                </Stack>
+                                <Stack direction="row" useFlexGap>
+                                    <NumbersIcon fontSize="large"/>
+                                    <Typography variant="h5">
+                                        {rank}
+                                    </Typography>
+                                </Stack>
+                            </Card>
                         </div>
                         <div>
                             {shortDescription}
