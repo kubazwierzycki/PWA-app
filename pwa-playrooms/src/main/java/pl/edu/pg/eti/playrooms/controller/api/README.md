@@ -29,7 +29,15 @@ Your code should have a const variable that represents server URL
         }
     }
     ```
-3. Receive actual waiting room status (e.g.):
+3. Receive websocket message with welcome info
+   ```
+   {
+      "type": "welcomeInfo",
+      "playerId": "ce7ffcd6-a2a0-4ae7-a74a-0208acde9c45"
+   }
+   ```
+
+4. Receive actual waiting room status (e.g.):
     ```
     {
        "isClosed": false,
@@ -226,8 +234,6 @@ or (<i>if time is up</i>
       ...
    }
    ```
-
-<b>If game is ended, websockets will be closed automatically.</b>
 
 ### End game
 

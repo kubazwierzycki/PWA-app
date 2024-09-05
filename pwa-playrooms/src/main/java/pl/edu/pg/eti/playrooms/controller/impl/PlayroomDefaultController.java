@@ -3,8 +3,10 @@ package pl.edu.pg.eti.playrooms.controller.impl;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import pl.edu.pg.eti.playrooms.controller.api.PlayroomController;
@@ -69,7 +71,7 @@ public class PlayroomDefaultController implements PlayroomController {
     public void updatePlayroom(String playroomId, PutPlayroom request) {
         Playroom playroom = this.getPlayroom(playroomId);
 
-        if (playroom != null) {
+        if (playroom != null && playroom.getPlayers().isEmpty()) {
             playroom.setGlobalTimer(request.getIsGlobalTimer());
             playroom.setGame(new Playroom.Game(request.getGameId(), request.getGame()));
             playroom.setGlobalTimerValue(request.getTimer());
@@ -79,6 +81,9 @@ public class PlayroomDefaultController implements PlayroomController {
 
             playroomEventRepository.updateGame(request.getGameId(), request.getGame(),
                     !request.getIsGlobalTimer(), request.getTimer().intValue());
+        }
+        else {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
     }
 
@@ -124,6 +129,9 @@ public class PlayroomDefaultController implements PlayroomController {
             playroomService.update(playroom);
             webSocketSessions.put(newPlayer.getWebSocketSessionId(), webSocketSession);
 
+            JSONObject welcomeInfo = welcomeInfo(newPlayer);
+            sendMessageJSON(webSocketSession, welcomeInfo);
+
             JSONObject status = getWaitingRoomStatus(playroom);
             for (String sessionId : playroom.getPlayersWaitingRoom().keySet()) {
                 sendMessageJSON(webSocketSessions.get(sessionId), status);
@@ -135,7 +143,8 @@ public class PlayroomDefaultController implements PlayroomController {
     public void finishWaitingRoom(String sessionId, JSONObject message) {
         Playroom playroom = this.getPlayroom(getStringValue("playroomId", message));
 
-        if (playroom != null && playroom.getGame() != null && UUID.fromString(sessionId).equals(playroom.getHostId())) {
+        if (playroom != null && playroom.getGame() != null &&
+                UUID.fromString(sessionId).equals(playroom.getHostId()) && !playroom.isWaitingRoomClosed()) {
             playroom.setWaitingRoomClosed(true);
             Map<String, Playroom.Player> waitingRoomPlayers = playroom.getPlayersWaitingRoom();
             Map<Integer, Playroom.Player> players = new HashMap<>();
@@ -157,13 +166,16 @@ public class PlayroomDefaultController implements PlayroomController {
 
             sendMessagesWithUpdate(players, playroom.getUuid().toString());
         }
+        else {
+            sendMessageJSON(webSocketSessions.get(sessionId), errorMessage());
+        }
     }
 
     @Override
     public void closeWaitingRoom(String sessionId, JSONObject message) {
         Playroom playroom = this.getPlayroom(getStringValue("playroomId", message));
 
-        if (playroom != null && sessionId.equals(playroom.getHostId().toString())) {
+        if (playroom != null && sessionId.equals(playroom.getHostId().toString()) && !playroom.isWaitingRoomClosed()) {
             playroom.setWaitingRoomClosed(true);
 
             this.playroomService.update(playroom);
@@ -174,13 +186,16 @@ public class PlayroomDefaultController implements PlayroomController {
                 sendMessageJSON(webSocketSessions.get(session), status);
             }
         }
+        else {
+            sendMessageJSON(webSocketSessions.get(sessionId), errorMessage());
+        }
     }
 
     @Override
     public void joinPlayroom(WebSocketSession webSocketSession, JSONObject message) {
         Playroom playroom = this.getPlayroom(getStringValue("playroomId", message));
 
-        if (playroom != null && playroom.isWaitingRoomClosed()) {
+        if (playroom != null && playroom.isWaitingRoomClosed() && !playroom.isEnded()) {
             String userId = getStringValue("id", message.getJSONObject("player"));
             for (Playroom.Player player: playroom.getPlayersWaitingRoom().values()) {
                 if (player.getUuid().toString().equals(userId) &&
@@ -193,6 +208,9 @@ public class PlayroomDefaultController implements PlayroomController {
                     newPlayersMap.put(newPlayersMap.size() + 1, player);
                 }
             }
+        }
+        else {
+            sendMessageJSON(webSocketSession, errorMessage());
         }
     }
 
@@ -232,7 +250,11 @@ public class PlayroomDefaultController implements PlayroomController {
                 }
                 playroom.setPlayers(newPlayers);
 
-                if (!newPlayers.isEmpty()) {
+                if (playroom.getPlayers().isEmpty()) {
+                    deletePlayroom(playroom);
+                    return;
+                }
+                else {
                     playroom.setCurrentPlayer((playroom.getCurrentPlayer() % newPlayers.size()) + 1);
                 }
             }
@@ -240,6 +262,11 @@ public class PlayroomDefaultController implements PlayroomController {
                 Map<String, Playroom.Player> playersWaitingRoom = playroom.getPlayersWaitingRoom();
                 playersWaitingRoom.remove(sessionId);
                 playroom.setPlayersWaitingRoom(playersWaitingRoom);
+
+                if (playroom.getPlayersWaitingRoom().isEmpty()) {
+                    deletePlayroom(playroom);
+                    return;
+                }
             }
 
             playroomService.update(playroom);
@@ -271,10 +298,13 @@ public class PlayroomDefaultController implements PlayroomController {
         String playroomId = getStringValue("playroomId", message);
         Playroom playroom = this.getPlayroom(playroomId);
 
-        if (playroom != null) {
+        if (playroom != null && !playroom.isEnded()) {
             updateLastModDate(playroom);
             endTurnRequest(sessionId, playroom);
             updateLastModDate(playroom);
+        }
+        else {
+            sendMessageJSON(webSocketSessions.get(sessionId), errorMessage());
         }
     }
 
@@ -283,12 +313,16 @@ public class PlayroomDefaultController implements PlayroomController {
         String playroomId = getStringValue("playroomId", message);
         Playroom playroom = this.getPlayroom(playroomId);
 
-        if (playroom != null && isPlayerInPlayroomBySession(sessionId, playroom)) {
+        if (playroom != null && !playroom.isPaused() && !playroom.isEnded() &&
+                isPlayerInPlayroomBySession(sessionId, playroom)) {
             updateLastModDate(playroom);
             playroom.setPaused(true);
 
             updateLastModDate(playroom);
             sendMessagesWithUpdate(playroom.getPlayers(), playroomId);
+        }
+        else {
+            sendMessageJSON(webSocketSessions.get(sessionId), errorMessage());
         }
     }
 
@@ -297,12 +331,16 @@ public class PlayroomDefaultController implements PlayroomController {
         String playroomId = getStringValue("playroomId", message);
         Playroom playroom = this.getPlayroom(playroomId);
 
-        if (playroom != null && isPlayerInPlayroomBySession(sessionId, playroom)) {
+        if (playroom != null && playroom.isPaused() && !playroom.isEnded() &&
+                isPlayerInPlayroomBySession(sessionId, playroom)) {
             updateLastModDate(playroom);
             playroom.setPaused(false);
 
             updateLastModDate(playroom);
             sendMessagesWithUpdate(playroom.getPlayers(), playroomId);
+        }
+        else {
+            sendMessageJSON(webSocketSessions.get(sessionId), errorMessage());
         }
     }
 
@@ -316,11 +354,14 @@ public class PlayroomDefaultController implements PlayroomController {
         String playroomId = getStringValue("playroomId", message);
         Playroom playroom = this.getPlayroom(playroomId);
 
-        if (playroom != null && isPlayerInPlayroomBySession(sessionId, playroom)) {
+        if (playroom != null && !playroom.isEnded() && isPlayerInPlayroomBySession(sessionId, playroom)) {
             UUID operationId = UUID.randomUUID();
             operationsToConfirm.put(operationId, END_GAME);
 
             askForConfirmation(sessionId, "Please confirm if the game is ended.", playroom, operationId);
+        }
+        else {
+            sendMessageJSON(webSocketSessions.get(sessionId), errorMessage());
         }
     }
 
@@ -340,28 +381,34 @@ public class PlayroomDefaultController implements PlayroomController {
     public void confirm(String sessionId, JSONObject message) {
         String playroomId = getStringValue("playroomId", message);
         Playroom playroom = this.getPlayroom(playroomId);
+        String operationId = getStringValue("operationId", message);
 
-        if (playroom != null && isPlayerInPlayroomBySession(sessionId, playroom)) {
-            String operationId = getStringValue("operationId", message);
+        if (playroom != null && !playroom.isEnded() && operationId != null &&
+                isPlayerInPlayroomBySession(sessionId, playroom)) {
 
-            if (operationId != null) {
-                String function = operationsToConfirm.get(UUID.fromString(operationId));
-                operationsToConfirm.remove(UUID.fromString(operationId));
+            String function = operationsToConfirm.get(UUID.fromString(operationId));
+            operationsToConfirm.remove(UUID.fromString(operationId));
 
-                switch (function) {
-                    case END_GAME:
-                        endGameRequest(playroom);
-                        break;
-                }
+            switch (function) {
+                case END_GAME:
+                    endGameRequest(playroom);
+                    break;
             }
+
+        }
+        else {
+            sendMessageJSON(webSocketSessions.get(sessionId), errorMessage());
         }
     }
 
     private void endGameRequest(Playroom playroom) {
         playroom.setEnded(true);
+        playroom.setPaused(true);
         playroomService.update(playroom);
         sendMessagesWithUpdate(playroom.getPlayers(), playroom.getUuid().toString());
+    }
 
+    private void deletePlayroom(Playroom playroom) {
         for (Playroom.Player player : playroom.getPlayers().values()) {
             quitPlayroom(player.getWebSocketSessionId(), new JSONObject()
                     .put("operation", "quitPlayroom")
@@ -498,6 +545,35 @@ public class PlayroomDefaultController implements PlayroomController {
             }
         }
         return false;
+    }
+
+    /**
+     * Get error message if operation cannot be dane
+     * @return JSONObject with error
+     */
+    private JSONObject errorMessage() {
+        JSONObject message = new JSONObject();
+        message.put("type", "error");
+        message.put("error", "Invalid operation");
+
+        return message;
+    }
+
+    /**
+     * Get welcome info for new player
+     * @param player - new joined player
+     * @return JSONObject with welcome message
+     * {
+     *     "type": "welcomeInfo",
+     *     "playerId": --playerId--
+     * }
+     */
+    private JSONObject welcomeInfo(Playroom.Player player) {
+        JSONObject message = new JSONObject();
+        message.put("type", "welcomeInfo");
+        message.put("playerId", player.getPlayerId().toString());
+
+        return message;
     }
 
     /**
@@ -679,8 +755,8 @@ public class PlayroomDefaultController implements PlayroomController {
             }
 
             JSONObject game = new JSONObject();
-            game.put("gameID", playroom.getGame().getId());
-            game.put("name", playroom.getGame().getName());
+            game.put("gameID", playroom.getGame() != null ? playroom.getGame().getId() : null);
+            game.put("name", playroom.getGame() != null ? playroom.getGame().getName() : null);
             gameStatus.put("game", game);
 
             JSONArray players = new JSONArray();
