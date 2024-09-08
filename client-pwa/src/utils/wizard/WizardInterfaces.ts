@@ -10,13 +10,33 @@ export interface IWizardGameInput {
     id: string
     userRating: number
     bggRating: number
+    categories: string[]
+    minPlayers: string
+    maxPlayers: string
+    minPlayTime: string
+    maxPlayTime: string
+    avgPlayTime: string
+    minAge: string
+    suggestedNumPlayers: IAbstractPoll
+    suggestedPlayerAge: IAbstractPoll
+}
+
+export interface IAbstractPoll {
+    name: string
+    totalVotes: number
+    results: IAbstractPollResult[]
+}
+
+export interface IAbstractPollResult {
+    value: string
+    numVotes: number
 }
 
 export interface IGameSuggestion {
     id: string
     name: string
     score: number
-    category: string
+    categories: string[]
 }
 
 export interface IWizardOutput {
