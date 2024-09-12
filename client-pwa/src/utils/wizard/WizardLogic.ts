@@ -19,6 +19,8 @@ const getBestGames = (input: IWizardGameInput[], params: IWizardParams): IWizard
     let set = input.map(game => {
         return {game: game, score: 100.0}
     });
+    // get weights
+
     // subtract points for discrepancies
 }
 

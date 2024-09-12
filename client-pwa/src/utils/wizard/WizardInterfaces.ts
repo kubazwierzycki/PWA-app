@@ -33,6 +33,15 @@ export interface IAbstractPollResult {
     numVotes: number
 }
 
+export interface IWizardWeights {
+    userRating: number
+    bggCommunityRating: number
+    playingTimeFit: number
+    numberPlayersFit: number
+    playingTimePoll: number
+    numberPlayersPoll: number
+}
+
 export interface IGameSuggestion {
     id: string
     name: string
