@@ -9,9 +9,16 @@ import {IWizardGameInput, IWizardOutput, IWizardParams} from "./WizardInterfaces
  */
 const getBestGames = (input: IWizardGameInput[], params: IWizardParams): IWizardOutput => {
     // filter out deal breakers
-
-    // assume perfect initial score
-
+    input = input.filter(game =>
+        parseInt(game.minPlayers) <= params.numPlayers &&
+        parseInt(game.maxPlayers) >= params.numPlayers
+    );
+    let minPlayerAge = Math.min(...params.playersAge);
+    input = input.filter(game => minPlayerAge >= parseInt(game.minAge))
+    // assume perfect initial score for each game
+    let set = input.map(game => {
+        return {game: game, score: 100.0}
+    });
     // subtract points for discrepancies
 }
 

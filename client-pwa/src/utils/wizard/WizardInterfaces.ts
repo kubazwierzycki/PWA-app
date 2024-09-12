@@ -8,6 +8,7 @@ export interface IWizardParams {
 
 export interface IWizardGameInput {
     id: string
+    name: string
     userRating: number
     bggRating: number
     categories: string[]
