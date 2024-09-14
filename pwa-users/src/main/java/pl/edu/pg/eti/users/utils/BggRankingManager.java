@@ -44,7 +44,8 @@ public class BggRankingManager {
         else {
             List<User.GameRanking> ranking = new ArrayList<>();
 
-            Map<String, Double> dictionaryRating = getUserGamesWithRating(user.getBggUsername());
+            Map<String, Double> dictionaryRating = getUserGamesWithRating(user.getBggUsername(), "own");
+            dictionaryRating.putAll(getUserGamesWithRating(user.getBggUsername(), "played"));
             for (String id : dictionaryRating.keySet()) {
                 ranking.add(new User.GameRanking(id, dictionaryRating.get(id), 0));
             }
@@ -65,7 +66,8 @@ public class BggRankingManager {
         }
         else {
             List<User.GameRanking> userRanking = user.getRanking();
-            Map<String, Double> gamesWithRating = getUserGamesWithRating(user.getBggUsername());
+            Map<String, Double> gamesWithRating = getUserGamesWithRating(user.getBggUsername(), "own");
+            gamesWithRating.putAll(getUserGamesWithRating(user.getBggUsername(), "played"));
             List<User.GameRanking> ranking = new ArrayList<>();
 
             for (String gameId : gamesWithRating.keySet()) {
@@ -88,12 +90,13 @@ public class BggRankingManager {
     /**
      * Get BGG rating of the games
      * @param username - BGG username
+     * @param option - own / played
      * @return  Map (game ID: game rating)
      */
-    private Map<String, Double> getUserGamesWithRating(String username) {
+    private Map<String, Double> getUserGamesWithRating(String username, String option) {
         Map<String, Double> result = new HashMap<>();
         try {
-            URL url = new URL(bggApiUrl + "/collection?username=" + username + "&own=1&stats=1");
+            URL url = new URL(bggApiUrl + "/collection?username=" + username + "&" + option + "=1&stats=1");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
 
