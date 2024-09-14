@@ -37,10 +37,6 @@ public class Gameplay implements Serializable {
     private String winner;
 
     @ManyToOne
-    @JoinColumn(name="host_id")
-    private Player host;
-
-    @ManyToOne
     @JoinColumn(name="game_id")
     private Game game;
 

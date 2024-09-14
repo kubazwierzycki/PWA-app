@@ -13,7 +13,7 @@ public interface GameService {
     /**
      * Find a game by ID
      * @param id - game ID
-     * @return a player with specified ID (if exists)
+     * @return a game with specified ID (if exists)
      */
     Optional<Game> find(String id);
 
