@@ -26,6 +26,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: "users_password"
       SPRING_JPA_DATABASE_PLATFORM: "org.hibernate.dialect.PostgreSQLDialect"
       EXPERIENCE_URL: "http://pwa-experience:8085"
+      GAMEPLAYS_URL: "http://pwa-gameplays:8082"
 
   users-db:
     image: postgres:16.3
@@ -47,6 +48,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: "games_password"
       SPRING_JPA_DATABASE_PLATFORM: "org.hibernate.dialect.PostgreSQLDialect"
       EXPERIENCE_URL: "http://pwa-experience:8085"
+      GAMEPLAYS_URL: "http://pwa-gameplays:8082"
 
   games-db:
     image: postgres:16.3
@@ -109,6 +111,7 @@ services:
       SPRING_JPA_DATABASE_PLATFORM: "org.hibernate.dialect.PostgreSQLDialect"
       GAMES_URL: "http://pwa-games:8083"
       EXPERIENCE_URL: "http://pwa-experience:8085"
+      GAMEPLAYS_URL: "http://pwa-gameplays:8082"
 
   playrooms-db:
     image: postgres:16.3
