@@ -189,4 +189,17 @@ public interface PlayroomController {
      */
     void confirm(String sessionId, JSONObject message);
 
+    /**
+     * Reject the operation
+     * @param sessionId - websocket session ID
+     * @param message - message with all details
+     *                {
+     *                  "operation": "reject",
+     *                  "playroomId": --playroomUUID--,
+     *                  "operationId": --operationID--
+     *                }
+     */
+    void reject(String sessionId, JSONObject message);
+
+
 }
