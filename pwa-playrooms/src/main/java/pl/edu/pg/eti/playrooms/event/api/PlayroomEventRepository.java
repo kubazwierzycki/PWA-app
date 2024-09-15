@@ -1,5 +1,7 @@
 package pl.edu.pg.eti.playrooms.event.api;
 
+import pl.edu.pg.eti.playrooms.entity.Playroom;
+
 /**
  * Event repository used to synchronize all services data
  */
@@ -37,5 +39,18 @@ public interface PlayroomEventRepository {
      * @param time - game timer
      */
     void updateGame(String gameId, String gameName, boolean isTurnBased, int time);
+
+    /**
+     * Create or update gameplay details in gameplays service
+     * @param playroom - playroom details
+     */
+    void putGameplay(Playroom playroom);
+
+    /**
+     * Create or update gameplay details in gameplays service
+     * @param playroom - playroom details
+     * @param winner - winner username
+     */
+    void putGameplay(Playroom playroom, String winner);
 
 }
