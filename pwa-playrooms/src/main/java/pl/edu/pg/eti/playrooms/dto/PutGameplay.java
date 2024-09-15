@@ -19,8 +19,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 public class PutGameplay {
-    private UUID uuid;
-
     private String winner;
 
     private Game game;

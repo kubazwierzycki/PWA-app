@@ -24,7 +24,7 @@ public class GameDefaultEventRepository implements GameEventRepository {
     @Override
     public void create(String id, PutGame request) {
         experienceRestTemplate.put("/api/games/{id}", request, id);
-        gameplaysRestTemplate.put("/api/ganes/{id}",
+        gameplaysRestTemplate.put("/api/games/{id}",
                 PutGameBasic.builder()
                         .name(request.getName())
                         .build(), id);
@@ -33,6 +33,6 @@ public class GameDefaultEventRepository implements GameEventRepository {
     @Override
     public void delete(String id) {
         experienceRestTemplate.delete("/api/games/{id}", id);
-        gameplaysRestTemplate.delete("/api/ganes/{id}", id);
+        gameplaysRestTemplate.delete("/api/games/{id}", id);
     }
 }

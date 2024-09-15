@@ -19,7 +19,7 @@ public interface GameController {
      * @param id - game ID
      * @param request - game details {@link PutGame}
      */
-    @PutMapping("/api/ganes/{id}")
+    @PutMapping("/api/games/{id}")
     @ResponseStatus(HttpStatus.CREATED)
     void putGame(
             @PathVariable("id") String id,
@@ -30,7 +30,7 @@ public interface GameController {
      * DELETE request to delete game
      * @param id - game ID
      */
-    @DeleteMapping("/api/ganes/{id}")
+    @DeleteMapping("/api/games/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void deleteGame(
             @PathVariable("id") String id

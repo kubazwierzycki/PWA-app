@@ -86,7 +86,6 @@ public class PlayroomDefaultEventRepository implements PlayroomEventRepository {
 
         PutGameplay gameplay =
                 PutGameplay.builder()
-                        .uuid(playroom.getUuid())
                         .winner(winner)
                         .game(PutGameplay.Game.builder()
                                 .id(playroom.getGame().getId())
@@ -95,6 +94,6 @@ public class PlayroomDefaultEventRepository implements PlayroomEventRepository {
                         .players(players)
                         .build();
 
-        gameplaysRestTemplate.put("/api/gameplay/{uuid}", gameplay);
+        gameplaysRestTemplate.put("/api/gameplay/{uuid}", gameplay, playroom.getUuid());
     }
 }

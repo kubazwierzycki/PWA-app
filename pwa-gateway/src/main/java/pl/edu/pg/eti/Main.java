@@ -28,25 +28,34 @@ public class Main {
                 .route("users", route -> route
                         .host(gateway)
                         .and()
-                        .path("/api/users/**", "/api/users")
+                        .path("/api/users/**",
+                                "/api/users"
+                        )
                         .uri(usersUrl)
                 )
-                .route("gameplays", route -> route
+                .route("gameplay", route -> route
                         .host(gateway)
                         .and()
-                        .path("/api/gameplays/{uuid}", "/api/gameplays")
+                        .path("/api/gameplay/{uuid}",
+                                "/api/gameplay",
+                                "/api/gameplay/player/{uuid}"
+                        )
                         .uri(gameplaysUrl)
                 )
                 .route("games", route -> route
                         .host(gateway)
                         .and()
-                        .path("/api/games/**", "/api/games")
+                        .path("/api/games/**",
+                                "/api/games"
+                        )
                         .uri(gamesUrl)
                 )
                 .route("playrooms", route -> route
                         .host(gateway)
                         .and()
-                        .path("/api/playrooms/{uuid}", "/api/playrooms")
+                        .path("/api/playrooms/{uuid}",
+                                "/api/playrooms"
+                        )
                         .uri(playroomsUrl)
                 )
                 .route("ws-playrooms", route -> route
@@ -58,7 +67,9 @@ public class Main {
                 .route("experience", route -> route
                         .host(gateway)
                         .and()
-                        .path("/api/experience/**", "/api/experience")
+                        .path("/api/experience/**",
+                                "/api/experience"
+                        )
                         .uri(experienceUrl)
                 )
                 .build();
