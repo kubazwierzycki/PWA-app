@@ -38,8 +38,9 @@ export interface IWizardWeights {
     bggCommunityRating: number
     playingTimeFit: number
     numberPlayersFit: number
-    playingTimePoll: number
+    playersAgePoll: number
     numberPlayersPoll: number
+    sum: number
 }
 
 export interface IGameSuggestion {

@@ -15,8 +15,9 @@ const weights: IWizardWeights = {
     bggCommunityRating: 0.2,
     playingTimeFit: 0.15,
     numberPlayersFit: 0.15,
-    playingTimePoll: 0.15,
-    numberPlayersPoll: 0.15
+    playersAgePoll: 0.15,
+    numberPlayersPoll: 0.15,
+    sum: 0
 }
 
 const EXPECTED_VOTES_PER_OPTION: number = 5;
@@ -24,28 +25,32 @@ const EXPECTED_VOTES_PER_OPTION: number = 5;
 /**
  * Function creating weights set for wizard algorithm
  * Takes into consideration credibility of BGG polls, based on number of votes compared to number of options in a poll
- * @param {number} playingTimeOptionsCount
- * @param {number} playingTimeVotes
+ * @param {number} playersAgeOptionsCount
+ * @param {number} playersAgeVotes
  * @param {number} numberPlayersOptionsCount
  * @param {number} numberPlayersVotes
  * @returns {@link IWizardWeights} object with
  */
 export const wizardWeights = (
-    playingTimeOptionsCount: number,
-    playingTimeVotes: number,
+    playersAgeOptionsCount: number,
+    playersAgeVotes: number,
     numberPlayersOptionsCount: number,
     numberPlayersVotes: number
 ): IWizardWeights => {
 
-    const playingTimeFitCredibility = playingTimeVotes / (playingTimeOptionsCount * EXPECTED_VOTES_PER_OPTION);
+    const playersAgeFitCredibility = playersAgeVotes / (playersAgeOptionsCount * EXPECTED_VOTES_PER_OPTION);
     const numberPlayersFitCredibility = numberPlayersVotes / (numberPlayersOptionsCount * EXPECTED_VOTES_PER_OPTION);
+
+    let sum = weights.userRating + weights.bggCommunityRating + weights.playingTimeFit + weights.numberPlayersFit +
+        weights.playersAgePoll * playersAgeFitCredibility + weights.numberPlayersPoll * numberPlayersFitCredibility;
 
     return {
         userRating: weights.userRating,
         bggCommunityRating: weights.bggCommunityRating,
         playingTimeFit: weights.playingTimeFit,
         numberPlayersFit: weights.numberPlayersFit,
-        playingTimePoll: weights.playingTimePoll * playingTimeFitCredibility,
-        numberPlayersPoll: weights.numberPlayersPoll * numberPlayersFitCredibility
+        playersAgePoll: weights.playersAgePoll * playersAgeFitCredibility,
+        numberPlayersPoll: weights.numberPlayersPoll * numberPlayersFitCredibility,
+        sum: sum
     }
 }
