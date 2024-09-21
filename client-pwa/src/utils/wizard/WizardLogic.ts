@@ -1,15 +1,38 @@
 import {IWizardGameInput, IWizardOutput, IWizardParams} from "./WizardInterfaces.ts";
 import {wizardWeights} from "./WizardConfig.ts";
 
+
+const PI = Math.PI;
+const E = Math.E;
+
+
 // overlap condition
 const isPlayTimeRangeOverlap = (
-    paramsMin,
-    paramsMax,
-    gameMin,
-    gameMax
+    paramsMin: number,
+    paramsMax: number,
+    gameMin: number,
+    gameMax: number
 ) => Math.max(paramsMin, gameMin) <= Math.min(paramsMax, gameMax);
 
+/**
+ * Higher order function returning function of standard normal distribution
+ * With parameters based on acceptable range
+ * Used to create a function assigning points over the spectrum of range
+ * @param {number} min - start of range
+ * @param {number} max - end of range
+ * @returns - function that gives points for value within a range
+ */
+const standardNormalDistributionPoints = (min: number, max: number) => {
+    const sigma = (max - min) / 2.0;
+    const mi = sigma + min;
 
+    const sigmaSquared = sigma ** 2;
+
+    // normalizing factor
+    const scale = Math.sqrt(2*PI*sigmaSquared);
+
+    return (x: number) => (1/(Math.sqrt(2*PI*sigmaSquared)))*(E**(-1*(((x - mi)**2)/(2*sigmaSquared)))) * scale;
+}
 
 /**
  * Public interface for wizard logic algorithm
@@ -28,8 +51,8 @@ const getBestGames = (input: IWizardGameInput[], params: IWizardParams): IWizard
     input = input.filter(game => isPlayTimeRangeOverlap(
         params.minPlayingTime,
         params.maxPlayingTime,
-        game.minPlayTime,
-        game.maxPlayTime
+        parseInt(game.minPlayTime),
+        parseInt(game.maxPlayTime)
     ));
     // assume perfect initial score for each game
     let set = input.map(game => {
@@ -47,11 +70,20 @@ const getBestGames = (input: IWizardGameInput[], params: IWizardParams): IWizard
             )
         }
     });
+    // function assigning points for average play time
+    const avgPlayingTimePoints = standardNormalDistributionPoints(params.minPlayingTime, params.maxPlayingTime);
     // subtract points for discrepancies
     for (let item of set) {
         // average playing time fit
-
+        const avgPlayingTimeScore = avgPlayingTimePoints(parseInt(item.game.avgPlayTime));
         // number of players fit ?????
+
+        // players age poll
+
+        // number of players poll
+
+        const score = avgPlayingTimeScore;
+        item.score = score;
     }
 }
 
