@@ -1,4 +1,11 @@
-import {IWizardGameInput, IWizardOutput, IWizardParams, IWizardWeights} from "./WizardInterfaces.ts";
+import {
+    IGameSuggestion,
+    IWizardGameInput,
+    IWizardOutput,
+    IWizardParams,
+    IWizardUserGameRank,
+    IWizardWeights
+} from "./WizardInterfaces.ts";
 import {wizardWeights} from "./WizardConfig.ts";
 
 
@@ -44,9 +51,10 @@ const isPlayTimeRangeOverlap = (
  * Higher order function returning function of standard normal distribution
  * With parameters based on given sigma (standard deviation) and mi (mean)
  * Used to create a function assigning points over the spectrum of range
+ * Normalizes return value to [0-1] range
  * @param {number} sigma - standard deviation of mean
  * @param {number} mi - mean value
- * @returns - function that gives points for value based on deviation to expected value
+ * @returns - function that gives points (0-1) for value based on deviation to expected value
  */
 const standardNormalDistributionPoints = (sigma: number, mi: number) => {
     const sigmaSquared = sigma ** 2;
@@ -61,9 +69,10 @@ const standardNormalDistributionPoints = (sigma: number, mi: number) => {
  * Higher order function returning function of standard normal distribution
  * With parameters based on acceptable range
  * Used to create a function assigning points over the spectrum of range
+ * Normalizes return value to [0-1] range
  * @param {number} min - start of range
  * @param {number} max - end of range
- * @returns - function that gives points for value within a range
+ * @returns - function that gives points (0-1) for value within a range
  */
 const standardNormalDistributionRangePoints = (min: number, max: number) => {
     const sigma = (max - min) / 2.0;
@@ -151,8 +160,6 @@ const getBestGames = (input: IWizardGameInput[], params: IWizardParams): IWizard
         // average playing time fit
         const avgPlayingTimeScore = avgPlayingTimePoints(parseInt(item.game.avgPlayTime)) * itemWeights.playingTimeFit;
 
-        // number of players fit ?????
-
         // players age poll
         const expectedAgePollValue = weightedAverage(
             item.game.suggestedPlayerAge.results.map(option => parseAge(option.value)),
@@ -171,10 +178,33 @@ const getBestGames = (input: IWizardGameInput[], params: IWizardParams): IWizard
         const communityRanking = parseFloat(item.game.statistics.ratings.average["@_value"]);
         const communityRankingScore = communityRanking / 10.0 * itemWeights.bggCommunityRating;
 
+        // user game ranking
+        const userGameRanking = params.ranking[parseInt(item.game.id)] ?? {
+            gameId: item.game.id,
+            rating: 0
+        } as IWizardUserGameRank;
+        const userGameRankingScore = userGameRanking.rating / 10.0 * itemWeights.userRating;
+
         // calculate final score
-        const score = avgPlayingTimeScore + playersAgeScore + numberOfPlayersScore + communityRankingScore;
+        const score = avgPlayingTimeScore + playersAgeScore + numberOfPlayersScore +
+            communityRankingScore + userGameRankingScore;
         item.score = score;
     }
+
+    // sort games by score
+    set.sort((a, b) => b.score - a.score);
+
+    // get top 5 games
+    set = set.slice(0, 6);
+
+    // return suggestions object
+    const suggestionsList = set.map(item => ({
+        id: item.game.id,
+        name: item.game.name,
+        score: item.score,
+        categories: item.game.categories
+    } as IGameSuggestion))
+    return {suggestions: suggestionsList} as IWizardOutput;
 }
 
 export default getBestGames;

@@ -48,7 +48,6 @@ export interface IWizardWeights {
     userRating: number
     bggCommunityRating: number
     playingTimeFit: number
-    numberPlayersFit: number
     playersAgePoll: number
     numberPlayersPoll: number
     sum: number
