@@ -1,4 +1,4 @@
-import {IWizardGameInput, IWizardOutput, IWizardParams} from "./WizardInterfaces.ts";
+import {IWizardGameInput, IWizardOutput, IWizardParams, IWizardWeights} from "./WizardInterfaces.ts";
 import {wizardWeights} from "./WizardConfig.ts";
 
 
@@ -78,6 +78,15 @@ const parseAge = (ageLabel: string): number => {
     else return parseInt(ageLabel);
 }
 
+// handles special case number of players label
+const parseNumPlayers = (numPlayersLabel: string): number => {
+    if (numPlayersLabel.includes("+")) {
+        const numberPart = numPlayersLabel.slice(0, numPlayersLabel.indexOf("+"));
+        return parseInt(numberPart);
+    }
+    else return parseInt(numPlayersLabel);
+}
+
 /**
  * Public interface for wizard logic algorithm
  * @param {IWizardGameInput[]} input - list of game input objects
@@ -103,30 +112,45 @@ const getBestGames = (input: IWizardGameInput[], params: IWizardParams): IWizard
         return {game: game, score: 100.0}
     });
     // get weights
-    const weights = input.map(game => {
-        return {
-            game: game.id,
-            weights: wizardWeights(
-                game.suggestedPlayerAge.results.length,
-                game.suggestedPlayerAge.totalVotes,
-                game.suggestedNumPlayers.results.length,
-                game.suggestedNumPlayers.totalVotes
-            )
-        }
+    const weights = new Map<number, IWizardWeights>();
+    input.forEach(game => {
+        let calculatedWeights = wizardWeights(
+            game.suggestedPlayerAge.results.length,
+            game.suggestedPlayerAge.totalVotes,
+            game.suggestedNumPlayers.results.length,
+            game.suggestedNumPlayers.totalVotes
+        );
+        weights.set(parseInt(game.id), calculatedWeights)
     });
 
     // function assigning points for average play time
     const avgPlayingTimePoints = standardNormalDistributionRangePoints(params.minPlayingTime, params.maxPlayingTime);
 
-    // function assigning points for players age fit
+    // function assigning points for players age poll fit
     const avgPlayerAge = average(params.playersAge);
     const stdPlayersAge = std(params.playersAge);
     const playersAgePoints = standardNormalDistributionPoints(stdPlayersAge, avgPlayerAge);
 
+    // function assigning points for number of players poll fit
+    const numberOfPlayersPoints = standardNormalDistributionPoints(5, params.numPlayers);
+
     // subtract points for discrepancies
     for (let item of set) {
+
+        // get weights
+        const itemWeights: IWizardWeights = weights.get(parseInt(item.game.id)) ?? {
+            userRating: 0,
+            bggCommunityRating: 0,
+            playingTimeFit: 0,
+            numberPlayersFit: 0,
+            playersAgePoll: 0,
+            numberPlayersPoll: 0,
+            sum: 0
+        } as IWizardWeights;
+
         // average playing time fit
-        const avgPlayingTimeScore = avgPlayingTimePoints(parseInt(item.game.avgPlayTime));
+        const avgPlayingTimeScore = avgPlayingTimePoints(parseInt(item.game.avgPlayTime)) * itemWeights.playingTimeFit;
+
         // number of players fit ?????
 
         // players age poll
@@ -134,10 +158,21 @@ const getBestGames = (input: IWizardGameInput[], params: IWizardParams): IWizard
             item.game.suggestedPlayerAge.results.map(option => parseAge(option.value)),
             item.game.suggestedPlayerAge.results.map(option => option.numVotes)
         );
-        const playersAgeScore = playersAgePoints(expectedAgePollValue);
-        // number of players poll
+        const playersAgeScore = playersAgePoints(expectedAgePollValue) * itemWeights.playersAgePoll;
 
-        const score = avgPlayingTimeScore + playersAgeScore;
+        // number of players poll
+        const expectedNumberOfPlayersPollValue = weightedAverage(
+            item.game.suggestedNumPlayers.results.map(option => parseNumPlayers(option.value)),
+            item.game.suggestedNumPlayers.results.map(option => option.numVotes)
+        );
+        const numberOfPlayersScore = numberOfPlayersPoints(expectedNumberOfPlayersPollValue) * itemWeights.numberPlayersPoll;
+
+        // BGG community ranking score
+        const communityRanking = parseFloat(item.game.statistics.ratings.average["@_value"]);
+        const communityRankingScore = communityRanking / 10.0 * itemWeights.bggCommunityRating;
+
+        // calculate final score
+        const score = avgPlayingTimeScore + playersAgeScore + numberOfPlayersScore + communityRankingScore;
         item.score = score;
     }
 }

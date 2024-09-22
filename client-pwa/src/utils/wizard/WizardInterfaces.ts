@@ -1,9 +1,19 @@
 
+export interface IWizardUserGameRank {
+    gameId: string
+    rating: number
+}
+
 export interface IWizardParams {
     numPlayers: number
     playersAge: number[]
     minPlayingTime: number
     maxPlayingTime: number
+    ranking: IWizardUserGameRank[]
+}
+
+export interface IWizardGameInputStats {
+    average: {"@_value": string}
 }
 
 export interface IWizardGameInput {
@@ -20,6 +30,7 @@ export interface IWizardGameInput {
     minAge: string
     suggestedNumPlayers: IAbstractPoll
     suggestedPlayerAge: IAbstractPoll
+    statistics: {ratings: IWizardGameInputStats}
 }
 
 export interface IAbstractPoll {
