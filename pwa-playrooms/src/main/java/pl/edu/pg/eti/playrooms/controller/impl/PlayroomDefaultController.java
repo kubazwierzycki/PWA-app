@@ -406,6 +406,8 @@ public class PlayroomDefaultController implements PlayroomController {
         playroom.setPaused(true);
         playroomService.update(playroom);
         sendMessagesWithUpdate(playroom.getPlayers(), playroom.getUuid().toString());
+
+        playroomEventRepository.putGameplay(playroom);
     }
 
     private void deletePlayroom(Playroom playroom) {

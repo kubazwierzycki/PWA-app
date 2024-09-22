@@ -22,4 +22,9 @@ public class Main {
     public RestTemplate experienceRestTemplate(@Value("${experience.url}") String experienceUrl) {
         return new RestTemplateBuilder().rootUri(experienceUrl).build();
     }
+
+    @Bean
+    public RestTemplate gameplaysRestTemplate(@Value("${gameplays.url}") String gameplaysUrl) {
+        return new RestTemplateBuilder().rootUri(gameplaysUrl).build();
+    }
 }
