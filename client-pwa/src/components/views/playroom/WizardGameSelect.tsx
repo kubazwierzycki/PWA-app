@@ -1,11 +1,15 @@
-import {Stack, TextField, Typography} from "@mui/material";
+import {Button, Stack, TextField, Typography} from "@mui/material";
 import {useState} from "react";
+import {getCollectionData} from "../../../utils/wizard/BGGWizardDataParser.ts";
+import {useBoardgamesContext} from "../../../contexts/BoardgamesContext.tsx";
 
 
 const WizardGameSelect = () => {
 
     const [minPlayTime, setMinPlayTime] = useState("0");
     const [maxPlayTime, setMaxPlayTime] = useState("60");
+
+    const {games} = useBoardgamesContext();
 
     return (
         <div style={{width: "100%", height: "100%", display: "flex", flexDirection: "column", padding: "20px 40px"}}>
@@ -43,6 +47,9 @@ const WizardGameSelect = () => {
                     />
                 </Stack>
             </div>
+            <Button onClick={() => getCollectionData(games)}>
+                Prepare data
+            </Button>
         </div>
     )
 }
