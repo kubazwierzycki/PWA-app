@@ -9,7 +9,7 @@ const WizardGameSelect = () => {
     const [minPlayTime, setMinPlayTime] = useState("0");
     const [maxPlayTime, setMaxPlayTime] = useState("60");
 
-    const {games} = useBoardgamesContext();
+    const {games, ranking} = useBoardgamesContext();
 
     return (
         <div style={{width: "100%", height: "100%", display: "flex", flexDirection: "column", padding: "20px 40px"}}>
@@ -47,7 +47,7 @@ const WizardGameSelect = () => {
                     />
                 </Stack>
             </div>
-            <Button onClick={() => getCollectionData(games)}>
+            <Button onClick={() => getCollectionData(games, ranking)}>
                 Prepare data
             </Button>
         </div>

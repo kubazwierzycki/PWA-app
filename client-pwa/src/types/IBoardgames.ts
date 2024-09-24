@@ -32,7 +32,7 @@ export interface BoardGamePoll {
     "@_name": string
     "@_title": string
     "@_totalvotes": string
-    results: any[]
+    results: any
 }
 
 export interface BoardGameUsersDetails {

@@ -3,8 +3,65 @@
  */
 import {getGameDetails} from "../../services/boardgames.ts";
 import {BoardGameDetails, BoardGameLink, BoardGamePoll, BoardGameRank, BoardGameStub} from "../../types/IBoardgames.ts";
-import {IWizardGameInput} from "./WizardInterfaces.ts";
+import {IAbstractPoll, IWizardGameInput} from "./WizardInterfaces.ts";
 
+
+// Function to parse a simple poll into IAbstractPoll format
+function parseSimplePoll(pollData: BoardGamePoll): IAbstractPoll {
+    console.log(pollData)
+    const results = pollData.results.result.map((result: any) => ({
+        value: result["@_value"] as string,
+        numVotes: parseInt(result["@_numvotes"]),
+    }));
+
+    return {
+        name: pollData["@_title"],
+        totalVotes: parseInt(pollData["@_totalvotes"]),
+        results,
+    };
+}
+
+// Function to parse a descriptive poll ("suggested_numplayers") into IAbstractPoll format
+function parseDescriptivePoll(pollData: BoardGamePoll): IAbstractPoll {
+    const results = pollData.results.map((result: any) => {
+
+        const resultArray: any[] = result.result;
+
+        // parsing descriptive values as follows:
+        // Best - 1.0
+        // Recommended - 0.66
+        // Not Recommended - 0
+        const parseValue = (val: string): number => {
+            switch (val) {
+                case 'Best':
+                    return 1.0;
+                case 'Recommended':
+                    return 0.66;
+                case 'Not Recommended':
+                    return 0;
+                default:
+                    return 0;
+            }
+        };
+
+        let valueResult = 0.0;
+        resultArray.forEach(res => {
+            valueResult += parseValue(res["@_value"]) * parseInt(res["@_numvotes"]);
+        })
+        valueResult /= result["@_numplayers"];
+
+        return {
+            value: valueResult.toString(),
+            numVotes: parseInt(result["@_numplayers"]),
+        }
+    });
+
+    return {
+        name: pollData["@_title"],
+        totalVotes: parseInt(pollData["@_totalvotes"]),
+        results,
+    };
+}
 
 const parseGame = (game: BoardGameDetails, ranking: BoardGameRank[]): IWizardGameInput | null => {
 
@@ -24,12 +81,12 @@ const parseGame = (game: BoardGameDetails, ranking: BoardGameRank[]): IWizardGam
     // user rating
     const userRating = ranking.find(rank => rank.gameId === gameId)?.rating || 0;
 
-    // Categories extraction
+    // extract categories
     const categories = game.link
         .filter((link: BoardGameLink) => link["@_type"] === "boardgamecategory")
         .map((link: BoardGameLink) => link["@_value"]);
 
-    // Player and time information
+    // player and game time information
     const minPlayers = game.minplayers["@_value"] || "";
     const maxPlayers = game.maxplayers["@_value"] || "";
     const minPlayTime = game.minplaytime["@_value"] || "";
@@ -37,7 +94,7 @@ const parseGame = (game: BoardGameDetails, ranking: BoardGameRank[]): IWizardGam
     const avgPlayTime = game.playingtime["@_value"] || "";
     const minAge = game.minage["@_value"] || "";
 
-    // Suggested player polls
+    // suggestion polls
     const suggestedNumPlayersPoll = game.poll.find((poll: BoardGamePoll) =>
         poll["@_name"] === "suggested_numplayers"
     );
@@ -45,10 +102,10 @@ const parseGame = (game: BoardGameDetails, ranking: BoardGameRank[]): IWizardGam
         poll["@_name"] === "suggested_playerage"
     );
 
-    const suggestedNumPlayers = suggestedNumPlayersPoll ? parsePoll(suggestedNumPlayersPoll) : { name: '', totalVotes: 0, results: [] };
-    const suggestedPlayerAge = suggestedPlayerAgePoll ? parsePoll(suggestedPlayerAgePoll) : { name: '', totalVotes: 0, results: [] };
+    const suggestedNumPlayers = suggestedNumPlayersPoll ? parseDescriptivePoll(suggestedNumPlayersPoll) : { name: '', totalVotes: 0, results: [] };
+    const suggestedPlayerAge = suggestedPlayerAgePoll ? parseSimplePoll(suggestedPlayerAgePoll) : { name: '', totalVotes: 0, results: [] };
 
-    // Statistics
+    // statistics
     const statistics = {
         ratings: {
             average: { "@_value": ratings.average["@_value"] || "0" },
@@ -80,10 +137,10 @@ export const getCollectionData = async (games: BoardGameStub[], ranking: BoardGa
     let details = await getGameDetails(idsList);
     console.log(details);
 
+    const data = details.map(game => parseGame(game, ranking));
 
-
-
-
+    console.log(data);
+    return data;
 }
 
 
