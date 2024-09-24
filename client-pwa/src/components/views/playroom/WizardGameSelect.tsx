@@ -2,6 +2,8 @@ import {Button, Stack, TextField, Typography} from "@mui/material";
 import {useState} from "react";
 import {getCollectionData} from "../../../utils/wizard/BGGWizardDataParser.ts";
 import {useBoardgamesContext} from "../../../contexts/BoardgamesContext.tsx";
+import getBestGames from "../../../utils/wizard/WizardLogic.ts";
+import {IWizardParams} from "../../../utils/wizard/WizardInterfaces.ts";
 
 
 const WizardGameSelect = () => {
@@ -10,6 +12,27 @@ const WizardGameSelect = () => {
     const [maxPlayTime, setMaxPlayTime] = useState("60");
 
     const {games, ranking} = useBoardgamesContext();
+
+    const parseParams = (): IWizardParams => {
+        return {
+            maxPlayingTime: 500,
+            minPlayingTime: 0,
+            numPlayers: 3,
+            playersAge: [18, 19, 24],
+            ranking: ranking
+        }
+    }
+
+    const handleWizard = async () => {
+        const data = await getCollectionData(games, ranking);
+        if (data === null) {
+            return;
+        }
+        else {
+            const bestGames = getBestGames(data, parseParams());
+            console.log(bestGames);
+        }
+    }
 
     return (
         <div style={{width: "100%", height: "100%", display: "flex", flexDirection: "column", padding: "20px 40px"}}>
@@ -47,8 +70,8 @@ const WizardGameSelect = () => {
                     />
                 </Stack>
             </div>
-            <Button onClick={() => getCollectionData(games, ranking)}>
-                Prepare data
+            <Button onClick={handleWizard}>
+                Get suggestions
             </Button>
         </div>
     )

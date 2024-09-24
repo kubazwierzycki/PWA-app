@@ -63,11 +63,11 @@ function parseDescriptivePoll(pollData: BoardGamePoll): IAbstractPoll {
     };
 }
 
-const parseGame = (game: BoardGameDetails, ranking: BoardGameRank[]): IWizardGameInput | null => {
+const parseGame = (game: BoardGameDetails, ranking: BoardGameRank[]): IWizardGameInput => {
 
     const gameId = game["@_id"];
     if (gameId === undefined) {
-        return null;
+        return {} as IWizardGameInput;
     }
 
     // extract name
