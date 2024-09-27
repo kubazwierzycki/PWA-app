@@ -55,19 +55,32 @@ export const updatePlayroom = async (id: string, body: PutPlayroom):Promise<bool
 
 /**
  * @param {string} playroomId - uuid of the playroom assigned by server
- * @param {string} id - player's uuid
  * @param {string} username - player's username
+ * @param {string} id - player's uuid
  * @returns {Promise<boolean>} websocket message
  */
-export const buildJoinWaitingRoomMessage = (playroomId: string, id: string, username: string) : object => {
-    return {
-        operation: "joinWaitingRoom",
-        playroomId: playroomId,
-        player: {
-            id: id,
-            username: username,
+export const buildJoinWaitingRoomMessage = (playroomId: string, username: string, id?: string) : object => {
+    if(typeof id !== 'undefined'){
+        return {
+            operation: "joinWaitingRoom",
+            playroomId: playroomId,
+            player: {
+                id: id,
+                username: username,
+            }
+        }
+    } else{
+        return {
+            operation: "joinWaitingRoom",
+            playroomId: playroomId,
+            player: {
+                id: null,
+                username: username,
+            }
         }
     }
+    
+
 }
 
 /**

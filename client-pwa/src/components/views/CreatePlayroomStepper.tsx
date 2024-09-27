@@ -99,7 +99,7 @@ const CreatePlayroomStepper = (): ReactNode => {
             if (readyState === ReadyState.OPEN) {
                 console.log("ready");
                 if(!joinSuccessfully){
-                    sendJsonMessage(buildJoinWaitingRoomMessage(code, uuid, user.username));
+                    sendJsonMessage(buildJoinWaitingRoomMessage(code, user.username, uuid));
                 }
             } else {
                 console.log(readyState);

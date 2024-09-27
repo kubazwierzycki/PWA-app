@@ -1,13 +1,57 @@
-import {ChangeEvent, ReactNode, useState} from "react";
+import {ChangeEvent, ReactNode, useEffect, useState} from "react";
 import styles from "../../styles/createPlayroom.module.css";
 import {Button, Card, Checkbox, FormControlLabel, FormGroup, Input, Typography} from "@mui/material";
 import {Link} from "react-router-dom";
+import useWebSocket, { ReadyState }  from "react-use-websocket";
+import { buildJoinWaitingRoomMessage, Player, PlayroomMessage, waitingRoomMessage } from "../../services/playroom";
+import { useAuth } from "../../contexts/AuthContext";
+import AwaitingPlayersView from "../../components/views/playroom/AwaitingPlayersView";
 
 /**
  * Live board game playing room joining page
  * @returns {ReactNode}
  */
 const PlayroomJoin = (): ReactNode => {
+    const [joinSuccessfully, setJoinSuccessfully] = useState<boolean>(false);
+    const [waitingRoomPlayers, setWaitingRoomPlayers] = useState<Player[]>([]);
+    const {uuid, user } = useAuth();
+    
+    //webSocket
+    const WS_URL = "ws://localhost:8080/ws-playrooms";
+
+    const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocket(WS_URL, {
+        share: true,
+        onOpen: () => {
+            console.log("WebSocket connection established.");
+        },
+    });
+
+    useEffect(() => {
+        if (lastJsonMessage) {
+            console.log(lastJsonMessage);
+            
+            const messageType : string = (lastJsonMessage as PlayroomMessage).type;
+            switch(messageType){
+                case "welcomeInfo": {
+                    console.log("welcomeInfo");
+                    setJoinSuccessfully(true);
+                    break;
+                }
+                case "waitingRoom": {
+                    const waitingRoomMessage : waitingRoomMessage = (lastJsonMessage as waitingRoomMessage);
+                    setWaitingRoomPlayers(waitingRoomMessage.players);
+                    console.log("waitingRoom");
+                    break;
+                }
+                default: {
+                    console.log("Unknown message type");
+                    break;
+                }
+            }
+        } else {
+            console.log("None");
+        }
+    }, [lastJsonMessage]);
 
     // playroom code entered by user
     const [code, setCode] = useState<string>("");
@@ -30,7 +74,22 @@ const PlayroomJoin = (): ReactNode => {
         event: ChangeEvent<HTMLInputElement>
     ) => setUseUsername(event.target.checked);
 
-    return (
+    const handleJoinPlayroom = () =>{
+        //webSocket
+        if (readyState === ReadyState.OPEN) {
+            console.log("ready");
+            if(!joinSuccessfully){
+                if(useUsername){
+                    sendJsonMessage(buildJoinWaitingRoomMessage(code, user.username, uuid));
+                } else{
+                    sendJsonMessage(buildJoinWaitingRoomMessage(code, nick));
+                }
+            }
+        }
+    }
+
+    return ( joinSuccessfully ? <div className={styles.container}>
+         <AwaitingPlayersView  code={code} players={waitingRoomPlayers}/></div> :
         <div className={styles.container}>
             <Card className={styles.generateBox} sx={{borderRadius: "20px"}}>
                 <Typography>
@@ -71,7 +130,7 @@ const PlayroomJoin = (): ReactNode => {
                         </FormGroup>
                     </div>
                 </div>
-                <Button variant="contained" sx={{marginTop: "10px"}}>
+                <Button variant="contained" sx={{marginTop: "10px"}} onClick={handleJoinPlayroom}>
                     Join playroom
                 </Button>
                 <br/>
