@@ -1,6 +1,7 @@
 import {ReactNode} from "react";
 import {Avatar, Card, Chip, Stack, Typography} from "@mui/material";
 import styles from "../../../styles/createPlayroom.module.css";
+import { Player } from "../../../services/playroom";
 
 
 /**
@@ -8,20 +9,20 @@ import styles from "../../../styles/createPlayroom.module.css";
  * @param {string} code - code of the created playroom
  * @returns {ReactNode}
  */
-const AwaitingPlayersView = ({code}: {code: string}): ReactNode => {
+const AwaitingPlayersView = ({code, players}: {code: string, players : Player[]}): ReactNode => {
 
 
     return (
         <Card className={styles.awaitBox} sx={{borderRadius: "20px"}}>
             <div className={styles.joinedList}>
                 {
-                    [1,2,3,4,5].map(value => {
+                    players.map(player => {
                         return (
-                            <Card sx={{marginTop: "10px", padding: "5px"}} key={value}>
+                            <Card sx={{marginTop: "10px", padding: "5px"}} key={player.username}>
                                 <Stack direction="row">
                                     <Avatar />
                                     <Typography sx={{marginLeft: "10px"}}>
-                                        User{value}
+                                        {player.username}
                                     </Typography>
                                 </Stack>
                             </Card>

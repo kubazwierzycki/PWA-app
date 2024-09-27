@@ -52,3 +52,142 @@ export const updatePlayroom = async (id: string, body: PutPlayroom):Promise<bool
     console.log(response.status)
     return response.status === 201;
 }
+
+/**
+ * @param {string} playroomId - uuid of the playroom assigned by server
+ * @param {string} id - player's uuid
+ * @param {string} username - player's username
+ * @returns {Promise<boolean>} websocket message
+ */
+export const buildJoinWaitingRoomMessage = (playroomId: string, id: string, username: string) : object => {
+    return {
+        operation: "joinWaitingRoom",
+        playroomId: playroomId,
+        player: {
+            id: id,
+            username: username,
+        }
+    }
+}
+
+/**
+ * @param {string} playroomId - uuid of the playroom assigned by server
+ * @returns {Promise<boolean>} websocket message
+ */
+export const buildCloseWaitingRoomMessage = (playroomId: string) : object => {
+    return {
+        "operation": "closeWaitingRoom",
+        "playroomId": playroomId,
+    }
+}
+
+/**
+ * @param {string} playroomId - uuid of the playroom assigned by server
+ * @returns {Promise<boolean>} websocket message
+ */
+export const buildFinishWaitingRoomMessage = (playroomId: string) : object => {
+    return {
+        "operation": "finishWaitingRoom",
+        "playroomId": playroomId,
+    }
+}
+
+/**
+ * @param {string} playroomId - uuid of the playroom assigned by server
+ * @returns {Promise<boolean>} websocket message
+ */
+export const buildStartGameMessage = (playroomId: string) : object => {
+    return {
+        "operation": "start",
+        "playroomId": playroomId,
+    }
+}
+
+/**
+ * @param {string} playroomId - uuid of the playroom assigned by server
+ * @returns {Promise<boolean>} websocket message
+ */
+export const buildEndTurnMessage = (playroomId: string) : object => {
+    return {
+        "operation": "endTurn",
+        "playroomId": playroomId,
+    }
+}
+
+/**
+ * @param {string} playroomId - uuid of the playroom assigned by server
+ * @returns {Promise<boolean>} websocket message
+ */
+export const buildCheckStatusMessage = (playroomId: string) : object => {
+    return {
+        "operation": "status",
+        "playroomId": playroomId,
+    }
+}
+
+/**
+ * @param {string} playroomId - uuid of the playroom assigned by server
+ * @returns {Promise<boolean>} websocket message
+ */
+export const buildEndGameMessage = (playroomId: string) : object => {
+    return {
+        "operation": "endGame",
+        "playroomId": playroomId,
+    }
+}
+
+/**
+ * @param {string} playroomId - uuid of the playroom assigned by server
+ * @param {string} operationId - id of the request assigned by server
+ * @returns {Promise<boolean>} websocket message
+ */
+export const buildConfirmEndGameMessage = (playroomId: string, operationId: string ) : object => {
+    return {
+        "operation": "confirm",
+        "playroomId": playroomId,
+        "operationId": operationId,
+    }
+}
+
+
+/**
+ * @param {string} playroomId - uuid of the playroom assigned by server
+ * @returns {Promise<boolean>} websocket message
+ */
+export const buildPauseGameMessage = (playroomId: string) : object => {
+    return {
+        "operation": "pause",
+        "playroomId": playroomId,
+    }
+}
+
+export interface PlayroomMessage {
+    type: string
+}
+
+// {
+//     "isClosed": false,
+//     "players": [
+//         {
+//             "userId": "1116a8c1-113a-115f-119f-111af1ef19e3",
+//             "playerId": "ce7ffcd6-a2a0-4ae7-a74a-0208acde9c45",
+//             "username": "exampleUsrname"
+//         }
+//     ],
+//     "playroomId": "1fbfc490-5fd8-4104-83db-bc275bc913dd",
+//     "hostID": "ce7ffcd6-a2a0-4ae7-a74a-0208acde9c45",
+//     "type": "waitingRoom"
+//  }
+
+export interface Player{
+    userId : string
+    playerId : string
+    username : string
+}
+
+export interface waitingRoomMessage extends PlayroomMessage {
+    isClosed : boolean
+    players : Player[]
+    playroomId : string
+    hostID : string
+}
