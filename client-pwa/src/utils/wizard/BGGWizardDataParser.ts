@@ -23,6 +23,8 @@ function parseSimplePoll(pollData: BoardGamePoll): IAbstractPoll {
 
 // Function to parse a descriptive poll ("suggested_numplayers") into IAbstractPoll format
 function parseDescriptivePoll(pollData: BoardGamePoll): IAbstractPoll {
+
+    console.log(pollData);
     const results = pollData.results.map((result: any) => {
 
         const resultArray: any[] = result.result;
@@ -132,9 +134,21 @@ const parseGame = (game: BoardGameDetails, ranking: BoardGameRank[]): IWizardGam
 }
 
 export const getCollectionData = async (games: BoardGameStub[], ranking: BoardGameRank[]) => {
-    const idsList = games.map(game => game["@_objectid"]).join(",");
-    console.log(idsList);
-    let details = await getGameDetails(idsList);
+    //const idsList = games.map(game => game["@_objectid"]).join(",");
+    //console.log(idsList);
+    let details = [] as BoardGameDetails[];
+    const len = games.length;
+    // BGG API allows only 20 items in one details fetch
+    const maxItemsPerFetch: number = 20;
+    // number of fetches necessary
+    const neededFetches = Math.ceil(len / maxItemsPerFetch);
+    for (let i=0; i<neededFetches; i++) {
+        let gamesList = games.slice(i * maxItemsPerFetch, (i + 1) * maxItemsPerFetch);
+        let idsList = gamesList.map(game => game["@_objectid"]).join(",");
+        console.log(idsList);
+        let detailsFetch = await getGameDetails(idsList);
+        details.push(...detailsFetch);
+    }
     console.log(details);
 
     const data = details.map(game => parseGame(game, ranking));
