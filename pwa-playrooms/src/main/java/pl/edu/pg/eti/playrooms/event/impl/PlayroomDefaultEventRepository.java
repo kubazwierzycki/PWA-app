@@ -75,6 +75,10 @@ public class PlayroomDefaultEventRepository implements PlayroomEventRepository {
     public void putGameplay(Playroom playroom, String winner) {
         List<PutGameplay.Player> players = new ArrayList<>();
 
+        if (playroom.getGame() == null || playroom.getPlayers() == null) {
+            return;
+        }
+
         for (Playroom.Player player : playroom.getPlayers().values()) {
             players.add(
                     PutGameplay.Player.builder()

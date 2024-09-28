@@ -307,3 +307,51 @@ or (<i>if time is up</i>
       "paused": true,
       ...
    ```
+
+### Win
+
+1. Send websocket message (e.g.):
+   ```
+   {
+      "operation": "win",
+      "playroomId": "1fbfc490-5fd8-4104-83db-bc275bc913dd"
+   }
+   ```
+
+2. Another player receive message (e.g.):
+   ```
+   {
+      "question": "Please confirm if player: exampleUsername won the game.",
+      "operationId": "5db9721e-3b3d-431a-88dc-40e8e02a46e6",
+      "type": "confirmOperation"
+   }
+   ```
+   
+3. The player can confirm the operation by sending a message (e.g.):
+
+   ```
+   {
+      "operation": "confirm",
+      "playroomId": "1fbfc490-5fd8-4104-83db-bc275bc913dd",
+      "operationId": "5db9721e-3b3d-431a-88dc-40e8e02a46e6"
+   }
+   ```
+   
+4. Receive message (e.g.):
+
+   ```
+   {
+      "notification": "Player: exampleUsername has won the game!",
+      "type": "notification"
+   }
+   ```
+
+5. The game is ended
+
+```
+{
+   ...
+   "ended": true,
+   ...
+}
+```
