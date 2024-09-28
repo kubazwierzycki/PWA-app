@@ -146,7 +146,7 @@ public class PlayroomDefaultController implements PlayroomController {
         Playroom playroom = this.getPlayroom(getStringValue("playroomId", message));
 
         if (playroom != null && playroom.getGame() != null &&
-                UUID.fromString(sessionId).equals(playroom.getHostId()) && !playroom.isWaitingRoomClosed()) {
+                UUID.fromString(sessionId).equals(playroom.getHostId())) {
             playroom.setWaitingRoomClosed(true);
             Map<String, Playroom.Player> waitingRoomPlayers = playroom.getPlayersWaitingRoom();
             Map<Integer, Playroom.Player> players = new HashMap<>();
@@ -455,7 +455,7 @@ public class PlayroomDefaultController implements PlayroomController {
     }
 
     private void winGameRequest(Playroom playroom, Playroom.Player player) {
-        if (playroom != null && player != null && !player.isGuest()) {
+        if (playroom != null && player != null) {
             if (!player.isGuest()) {
                 playroomEventRepository.putExperience(player.getUuid().toString(), playroom.getGame().getId(), true);
             }
@@ -560,7 +560,9 @@ public class PlayroomDefaultController implements PlayroomController {
 
     private void sendMessageJSON(WebSocketSession webSocketSession, JSONObject message) {
         try {
-            webSocketSession.sendMessage(new TextMessage(message.toString()));
+            if (webSocketSession.isOpen()) {
+                webSocketSession.sendMessage(new TextMessage(message.toString()));
+            }
         }
         catch (IOException ex) {
             System.err.println("Cannot send message: " + message + "\nWebSocketSession: " + webSocketSession.getId());
