@@ -25,6 +25,14 @@ function parseSimplePoll(pollData: BoardGamePoll): IAbstractPoll {
 function parseDescriptivePoll(pollData: BoardGamePoll): IAbstractPoll {
 
     console.log(pollData);
+    // ignore rare weird BGG data cases
+    if (!Array.isArray(pollData.results)) {
+        return {
+            name: pollData["@_title"],
+            totalVotes: parseInt(pollData["@_totalvotes"]),
+            results: [],
+        };
+    }
     const results = pollData.results.map((result: any) => {
 
         const resultArray: any[] = result.result;
@@ -117,6 +125,7 @@ const parseGame = (game: BoardGameDetails, ranking: BoardGameRank[]): IWizardGam
     return {
         id: game["@_id"],
         name: name,
+        thumbnail: game.thumbnail,
         userRating: userRating,
         bggRating: bggRating,
         categories: categories,

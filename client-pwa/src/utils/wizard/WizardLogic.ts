@@ -172,6 +172,8 @@ const getBestGames = (input: IWizardGameInput[], params: IWizardParams): IWizard
             item.game.suggestedNumPlayers.results.map(option => parseNumPlayers(option.value)),
             item.game.suggestedNumPlayers.results.map(option => option.numVotes)
         );
+        // TODO: expectedNumberOfPlayersPollValue is NaN
+        console.log(expectedNumberOfPlayersPollValue, itemWeights.numberPlayersPoll, numberOfPlayersPoints(expectedNumberOfPlayersPollValue))
         const numberOfPlayersScore = numberOfPlayersPoints(expectedNumberOfPlayersPollValue) * itemWeights.numberPlayersPoll;
 
         // BGG community ranking score
@@ -186,6 +188,7 @@ const getBestGames = (input: IWizardGameInput[], params: IWizardParams): IWizard
         const userGameRankingScore = userGameRanking.rating / 10.0 * itemWeights.userRating;
 
         // calculate final score
+        console.log(avgPlayingTimeScore, playersAgeScore, numberOfPlayersScore, communityRankingScore, userGameRankingScore);
         const score = avgPlayingTimeScore + playersAgeScore + numberOfPlayersScore +
             communityRankingScore + userGameRankingScore;
         item.score = score;
@@ -195,12 +198,13 @@ const getBestGames = (input: IWizardGameInput[], params: IWizardParams): IWizard
     set.sort((a, b) => b.score - a.score);
 
     // get top 5 games
-    set = set.slice(0, 6);
+    set = set.slice(0, 5);
 
     // return suggestions object
     const suggestionsList = set.map(item => ({
         id: item.game.id,
         name: item.game.name,
+        thumbnail: item.game.thumbnail,
         score: item.score,
         categories: item.game.categories
     } as IGameSuggestion))

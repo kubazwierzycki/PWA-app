@@ -19,6 +19,7 @@ export interface IWizardGameInputStats {
 export interface IWizardGameInput {
     id: string
     name: string
+    thumbnail: string
     userRating: number
     bggRating: number
     categories: string[]
@@ -56,6 +57,7 @@ export interface IWizardWeights {
 export interface IGameSuggestion {
     id: string
     name: string
+    thumbnail: string
     score: number
     categories: string[]
 }
