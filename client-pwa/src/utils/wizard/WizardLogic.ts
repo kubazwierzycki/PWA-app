@@ -91,9 +91,10 @@ const parseAge = (ageLabel: string): number => {
 const parseNumPlayers = (numPlayersLabel: string): number => {
     if (numPlayersLabel.includes("+")) {
         const numberPart = numPlayersLabel.slice(0, numPlayersLabel.indexOf("+"));
+        console.log(numPlayersLabel, parseInt(numberPart))
         return parseInt(numberPart);
     }
-    else return parseInt(numPlayersLabel);
+    else {console.log(numPlayersLabel, parseInt(numPlayersLabel)); return parseInt(numPlayersLabel);}
 }
 
 /**
@@ -172,8 +173,7 @@ const getBestGames = (input: IWizardGameInput[], params: IWizardParams): IWizard
             item.game.suggestedNumPlayers.results.map(option => parseNumPlayers(option.value)),
             item.game.suggestedNumPlayers.results.map(option => option.numVotes)
         );
-        // TODO: expectedNumberOfPlayersPollValue is NaN
-        console.log(expectedNumberOfPlayersPollValue, itemWeights.numberPlayersPoll, numberOfPlayersPoints(expectedNumberOfPlayersPollValue))
+
         const numberOfPlayersScore = numberOfPlayersPoints(expectedNumberOfPlayersPollValue) * itemWeights.numberPlayersPoll;
 
         // BGG community ranking score
@@ -188,7 +188,6 @@ const getBestGames = (input: IWizardGameInput[], params: IWizardParams): IWizard
         const userGameRankingScore = userGameRanking.rating / 10.0 * itemWeights.userRating;
 
         // calculate final score
-        console.log(avgPlayingTimeScore, playersAgeScore, numberOfPlayersScore, communityRankingScore, userGameRankingScore);
         const score = avgPlayingTimeScore + playersAgeScore + numberOfPlayersScore +
             communityRankingScore + userGameRankingScore;
         item.score = score;

@@ -8,7 +8,7 @@ import {IAbstractPoll, IWizardGameInput} from "./WizardInterfaces.ts";
 
 // Function to parse a simple poll into IAbstractPoll format
 function parseSimplePoll(pollData: BoardGamePoll): IAbstractPoll {
-    console.log(pollData)
+
     const results = pollData.results.result.map((result: any) => ({
         value: result["@_value"] as string,
         numVotes: parseInt(result["@_numvotes"]),
@@ -24,7 +24,6 @@ function parseSimplePoll(pollData: BoardGamePoll): IAbstractPoll {
 // Function to parse a descriptive poll ("suggested_numplayers") into IAbstractPoll format
 function parseDescriptivePoll(pollData: BoardGamePoll): IAbstractPoll {
 
-    console.log(pollData);
     // ignore rare weird BGG data cases
     if (!Array.isArray(pollData.results)) {
         return {
@@ -58,7 +57,12 @@ function parseDescriptivePoll(pollData: BoardGamePoll): IAbstractPoll {
         resultArray.forEach(res => {
             valueResult += parseValue(res["@_value"]) * parseInt(res["@_numvotes"]);
         })
-        valueResult /= result["@_numplayers"];
+        if (parseInt(result["@_numplayers"]) === 0) {
+            valueResult = 0;
+        }
+        else {
+            valueResult /= parseInt(result["@_numplayers"]);
+        }
 
         return {
             value: valueResult.toString(),
