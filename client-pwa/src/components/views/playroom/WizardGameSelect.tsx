@@ -133,7 +133,19 @@ const WizardGameSelect = () => {
                 </Button>
             </div>
             :
-            <WizardSuggestions suggestions={suggestions} />
+            <div style={{
+                overflowY: "auto",
+                width: "100%",
+                height: "100%",
+                padding: "20px 40px"
+            }}>
+                <div style={{width: "100%", textAlign: "center", padding: "10px 0"}}>
+                    <Typography fontWeight="bold">
+                        HERE ARE YOUR TOP WIZARD SUGGESTIONS:
+                    </Typography>
+                </div>
+                <WizardSuggestions suggestions={suggestions} />
+            </div>
     )
 }
 

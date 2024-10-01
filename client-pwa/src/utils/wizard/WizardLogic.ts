@@ -190,7 +190,7 @@ const getBestGames = (input: IWizardGameInput[], params: IWizardParams): IWizard
         // calculate final score
         const score = avgPlayingTimeScore + playersAgeScore + numberOfPlayersScore +
             communityRankingScore + userGameRankingScore;
-        item.score = score;
+        item.score = score * 100;
     }
 
     // sort games by score
