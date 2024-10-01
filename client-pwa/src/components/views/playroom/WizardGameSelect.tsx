@@ -1,5 +1,5 @@
 import {Button, Stack, TextField, Typography} from "@mui/material";
-import {useState} from "react";
+import {ChangeEvent, useState} from "react";
 import {getCollectionData} from "../../../utils/wizard/BGGWizardDataParser.ts";
 import {useBoardgamesContext} from "../../../contexts/BoardgamesContext.tsx";
 import getBestGames from "../../../utils/wizard/WizardLogic.ts";
@@ -15,14 +15,56 @@ const WizardGameSelect = () => {
     const [minPlayTime, setMinPlayTime] = useState("0");
     const [maxPlayTime, setMaxPlayTime] = useState("60");
 
+    const [error, setError] = useState({ minPlayTime: false, maxPlayTime: false });
+
+    // TODO: update with playroom number of players logic
+    // @ts-ignore
+    const [numPlayers, setNumPlayers] = useState(4);
+
+    // TODO: update with playroom players age list logic (needs to be added to form)
+    // @ts-ignore
+    const [playersAge, setPlayersAge] = useState([19, 22, 23, 16]);
+
     const {games, ranking} = useBoardgamesContext();
+
+    const handleMinPlayTimeChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const value = event.target.value;
+        const intValue = parseInt(event.target.value);
+        setMinPlayTime(value);
+        if (!Number.isInteger(Number(value))) {
+            setError(prev => ({ ...prev, minPlayTime: true }));
+            return;
+        }
+        if (!isNaN(intValue) && intValue >= 0) {
+            setError(prev => ({ ...prev, minPlayTime: false }));
+        }
+        else {
+            setError(prev => ({ ...prev, minPlayTime: true }));
+        }
+    };
+
+    const handleMaxPlayTimeChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const value = event.target.value;
+        const intValue = parseInt(event.target.value);
+        setMaxPlayTime(value);
+        if (!Number.isInteger(Number(value))) {
+            setError(prev => ({ ...prev, maxPlayTime: true }));
+            return;
+        }
+        if (!isNaN(intValue) && intValue >= 0) {
+            setError(prev => ({ ...prev, maxPlayTime: false }));
+        }
+        else {
+            setError(prev => ({ ...prev, maxPlayTime: true }));
+        }
+    };
 
     const parseParams = (): IWizardParams => {
         return {
-            maxPlayingTime: 500,
-            minPlayingTime: 0,
-            numPlayers: 3,
-            playersAge: [18, 19, 24],
+            maxPlayingTime: parseInt(maxPlayTime),
+            minPlayingTime: parseInt(minPlayTime),
+            numPlayers: numPlayers,
+            playersAge: playersAge,
             ranking: ranking
         }
     }
@@ -34,7 +76,6 @@ const WizardGameSelect = () => {
         }
         else {
             const bestGames = getBestGames(data, parseParams());
-            console.log(bestGames);
             setSuggestions(bestGames.suggestions);
             setSuggestionsReady(true);
         }
@@ -54,7 +95,7 @@ const WizardGameSelect = () => {
                         <Typography>
                             Number of players:
                         </Typography>
-                        <TextField value={"4"} disabled/>
+                        <TextField value={numPlayers} disabled/>
                     </Stack>
                 </div>
                 <div style={{flex: 1}}>
@@ -62,7 +103,7 @@ const WizardGameSelect = () => {
                         <Typography>
                             Players age:
                         </Typography>
-                        <TextField value={"19, 22, 23, 14"} disabled/>
+                        <TextField value={playersAge} disabled/>
                     </Stack>
                 </div>
                 <div style={{flex: 1}}>
@@ -72,14 +113,18 @@ const WizardGameSelect = () => {
                         </Typography>
                         <TextField
                             value={minPlayTime}
-                            onChange={event => setMinPlayTime(event.target.value)}
+                            onChange={handleMinPlayTimeChange}
+                            error={error.minPlayTime}
+                            helperText={error.minPlayTime ? "Please enter a valid integer" : ""}
                         />
                         <Typography>
                             Max play time:
                         </Typography>
                         <TextField
                             value={maxPlayTime}
-                            onChange={event => setMaxPlayTime(event.target.value)}
+                            onChange={handleMaxPlayTimeChange}
+                            error={error.maxPlayTime}
+                            helperText={error.maxPlayTime ? "Please enter a valid integer" : ""}
                         />
                     </Stack>
                 </div>
