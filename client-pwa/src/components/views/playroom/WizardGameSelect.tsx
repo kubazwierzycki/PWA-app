@@ -1,5 +1,5 @@
 import {Button, Stack, TextField, Typography} from "@mui/material";
-import {ChangeEvent, useState} from "react";
+import {ChangeEvent, Dispatch, ReactNode, SetStateAction, useState} from "react";
 import {getCollectionData} from "../../../utils/wizard/BGGWizardDataParser.ts";
 import {useBoardgamesContext} from "../../../contexts/BoardgamesContext.tsx";
 import getBestGames from "../../../utils/wizard/WizardLogic.ts";
@@ -7,7 +7,21 @@ import {IGameSuggestion, IWizardParams} from "../../../utils/wizard/WizardInterf
 import WizardSuggestions from "./WizardSuggestions.tsx";
 
 
-const WizardGameSelect = () => {
+interface SearchSelectProps {
+    setName: Dispatch<SetStateAction<string>>
+    choice: string
+    setChoice: Dispatch<SetStateAction<string>>
+}
+
+/**
+ * View presenting wizard functionality as means of choosing game to play in a playroom
+ * (Alternative to search bar choice)
+ * @param {Dispatch<SetStateAction<string>>} setName - callback for game choice info
+ * @param {string} choice - id of chosen game
+ * @param {Dispatch<SetStateAction<string>>} setChoice - id of chosen game change callback
+ * @returns {ReactNode}
+ */
+const WizardGameSelect = ({setName, choice, setChoice}: SearchSelectProps): ReactNode => {
 
     const [suggestionsReady, setSuggestionsReady] = useState(false);
     const [suggestions, setSuggestions] = useState([] as IGameSuggestion[]);
@@ -144,7 +158,12 @@ const WizardGameSelect = () => {
                         HERE ARE YOUR TOP WIZARD SUGGESTIONS:
                     </Typography>
                 </div>
-                <WizardSuggestions suggestions={suggestions} />
+                <WizardSuggestions
+                    suggestions={suggestions}
+                    choice={choice}
+                    setChoice={setChoice}
+                    setName={setName}
+                />
             </div>
     )
 }
