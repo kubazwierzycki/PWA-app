@@ -91,10 +91,9 @@ const parseAge = (ageLabel: string): number => {
 const parseNumPlayers = (numPlayersLabel: string): number => {
     if (numPlayersLabel.includes("+")) {
         const numberPart = numPlayersLabel.slice(0, numPlayersLabel.indexOf("+"));
-        console.log(numPlayersLabel, parseInt(numberPart))
         return parseInt(numberPart);
     }
-    else {console.log(numPlayersLabel, parseInt(numPlayersLabel)); return parseInt(numPlayersLabel);}
+    else return parseInt(numPlayersLabel);
 }
 
 /**

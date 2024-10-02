@@ -158,8 +158,8 @@ export const getCollectionData = async (games: BoardGameStub[], ranking: BoardGa
     for (let i=0; i<neededFetches; i++) {
         let gamesList = games.slice(i * maxItemsPerFetch, (i + 1) * maxItemsPerFetch);
         let idsList = gamesList.map(game => game["@_objectid"]).join(",");
-        console.log(idsList);
         let detailsFetch = await getGameDetails(idsList);
+        console.log(detailsFetch)
         details.push(...detailsFetch);
     }
     console.log(details);
