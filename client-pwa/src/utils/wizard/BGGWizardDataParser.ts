@@ -162,7 +162,6 @@ export const getCollectionData = async (games: BoardGameStub[], ranking: BoardGa
         console.log(detailsFetch)
         details.push(...detailsFetch);
     }
-    console.log(details);
 
     const data = details.map(game => parseGame(game, ranking));
 

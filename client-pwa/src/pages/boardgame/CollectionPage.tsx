@@ -46,8 +46,6 @@ const CollectionPage = (): ReactNode => {
 
     const fetchDetails = async () => {
 
-        console.log('fetching details')
-        console.log(sortedCollection.length)
         if (sortedCollection === undefined || sortedCollection.length === 0) {
             setShownGames([]);
             return;
@@ -62,9 +60,7 @@ const CollectionPage = (): ReactNode => {
         }
 
         const idsList = ids.join(",");
-        console.log(idsList)
         const gameDetails = await getGameDetails(idsList);
-        console.log(gameDetails)
 
         for (let i = 0; i < gameDetails.length; i++) {
             let details = gameDetails[i];
@@ -72,8 +68,7 @@ const CollectionPage = (): ReactNode => {
             // Correct description and create short description
             const correctedDescription = clearCharEntities(details.description);
             details.description = correctedDescription;
-            details.shortDescription =
-                getShortDescription(correctedDescription);
+            details.shortDescription = getShortDescription(correctedDescription);
 
             gameDetails[i] = details;
         }
@@ -182,11 +177,9 @@ const CollectionPage = (): ReactNode => {
 
     const sortGames = () => {
         let gamesData = [...games];
-        console.log(gamesData)
         // sorting games according to ordering
         if (ordering === "ranking") {
             gamesData = sortGamesByRanking(games, ranking);
-            console.log(gamesData)
         }
         else {
             // alphabetical sort with name comparator
@@ -195,9 +188,7 @@ const CollectionPage = (): ReactNode => {
                 const nameB = b.name["#text"];
                 return nameA.localeCompare(nameB);
             });
-            console.log(gamesData)
         }
-        console.log(gamesData)
         setSortedCollection(gamesData);
     }
 
@@ -208,7 +199,6 @@ const CollectionPage = (): ReactNode => {
 
     // update shownGames effect
     useEffect(() => {
-        console.log(sortedCollection)
         if (games === undefined || games.length === 0) {
             return;
         }

@@ -1,6 +1,6 @@
 import {IGameSuggestion} from "../../../utils/wizard/WizardInterfaces.ts";
 import {Typography} from "@mui/material";
-import {CSSProperties, Dispatch, SetStateAction} from "react";
+import {CSSProperties, Dispatch, ReactNode, SetStateAction} from "react";
 
 interface WizardSuggestionsProps {
     suggestions: IGameSuggestion[]
@@ -10,14 +10,14 @@ interface WizardSuggestionsProps {
 }
 
 /**
- *
- * @param suggestions
- * @param choice
- * @param setChoice
- * @param setName
- * @constructor
+ * View component displaying wizard result suggestions
+ * @param {IGameSuggestion[]} suggestions - wizard algorithm output
+ * @param {string} choice - variable storing playroom game choice
+ * @param {Dispatch<SetStateAction<string>>} setChoice - callback changing variable storing playroom game choice
+ * @param {Dispatch<SetStateAction<string>>} setName - callback setting playroom chosen game name
+ * @returns {ReactNode}
  */
-const WizardSuggestions = ({suggestions, choice, setChoice, setName}: WizardSuggestionsProps) => {
+const WizardSuggestions = ({suggestions, choice, setChoice, setName}: WizardSuggestionsProps): ReactNode => {
 
     const handleClick = (gameId: string, gameName: string) => {
         setChoice(gameId);
