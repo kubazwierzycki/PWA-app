@@ -11,6 +11,7 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import pl.edu.pg.eti.playrooms.controller.api.PlayroomController;
 import pl.edu.pg.eti.playrooms.dto.GetPlayrooms;
+import pl.edu.pg.eti.playrooms.dto.Operation;
 import pl.edu.pg.eti.playrooms.dto.PlayroomInfo;
 import pl.edu.pg.eti.playrooms.dto.PutPlayroom;
 import pl.edu.pg.eti.playrooms.entity.Playroom;
@@ -27,6 +28,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static pl.edu.pg.eti.playrooms.websockets.WebSocketConnectionHandler.END_GAME;
+import static pl.edu.pg.eti.playrooms.websockets.WebSocketConnectionHandler.WIN;
 
 @Controller
 public class PlayroomDefaultController implements PlayroomController {
@@ -34,7 +36,7 @@ public class PlayroomDefaultController implements PlayroomController {
     private final PlayroomService playroomService;
     private final Map<String, WebSocketSession> webSocketSessions;
     private final PlayroomEventRepository playroomEventRepository;
-    private final Map<UUID, String> operationsToConfirm;
+    private final Map<UUID, Operation> operationsToConfirm;
 
     @Autowired
     public PlayroomDefaultController(PlayroomService playroomService,
@@ -105,7 +107,7 @@ public class PlayroomDefaultController implements PlayroomController {
     public void joinWaitingRoom(WebSocketSession webSocketSession, JSONObject message) {
         Playroom playroom = this.getPlayroom(getStringValue("playroomId", message));
 
-        if (playroom != null && !playroom.isWaitingRoomClosed()) {
+        if (playroom != null && !playroom.isWaitingRoomClosed() && !playroom.isEnded()) {
             UUID uuid;
             boolean guest;
             String uuidValue = getStringValue("id", message.getJSONObject("player"));
@@ -144,7 +146,7 @@ public class PlayroomDefaultController implements PlayroomController {
         Playroom playroom = this.getPlayroom(getStringValue("playroomId", message));
 
         if (playroom != null && playroom.getGame() != null &&
-                UUID.fromString(sessionId).equals(playroom.getHostId()) && !playroom.isWaitingRoomClosed()) {
+                UUID.fromString(sessionId).equals(playroom.getHostId())) {
             playroom.setWaitingRoomClosed(true);
             Map<String, Playroom.Player> waitingRoomPlayers = playroom.getPlayersWaitingRoom();
             Map<Integer, Playroom.Player> players = new HashMap<>();
@@ -226,6 +228,28 @@ public class PlayroomDefaultController implements PlayroomController {
 
         if (playroom != null) {
             if (!playroom.isEnded() && sessionId.equals(playroom.getHostId().toString())) {
+                if (playroom.getPlayers().isEmpty()) {
+                    Map<String, Playroom.Player> waitingRoomPlayers = playroom.getPlayersWaitingRoom();
+                    waitingRoomPlayers.remove(sessionId);
+
+                    playroom.setPlayersWaitingRoom(waitingRoomPlayers);
+                    for (String session : playroom.getPlayersWaitingRoom().keySet()) {
+                        sendMessageJSON(webSocketSessions.get(session),
+                                getNotificationMessage("The game is ended. The host left the game."));
+                        sendMessageJSON(webSocketSessions.get(session), getWaitingRoomStatus(playroom));
+                    }
+                } else {
+                    Map<Integer, Playroom.Player> players = playroom.getPlayers();
+                    for (int i : players.keySet()) {
+                        if (players.get(i).getWebSocketSessionId().equals(playroom.getHostId().toString())) {
+                            players.remove(i);
+                        } else {
+                            sendMessageJSON(webSocketSessions.get(players.get(i).getWebSocketSessionId()),
+                                    getNotificationMessage("The game is ended. The host left the game."));
+                        }
+                    }
+                    playroom.setPlayers(players);
+                }
                 endGameRequest(playroom);
                 return;
             }
@@ -346,7 +370,27 @@ public class PlayroomDefaultController implements PlayroomController {
 
     @Override
     public void win(String sessionId, JSONObject message) {
-        // TODO implement ending game as winner
+        String playroomId = getStringValue("playroomId", message);
+        Playroom playroom = this.getPlayroom(playroomId);
+
+        if (playroom != null && !playroom.isEnded() && isPlayerInPlayroomBySession(sessionId, playroom)) {
+            UUID operationId = UUID.randomUUID();
+            operationsToConfirm.put(operationId,
+                    Operation.builder()
+                            .type(WIN)
+                            .player(getPlayerBySession(playroom, sessionId))
+                            .build()
+            );
+
+            askForConfirmation(sessionId,
+                    "Please confirm if player: " +
+                            getPlayerBySession(playroom, sessionId).getUsername() +
+                            " won the game.",
+                    playroom, operationId);
+        }
+        else {
+            sendMessageJSON(webSocketSessions.get(sessionId), errorMessage());
+        }
     }
 
     @Override
@@ -356,7 +400,11 @@ public class PlayroomDefaultController implements PlayroomController {
 
         if (playroom != null && !playroom.isEnded() && isPlayerInPlayroomBySession(sessionId, playroom)) {
             UUID operationId = UUID.randomUUID();
-            operationsToConfirm.put(operationId, END_GAME);
+            operationsToConfirm.put(operationId,
+                    Operation.builder()
+                            .type(END_GAME)
+                            .player(null).build()
+            );
 
             askForConfirmation(sessionId, "Please confirm if the game is ended.", playroom, operationId);
         }
@@ -384,20 +432,60 @@ public class PlayroomDefaultController implements PlayroomController {
         String operationId = getStringValue("operationId", message);
 
         if (playroom != null && !playroom.isEnded() && operationId != null &&
+                operationsToConfirm.containsKey(UUID.fromString(operationId)) &&
                 isPlayerInPlayroomBySession(sessionId, playroom)) {
 
-            String function = operationsToConfirm.get(UUID.fromString(operationId));
+            Operation operation = operationsToConfirm.get(UUID.fromString(operationId));
+            String function = operation.getType();
             operationsToConfirm.remove(UUID.fromString(operationId));
 
             switch (function) {
                 case END_GAME:
                     endGameRequest(playroom);
                     break;
+                case WIN:
+                    winGameRequest(playroom, operation.getPlayer());
+                    break;
             }
-
         }
         else {
-            sendMessageJSON(webSocketSessions.get(sessionId), errorMessage());
+            sendMessageJSON(webSocketSessions.get(sessionId), errorMessage("operation does not exist"));
+        }
+    }
+
+    @Override
+    public void reject(String sessionId, JSONObject message) {
+        String operationId = getStringValue("operationId", message);
+
+        if (operationId != null) {
+            operationsToConfirm.remove(UUID.fromString(operationId));
+        }
+        else {
+            sendMessageJSON(webSocketSessions.get(sessionId), errorMessage("operation does not exist"));
+        }
+    }
+
+    private Playroom.Player getPlayerBySession(Playroom playroom, String sessionId) {
+        if (playroom != null && sessionId != null) {
+            for (Playroom.Player player : playroom.getPlayers().values()) {
+                if (sessionId.equals(player.getWebSocketSessionId())) {
+                    return player;
+                }
+            }
+        }
+        return null;
+    }
+
+    private void winGameRequest(Playroom playroom, Playroom.Player player) {
+        if (playroom != null && player != null) {
+            if (!player.isGuest()) {
+                playroomEventRepository.putExperience(player.getUuid().toString(), playroom.getGame().getId(), true);
+            }
+            for (Playroom.Player user : playroom.getPlayers().values()) {
+                sendMessageJSON(webSocketSessions.get(user.getWebSocketSessionId()),
+                        getNotificationMessage("Player: " + player.getUsername() + " has won the game!"));
+            }
+            endGameRequest(playroom);
         }
     }
 
@@ -498,7 +586,9 @@ public class PlayroomDefaultController implements PlayroomController {
 
     private void sendMessageJSON(WebSocketSession webSocketSession, JSONObject message) {
         try {
-            webSocketSession.sendMessage(new TextMessage(message.toString()));
+            if (webSocketSession != null && webSocketSession.isOpen()) {
+                webSocketSession.sendMessage(new TextMessage(message.toString()));
+            }
         }
         catch (IOException ex) {
             System.err.println("Cannot send message: " + message + "\nWebSocketSession: " + webSocketSession.getId());
@@ -554,9 +644,36 @@ public class PlayroomDefaultController implements PlayroomController {
      * @return JSONObject with error
      */
     private JSONObject errorMessage() {
+        return errorMessage(null);
+    }
+
+    /**
+     * Get notification message
+     * @param details - notification details
+     * @return JSONObject with notification
+     */
+    private JSONObject getNotificationMessage(String details) {
+        JSONObject message = new JSONObject();
+        message.put("type", "notification");
+        message.put("notification", details);
+
+        return message;
+    }
+
+    /**
+     * Get error message if operation cannot be dane
+     * @param details - error details
+     * @return JSONObject with error
+     */
+    private JSONObject errorMessage(String details) {
         JSONObject message = new JSONObject();
         message.put("type", "error");
-        message.put("error", "Invalid operation");
+        if (details != null) {
+            message.put("error", "Invalid operation - " + details);
+        }
+        else {
+            message.put("error", "Invalid operation");
+        }
 
         return message;
     }

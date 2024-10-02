@@ -72,6 +72,11 @@ public class User implements Serializable {
     @OrderBy("rating DESC")
     private List<GameRanking> ranking;
 
+    /**
+     * If ranking loading is in progress
+     */
+    private boolean loadRanking;
+
     @Embeddable
     @Getter
     @Builder

@@ -48,10 +48,10 @@ public class PlayroomDefaultEventRepository implements PlayroomEventRepository {
 
     @Override
     public void putExperience(String userId, String gameId, boolean win, int rating) {
-        if (rating < 0 || rating > 10) {
+        if (!(rating >= 0 && rating <= 10)) {
             putExperience(userId, gameId, win);
         }
-        if (win) {
+        else if (win) {
             experienceRestTemplate.put("/api/experience/{userUUID}/{gameID}?win=1&rating={rating}",
                     null, userId, gameId, rating);
         }
@@ -74,6 +74,10 @@ public class PlayroomDefaultEventRepository implements PlayroomEventRepository {
     @Override
     public void putGameplay(Playroom playroom, String winner) {
         List<PutGameplay.Player> players = new ArrayList<>();
+
+        if (playroom.getGame() == null || playroom.getPlayers() == null) {
+            return;
+        }
 
         for (Playroom.Player player : playroom.getPlayers().values()) {
             players.add(

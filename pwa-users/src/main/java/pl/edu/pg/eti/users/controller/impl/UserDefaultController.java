@@ -101,8 +101,7 @@ public class UserDefaultController implements UserController {
                 userService.update(user);
 
                 Thread createRanking = new Thread(() -> {
-                    user.setRanking(bggRankingManager.getNewGameRanking(user.getUuid().toString()));
-                    userService.update(user);
+                    loadUserRanking(user);
                 });
                 createRanking.start();
             }
@@ -116,8 +115,7 @@ public class UserDefaultController implements UserController {
                 userService.update(user);
 
                 Thread createRanking = new Thread(() -> {
-                    user.setRanking(bggRankingManager.getNewGameRanking(user.getUuid().toString()));
-                    userService.update(user);
+                    loadUserRanking(user);
                 });
                 createRanking.start();
             }
@@ -143,12 +141,12 @@ public class UserDefaultController implements UserController {
                     .password(SecurityProvider.calculateSHA256(request.getPassword()))
                     .token(SecurityProvider.calculateSHA256(token))
                     .bggUsername(request.getBggUsername())
+                    .loadRanking(false)
                     .build();
             userService.create(user);
 
             Thread createRanking = new Thread(() -> {
-                user.setRanking(bggRankingManager.getNewGameRanking(user.getUuid().toString()));
-                userService.update(user);
+                loadUserRanking(user);
             });
             createRanking.start();
 
@@ -232,6 +230,9 @@ public class UserDefaultController implements UserController {
         if (user == null || user.getRanking() == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
+        else if (user.isLoadRanking() && user.getRanking().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
         else {
             return GetRanking.builder()
                     .ranking(user.getRanking().stream()
@@ -265,9 +266,22 @@ public class UserDefaultController implements UserController {
         }
 
         Thread createRanking = new Thread(() -> {
+            user.setLoadRanking(true);
+            userService.update(user);
+
             user.setRanking(bggRankingManager.updateGameRanking(user.getUuid().toString()));
+            user.setLoadRanking(false);
             userService.update(user);
         });
         createRanking.start();
+    }
+
+    private void loadUserRanking(User user) {
+        user.setLoadRanking(true);
+        userService.update(user);
+
+        user.setRanking(bggRankingManager.getNewGameRanking(user.getUuid().toString()));
+        user.setLoadRanking(false);
+        userService.update(user);
     }
 }
