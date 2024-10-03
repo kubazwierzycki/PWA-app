@@ -82,7 +82,7 @@ const ChoosingGameView = ({name, setName, choice, setChoice}: ChoosingViewProps)
                 <Paper style={{height: "100%"}}>
                     {
                         selectionMode === SELECTION_MODES.WIZARD ?
-                            <WizardGameSelect />
+                            <WizardGameSelect setName={setName} choice={choice} setChoice={setChoice}/>
                             :
                             <SearchGameSelect setName={setName} choice={choice} setChoice={setChoice}/>
                     }

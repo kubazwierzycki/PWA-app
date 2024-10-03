@@ -68,8 +68,7 @@ const CollectionPage = (): ReactNode => {
             // Correct description and create short description
             const correctedDescription = clearCharEntities(details.description);
             details.description = correctedDescription;
-            details.shortDescription =
-                getShortDescription(correctedDescription);
+            details.shortDescription = getShortDescription(correctedDescription);
 
             gameDetails[i] = details;
         }

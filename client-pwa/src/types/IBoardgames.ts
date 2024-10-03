@@ -4,6 +4,7 @@ export interface NameType {
 }
 
 export interface BoardGameDetails {
+    "@_id": string
     name: {"@_value": string}
     description: string
     shortDescription: string
@@ -15,6 +16,23 @@ export interface BoardGameDetails {
     maxplayers: {"@_value": string}
     minage: {"@_value": string}
     playingtime: {"@_value": string}
+    minplaytime: {"@_value": string}
+    maxplaytime: {"@_value": string}
+    link: BoardGameLink[]
+    poll: BoardGamePoll[]
+}
+
+export interface BoardGameLink {
+    "@_id": string
+    "@_type": string
+    "@_value": string
+}
+
+export interface BoardGamePoll {
+    "@_name": string
+    "@_title": string
+    "@_totalvotes": string
+    results: any
 }
 
 export interface BoardGameUsersDetails {
