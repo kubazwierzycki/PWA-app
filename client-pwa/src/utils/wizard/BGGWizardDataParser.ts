@@ -5,6 +5,10 @@ import {getGameDetails} from "../../services/boardgames.ts";
 import {BoardGameDetails, BoardGameLink, BoardGamePoll, BoardGameRank, BoardGameStub} from "../../types/IBoardgames.ts";
 import {IAbstractPoll, IWizardGameInput} from "./WizardInterfaces.ts";
 
+// configuration of descriptive poll values parsing to numeric
+const BEST_VALUE: number = 1.0;
+const RECOMMENDED_VALUE: number = 0.66;
+const NOT_RECOMMENDED_VALUE: number = 0;
 
 // Function to parse a simple poll into IAbstractPoll format
 function parseSimplePoll(pollData: BoardGamePoll): IAbstractPoll {
@@ -36,18 +40,18 @@ function parseDescriptivePoll(pollData: BoardGamePoll): IAbstractPoll {
 
         const resultArray: any[] = result.result;
 
-        // parsing descriptive values as follows:
+        // parsing descriptive values as follows (suggested):
         // Best - 1.0
         // Recommended - 0.66
         // Not Recommended - 0
         const parseValue = (val: string): number => {
             switch (val) {
                 case 'Best':
-                    return 1.0;
+                    return BEST_VALUE;
                 case 'Recommended':
-                    return 0.66;
+                    return RECOMMENDED_VALUE;
                 case 'Not Recommended':
-                    return 0;
+                    return NOT_RECOMMENDED_VALUE;
                 default:
                     return 0;
             }
@@ -159,14 +163,12 @@ export const getCollectionData = async (games: BoardGameStub[], ranking: BoardGa
         let gamesList = games.slice(i * maxItemsPerFetch, (i + 1) * maxItemsPerFetch);
         let idsList = gamesList.map(game => game["@_objectid"]).join(",");
         let detailsFetch = await getGameDetails(idsList);
-        console.log(detailsFetch)
+        // TODO: testing only (due to long waits) - to be removed
+        console.log(`Fetched game details: ${i+1}/${neededFetches}`);
         details.push(...detailsFetch);
     }
 
-    const data = details.map(game => parseGame(game, ranking));
-
-    console.log(data);
-    return data;
+    return details.map(game => parseGame(game, ranking));
 }
 
 
