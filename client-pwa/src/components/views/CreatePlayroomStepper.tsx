@@ -10,9 +10,12 @@ import GeneratePlayroomView from "./playroom/GeneratePlayroomView.tsx";
 import styles from "../../styles/createPlayroom.module.css";
 import AwaitingPlayersView from "./playroom/AwaitingPlayersView.tsx";
 import ChoosingGameView from "./playroom/ChoosingGameView.tsx";
-import { buildJoinWaitingRoomMessage, Player, PlayroomMessage, PutPlayroom, updatePlayroom, waitingRoomMessage } from "../../services/playroom.ts";
-import useWebSocket, { ReadyState } from "react-use-websocket";
+import {buildFinishWaitingRoomMessage, buildJoinWaitingRoomMessage, Player, PlayroomMessage, PutPlayroom, updatePlayroom, waitingRoomMessage } from "../../services/playroom.ts";
+import { ReadyState } from "react-use-websocket";
 import { useAuth } from "../../contexts/AuthContext.tsx";
+import { useNavigate } from "react-router-dom";
+import { useWebSocketContext } from "../../contexts/WebSocketContext.tsx";
+import { usePlayroomContext } from "../../contexts/PlayroomContext.tsx";
 
 
 
@@ -32,17 +35,20 @@ const steps = [
 const CreatePlayroomStepper = (): ReactNode => {
     const [joinSuccessfully, setJoinSuccessfully] = useState<boolean>(false);
     const [waitingRoomPlayers, setWaitingRoomPlayers] = useState<Player[]>([]);
-
+    const navigate = useNavigate();
     const {uuid, user } = useAuth();
+    const {code, setCode} = usePlayroomContext();
     //webSocket
-    const WS_URL = "ws://localhost:8080/ws-playrooms";
 
-    const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocket(WS_URL, {
-        share: true,
-        onOpen: () => {
-            console.log("WebSocket connection established.");
-        },
-    });
+    const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocketContext();
+    // const WS_URL = "ws://localhost:8080/ws-playrooms";
+
+    // const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocket(WS_URL, {
+    //     share: true,
+    //     onOpen: () => {
+    //         console.log("WebSocket connection established.");
+    //     },
+    // });
 
     useEffect(() => {
         if (lastJsonMessage) {
@@ -58,7 +64,12 @@ const CreatePlayroomStepper = (): ReactNode => {
                 case "waitingRoom": {
                     const waitingRoomMessage : waitingRoomMessage = (lastJsonMessage as waitingRoomMessage);
                     setWaitingRoomPlayers(waitingRoomMessage.players);
-                    console.log("waitingRoom");
+                    console.log("waitingRoomUpdate");
+                    break;
+                }
+                case "playroom": {
+                    navigate("/playroom");
+                    console.log("playroom");
                     break;
                 }
                 default: {
@@ -80,7 +91,7 @@ const CreatePlayroomStepper = (): ReactNode => {
     const [activeStep, setActiveStep] = React.useState(0);
 
     // code generated for the new playroom
-    const [code, setCode] = useState<string>("");
+    //const [code, setCode] = useState<string>("");
 
     // function checking if next is possible
     const isNextValid = (step: number) => {
@@ -91,6 +102,11 @@ const CreatePlayroomStepper = (): ReactNode => {
                 return true;
         }
     };
+
+    const handleStartGame = () => {
+        console.log("Start");
+        sendJsonMessage(buildFinishWaitingRoomMessage(code));
+    }
 
     const handleNext = () => {
         if (isNextValid(activeStep)) {
@@ -126,7 +142,7 @@ const CreatePlayroomStepper = (): ReactNode => {
         }
     };
 
-    const handleStart = () => {
+    const handleStart = async () => {
         if (name === "") {
             // game not chosen yet
             alert("Please choose a game to be played");
@@ -134,7 +150,10 @@ const CreatePlayroomStepper = (): ReactNode => {
             // game chosen - ready to play
             // TODO: real playroom view transition
             // send update request about the playroom
-            handleUpdate().then();
+            //wait for room update
+            await handleUpdate().then();
+            //sendJsonMessage(buildCloseWaitingRoomMessage(code));
+            sendJsonMessage(buildFinishWaitingRoomMessage(code));
         }
     };
 
@@ -196,6 +215,10 @@ const CreatePlayroomStepper = (): ReactNode => {
                     <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
                         <Box sx={{ flex: "1 1 auto" }} />
                         <Button onClick={handleReset}>Reset</Button>
+                    </Box>
+                    <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
+                        <Box sx={{ flex: "1 1 auto" }} />
+                        <Button onClick={handleStartGame}>Start game</Button>
                     </Box>
                 </React.Fragment>
             ) : (

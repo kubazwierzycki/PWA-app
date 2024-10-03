@@ -178,20 +178,6 @@ export interface PlayroomMessage {
     type: string
 }
 
-// {
-//     "isClosed": false,
-//     "players": [
-//         {
-//             "userId": "1116a8c1-113a-115f-119f-111af1ef19e3",
-//             "playerId": "ce7ffcd6-a2a0-4ae7-a74a-0208acde9c45",
-//             "username": "exampleUsrname"
-//         }
-//     ],
-//     "playroomId": "1fbfc490-5fd8-4104-83db-bc275bc913dd",
-//     "hostID": "ce7ffcd6-a2a0-4ae7-a74a-0208acde9c45",
-//     "type": "waitingRoom"
-//  }
-
 export interface Player{
     userId : string
     playerId : string

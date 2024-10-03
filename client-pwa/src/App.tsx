@@ -20,6 +20,7 @@ import authorisationService from "./services/authorization.ts";
 import ComparingGamesPage from "./pages/boardgame/ComparingGamesPage.tsx";
 import BoardGameDetailsPage from "./pages/boardgame/BoardGameDetailsPage.tsx";
 import PlayroomJoin from "./pages/playroom/PlayroomJoin.tsx";
+import Playroom from "./pages/playroom/Playroom.tsx";
 
 /**
  * Main app component, controls page routing
@@ -60,6 +61,7 @@ function App(): ReactNode {
                 <Route path="/play/join" element={<PlayroomJoin />}></Route>
                 <Route path="/signIn" element={<SignIn />}></Route>
                 <Route path="/signUp" element={<SignUp />}></Route>
+                <Route path="/playroom" element={<Playroom />}></Route>
                 <Route path="/boardgames/collection" element={
                     <CollectionContextProvider>
                         <CollectionPage />
