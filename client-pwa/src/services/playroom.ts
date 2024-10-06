@@ -174,19 +174,53 @@ export const buildPauseGameMessage = (playroomId: string) : object => {
     }
 }
 
-export interface PlayroomMessage {
+export interface SimpleMessage {
     type: string
 }
 
-export interface Player{
+export interface WaitingPlayer{
     userId : string
     playerId : string
     username : string
 }
 
-export interface waitingRoomMessage extends PlayroomMessage {
+export interface PlayroomPlayer{
+    timer: number
+    name: string
+    queueNumber: number
+    playerId: string
+    skipped: boolean
+}
+
+export interface Game{
+    gameID : number
+    name : string
+}
+
+export interface WaitingRoomMessage extends SimpleMessage {
     isClosed : boolean
-    players : Player[]
+    players : WaitingPlayer[]
     playroomId : string
     hostID : string
+}
+
+export interface ConfirmOperationMessage extends SimpleMessage {
+    operationId : string
+    question : string
+    type : string
+}
+
+export interface PlayroomMessage extends SimpleMessage {
+    timer : number
+    paused : boolean
+    game : Game
+    currentPlayer : number
+    players : PlayroomPlayer[]
+    ended : boolean
+    hostId : string
+}
+
+export interface ConfirmOperationAlert {
+    operationId : string
+    question : string
 }

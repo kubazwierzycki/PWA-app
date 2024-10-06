@@ -1,15 +1,16 @@
 import {ReactNode} from "react";
 import {Avatar, Card, Chip, Stack, Typography} from "@mui/material";
 import styles from "../../../styles/createPlayroom.module.css";
-import { Player } from "../../../services/playroom";
+import { WaitingPlayer } from "../../../services/playroom";
 
 
 /**
  * View component showing players who have joined the room
  * @param {string} code - code of the created playroom
+ * @param {WaitingPlayer[]} players - list of awaiting players
  * @returns {ReactNode}
  */
-const AwaitingPlayersView = ({code, players}: {code: string, players : Player[]}): ReactNode => {
+const AwaitingPlayersView = ({code, players}: {code: string, players : WaitingPlayer[]}): ReactNode => {
 
 
     return (
