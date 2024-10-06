@@ -3,7 +3,7 @@ import styles from "../../styles/createPlayroom.module.css";
 import {Button, Card, Checkbox, FormControlLabel, FormGroup, Input, Typography} from "@mui/material";
 import {Link, useNavigate} from "react-router-dom";
 import { ReadyState }  from "react-use-websocket";
-import { buildJoinWaitingRoomMessage, Player, PlayroomMessage, waitingRoomMessage } from "../../services/playroom";
+import { buildJoinWaitingRoomMessage, WaitingPlayer, SimpleMessage, WaitingRoomMessage } from "../../services/playroom";
 import { useAuth } from "../../contexts/AuthContext";
 import AwaitingPlayersView from "../../components/views/playroom/AwaitingPlayersView";
 import { useWebSocketContext } from "../../contexts/WebSocketContext";
@@ -15,7 +15,7 @@ import { usePlayroomContext } from "../../contexts/PlayroomContext";
  */
 const PlayroomJoin = (): ReactNode => {
     const [joinSuccessfully, setJoinSuccessfully] = useState<boolean>(false);
-    const [waitingRoomPlayers, setWaitingRoomPlayers] = useState<Player[]>([]);
+    const [waitingRoomPlayers, setWaitingRoomPlayers] = useState<WaitingPlayer[]>([]);
     const {uuid, user } = useAuth();
     const navigate = useNavigate();
     const {code, setCode} = usePlayroomContext();
@@ -35,7 +35,7 @@ const PlayroomJoin = (): ReactNode => {
         if (lastJsonMessage) {
             console.log(lastJsonMessage);
             
-            const messageType : string = (lastJsonMessage as PlayroomMessage).type;
+            const messageType : string = (lastJsonMessage as SimpleMessage).type;
             switch(messageType){
                 case "welcomeInfo": {
                     console.log("welcomeInfo");
@@ -43,7 +43,7 @@ const PlayroomJoin = (): ReactNode => {
                     break;
                 }
                 case "waitingRoom": {
-                    const waitingRoomMessage : waitingRoomMessage = (lastJsonMessage as waitingRoomMessage);
+                    const waitingRoomMessage : WaitingRoomMessage = (lastJsonMessage as WaitingRoomMessage);
                     setWaitingRoomPlayers(waitingRoomMessage.players);
                     console.log("waitingRoom");
                     break;
@@ -127,7 +127,7 @@ const PlayroomJoin = (): ReactNode => {
                             placeholder="Your nick"
                         />
                         <FormGroup>
-                            <FormControlLabel
+                            {uuid !== "" && <FormControlLabel
                                 label="Use my username"
                                 control={
                                     <Checkbox
@@ -136,7 +136,7 @@ const PlayroomJoin = (): ReactNode => {
                                         onChange={handleCheckboxChange}
                                     />
                                 }
-                            />
+                            />}
                         </FormGroup>
                     </div>
                 </div>
