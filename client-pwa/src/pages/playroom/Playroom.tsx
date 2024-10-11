@@ -1,11 +1,15 @@
-import { Box, Button, ButtonGroup, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Typography } from "@mui/material";
+import { Alert, AlertTitle, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, ThemeProvider, Typography } from "@mui/material";
 import {ReactNode, useEffect, useState} from "react";
 import { useWebSocketContext } from "../../contexts/WebSocketContext";
-import { buildConfirmEndGameMessage as buildConfirmOperation, buildEndGameMessage, buildEndTurnMessage, buildPauseGameMessage, buildStartGameMessage, SimpleMessage, ConfirmOperationMessage, PlayroomMessage, ConfirmOperationAlert } from "../../services/playroom";
+import { buildConfirmOperation, PlayroomPlayer, buildEndGameMessage, buildEndTurnMessage, buildPauseGameMessage, buildStartGameMessage, SimpleMessage, ConfirmOperationMessage, PlayroomMessage, ConfirmOperationAlert } from "../../services/playroom";
 import Grid from '@mui/material/Grid';
 import { usePlayroomContext } from "../../contexts/PlayroomContext";
 import TimerView from "../../components/views/playroom/TimerView";
 import PlayroomPlayersView from "../../components/views/playroom/PlayroomPlayersView";
+import styles from '../../styles/playroom.module.css'
+import { useNavigate } from "react-router-dom";
+import { createTheme, responsiveFontSizes } from '@mui/material/styles';
+
 
 
 /**
@@ -13,9 +17,13 @@ import PlayroomPlayersView from "../../components/views/playroom/PlayroomPlayers
  * @returns {ReactNode}
  */
 const Playroom = (): ReactNode => {
-    const { sendJsonMessage, lastJsonMessage} = useWebSocketContext();
-    const {code} = usePlayroomContext();
+    let theme = createTheme();
+    theme = responsiveFontSizes(theme);
 
+    const { sendJsonMessage, lastJsonMessage} = useWebSocketContext();
+    const {username, code, timer} = usePlayroomContext();
+    const [isCurrentPlayer, setIsCurrentPlayer] = useState<boolean>(false);
+    const navigate = useNavigate();
     const [open, setOpen] = useState(false);
     const [confirmOperationAlert, setConfirmOperationAlert] = useState<ConfirmOperationAlert>({
         operationId : "",
@@ -23,8 +31,8 @@ const Playroom = (): ReactNode => {
     });
     
     const [gameState, setGameState] = useState<PlayroomMessage>({
-        type: "playroom",
-        timer : 0,
+        type: "init",
+        timer : timer,
         paused : true,
         game : {gameID: 0, name: ""},
         currentPlayer : 1,
@@ -36,12 +44,25 @@ const Playroom = (): ReactNode => {
     // actions performed for a given message type
     useEffect(() => {
         if (lastJsonMessage) {
-            console.log(lastJsonMessage);
             const messageType : string = (lastJsonMessage as SimpleMessage).type;
             switch(messageType){
                 case "playroom": {
-                    setGameState(lastJsonMessage as PlayroomMessage);
-                    console.log("playroom");
+                    const playroomMessage : PlayroomMessage = (lastJsonMessage as PlayroomMessage);
+                    setGameState(playroomMessage);
+                    console.log(playroomMessage);
+                    
+                    const players : PlayroomPlayer[]  = playroomMessage.players;
+                    const player : PlayroomPlayer | undefined = players.find(p => p.name === username);
+                    if(player !== undefined){
+                        player.queueNumber === playroomMessage.currentPlayer 
+                            ? setIsCurrentPlayer(true)
+                            : setIsCurrentPlayer(false)
+                    }
+
+                    if(playroomMessage.ended){
+                        setTimeout(()=> navigate("/"), 4000);
+                    }
+
                     break;
                 }
                 case "confirmOperation": {
@@ -62,8 +83,9 @@ const Playroom = (): ReactNode => {
                     break;
                 }
             }
-        } else {
-            console.log("None");
+        } else{
+            //Block site for non playing
+            navigate("/");
         }
     }, [lastJsonMessage]);
 
@@ -74,30 +96,32 @@ const Playroom = (): ReactNode => {
     // operation agreed by user
     const handleAgreeEndGame = () => {
         handleClose();
-        sendJsonMessage(buildConfirmOperation(code, confirmOperationAlert.operationId));
+        sendJsonMessage(buildConfirmOperation(code, confirmOperationAlert.operationId))
     }
 
     const handleStartGame = () => {
-        console.log("Start");
-        sendJsonMessage(buildStartGameMessage(code));
+        sendJsonMessage(buildStartGameMessage(code))
     }
 
     const handlePauseGame = () => {
-        console.log("Pause");
-        sendJsonMessage(buildPauseGameMessage(code));
+        sendJsonMessage(buildPauseGameMessage(code))
     }
 
     const handleEndTurn = () => {
-        console.log("End turn");
-        sendJsonMessage(buildEndTurnMessage(code));
+        sendJsonMessage(buildEndTurnMessage(code))
     }
 
     const handleEndGame = () => {
-        console.log("End game");
-        sendJsonMessage(buildEndGameMessage(code));
+        sendJsonMessage(buildEndGameMessage(code))
+    }
+
+    const isEndTurnButtonDisabled = () : boolean => {
+        return !(isCurrentPlayer && !gameState.paused)
     }
 
     return (
+        <ThemeProvider theme={theme}>
+
         <div>
             <Dialog
                 open={open}
@@ -120,44 +144,66 @@ const Playroom = (): ReactNode => {
                 </Button>
                 </DialogActions>
             </Dialog>
-          
+
+            {gameState.ended ?
+                <Alert severity="info">
+                <AlertTitle>The game has ended</AlertTitle>
+                You will be redirected to the homepage.
+                </Alert> : null
+            }
 
             <Box sx={{ flexGrow: 1 }}>
-                <Grid container spacing={3}>
-                    <Grid xs={3}>
+                <Grid container>
+                    <Grid item xs={0} md={3}>
                     </Grid>
-                    <Grid xs={6} style={{textAlign: 'center'}}>
-                        <Typography gutterBottom>{gameState.game.name}</Typography>
-                        <TimerView  
-                        timer={gameState.timer}
-                        paused={gameState.paused}/>
+                    <Grid item xs={12} md={6} style={{textAlign: 'center'}}>
+                        <Typography variant="h4" gutterBottom className={styles.gameTitle}>{gameState.game.name}</Typography>
+                        {(gameState.timer !== null && gameState.timer !== 0) ? 
+                            <TimerView
+                                timer={gameState.timer}
+                                paused={gameState.paused}
+                                hiddenButtons={false}
+                            /> : null
+                        }
+   
                     </Grid>
-                    <Grid xs={3}>
-                    </Grid>
-
-                    <Grid xs={3}>
-                        <PlayroomPlayersView players={gameState.players}/>
-                    </Grid>
-                    <Grid xs={6}>
-                    </Grid>
-                    <Grid xs={3}>
-                        <ButtonGroup orientation="vertical" aria-label="Basic button group">
-                            <Button onClick={handleEndGame}>End game</Button>
-                            <Button onClick={handleStartGame}>Start</Button>
-                            <Button onClick={handlePauseGame}>Pause</Button>
-                        </ButtonGroup>
+                    <Grid item xs={0} md={12}>
                     </Grid>
 
-                    <Grid xs={3}>
+                    <Grid item xs={12} md={3}>
+                        <PlayroomPlayersView paused={gameState.paused} players={gameState.players} currentPlayer={gameState.currentPlayer}/>
                     </Grid>
-                    <Grid xs={6} style={{textAlign: 'center'}}>
-                        <Button onClick={handleEndTurn}>End Turn</Button>
+                    <Grid item xs={0} md={6}>
+                        <Box>
+                            <img className={styles.gameImage} src="https://cf.geekdo-images.com/MQs6Py-AE4sFFhmkh04GHA__imagepage/img/Xgzvg6vldykBRO6UNiZV1kZfLNs=/fit-in/900x600/filters:no_upscale():strip_icc()/pic8470681.jpg"/>
+                        </Box>
                     </Grid>
-                    <Grid xs={3}>
+                    <Grid item xs={12} md={3}>
+                        <Box sx={{display:"flex", flexDirection:"column"}}>
+                            {gameState.paused 
+                                ? <Button sx={{m:1}} variant="outlined" onClick={handleStartGame}>Start</Button>
+                                : <Button sx={{m:1}} variant="outlined" onClick={handlePauseGame}>Pause</Button> 
+                            }
+                            <Button sx={{m:1}} variant="outlined" onClick={handleEndGame}>End game</Button>
+                        </Box>
+                    </Grid>
+
+                    <Grid item xs={3} md={3}>
+                    </Grid>
+                    <Grid item xs={6} md={6} style={{textAlign: 'center'}}>
+                        <Button
+                            disabled={isEndTurnButtonDisabled()}
+                            variant="outlined"
+                            onClick={handleEndTurn}>
+                            End Turn
+                        </Button>
+                    </Grid>
+                    <Grid item xs={3} md={3}>
                     </Grid>
                 </Grid>
             </Box>
         </div>
+        </ThemeProvider>
     )
 }
 

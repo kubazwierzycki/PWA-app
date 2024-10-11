@@ -1,10 +1,9 @@
-import { Button, Checkbox, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControl, FormControlLabel, InputLabel, OutlinedInput} from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormControlLabel, FormLabel, InputLabel, OutlinedInput, Radio, RadioGroup} from "@mui/material";
 import { ReactNode} from "react";
 
-const TimerSettingsView = ({isGlobalTimer, timer, isTimerDialogOpen,
+const TimerSettingsView = ({timer, isTimerDialogOpen,
         setIsGlobalTimer, setTimer, setIsTimerDialogOpen, setIsTimerSet}: 
         {
-            isGlobalTimer: boolean,
             timer : number,
             isTimerDialogOpen : boolean,
             setIsGlobalTimer: React.Dispatch<React.SetStateAction<boolean>>,
@@ -23,7 +22,9 @@ const TimerSettingsView = ({isGlobalTimer, timer, isTimerDialogOpen,
     };
 
     const handleGlobalTimerChange = (event: React.ChangeEvent<HTMLInputElement>) =>{
-      setIsGlobalTimer(event.target.checked)
+      event.target.value === "true" 
+        ? setIsGlobalTimer(true)
+        : setIsGlobalTimer(false)
     }
 
     const handleTimeChange = (event: React.ChangeEvent<HTMLInputElement>) =>{
@@ -37,23 +38,23 @@ const TimerSettingsView = ({isGlobalTimer, timer, isTimerDialogOpen,
         <Dialog
           open={isTimerDialogOpen}
           onClose={handleClose}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
+          aria-labelledby="timer-settings"
+          aria-describedby="set-timer"
         >
-          <DialogTitle id="alert-dialog-title">
+          <DialogTitle id="timer-settings">
             {"Timer settings"}
           </DialogTitle>
           <DialogContent>
-            <DialogContentText id="alert-dialog-description">
-              Please set up timer for your playroom.
-            </DialogContentText>
-            <FormControlLabel control={
-                    <Checkbox
-                    checked={isGlobalTimer}
-                    onChange={handleGlobalTimerChange}
-                    inputProps={{ 'aria-label': 'controlled' }}
-                  />
-              } label="Global timer" />
+            <FormLabel id="timer-type-radio-buttons-group">Timer type</FormLabel>
+            <RadioGroup
+              aria-labelledby="timer-type-radio-buttons-group"
+              defaultValue="true"
+              name="timer-type-buttons-group"
+            >
+              <FormControlLabel value="true" control={<Radio     onChange={handleGlobalTimerChange}/> } label="One global timer" />
+              <FormControlLabel value="false" control={<Radio     onChange={handleGlobalTimerChange}/>} label="Timer per user" />
+            </RadioGroup>
+
               <FormControl
                 sx={{ m: 1 }}
                 variant="filled"
@@ -72,9 +73,9 @@ const TimerSettingsView = ({isGlobalTimer, timer, isTimerDialogOpen,
             </FormControl>
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleClose}>Go back</Button>
+            <Button onClick={handleClose}>Back</Button>
             <Button onClick={handleStartGame} autoFocus>
-              Start game
+              Go to summary
             </Button>
           </DialogActions>
         </Dialog>

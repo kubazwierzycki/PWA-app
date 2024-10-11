@@ -3,7 +3,7 @@ import styles from "../../styles/createPlayroom.module.css";
 import {Button, Card, Checkbox, FormControlLabel, FormGroup, Input, Typography} from "@mui/material";
 import {Link, useNavigate} from "react-router-dom";
 import { ReadyState }  from "react-use-websocket";
-import { buildJoinWaitingRoomMessage, WaitingPlayer, SimpleMessage, WaitingRoomMessage } from "../../services/playroom";
+import { buildJoinWaitingRoomMessage, WaitingPlayer, SimpleMessage, WaitingRoomMessage, PlayroomMessage } from "../../services/playroom";
 import { useAuth } from "../../contexts/AuthContext";
 import AwaitingPlayersView from "../../components/views/playroom/AwaitingPlayersView";
 import { useWebSocketContext } from "../../contexts/WebSocketContext";
@@ -14,43 +14,45 @@ import { usePlayroomContext } from "../../contexts/PlayroomContext";
  * @returns {ReactNode}
  */
 const PlayroomJoin = (): ReactNode => {
-    const [joinSuccessfully, setJoinSuccessfully] = useState<boolean>(false);
-    const [waitingRoomPlayers, setWaitingRoomPlayers] = useState<WaitingPlayer[]>([]);
-    const {uuid, user } = useAuth();
+
     const navigate = useNavigate();
-    const {code, setCode} = usePlayroomContext();
-    //webSocket
-    const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocketContext();
 
-    // const WS_URL = "ws://localhost:8080/ws-playrooms";
+    const {uuid, user } = useAuth();
     
-    // const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocket(WS_URL, {
-    //     share: true,
-    //     onOpen: () => {
-    //         console.log("WebSocket connection established.");
-    //     },
-    // });
+    const {code, setCode, setUsername, setTimer} = usePlayroomContext();
 
+    const {sendJsonMessage, lastJsonMessage, readyState } = useWebSocketContext();
+
+    // entered nick value for playroom
+    const [nick, setNick] = useState<string>("");
+
+    // should username be used as nick
+    const [useUsername, setUseUsername] = useState<boolean>(true);
+
+    // waiting room joining status
+    const [joinSuccessfully, setJoinSuccessfully] = useState<boolean>(false);
+
+    // waiting room player list
+    const [waitingRoomPlayers, setWaitingRoomPlayers] = useState<WaitingPlayer[]>([]);
+
+    // web socket messages processing
     useEffect(() => {
         if (lastJsonMessage) {
-            console.log(lastJsonMessage);
-            
             const messageType : string = (lastJsonMessage as SimpleMessage).type;
             switch(messageType){
                 case "welcomeInfo": {
-                    console.log("welcomeInfo");
                     setJoinSuccessfully(true);
                     break;
                 }
                 case "waitingRoom": {
                     const waitingRoomMessage : WaitingRoomMessage = (lastJsonMessage as WaitingRoomMessage);
                     setWaitingRoomPlayers(waitingRoomMessage.players);
-                    console.log("waitingRoom");
                     break;
                 }
                 case "playroom": {
+                    const playroomMessage : PlayroomMessage = (lastJsonMessage as PlayroomMessage);
+                    setTimer(playroomMessage.timer);
                     navigate("/playroom");
-                    console.log("playroom");
                     break;
                 }
                 default: {
@@ -58,19 +60,8 @@ const PlayroomJoin = (): ReactNode => {
                     break;
                 }
             }
-        } else {
-            console.log("None");
         }
     }, [lastJsonMessage, navigate]);
-
-    // playroom code entered by user
-    //const [code, setCode] = useState<string>("");
-
-    // entered nick value for playroom
-    const [nick, setNick] = useState<string>("");
-
-    // should username be used as nick
-    const [useUsername, setUseUsername] = useState<boolean>(true);
 
     const handleCodeInputChange = (
         inputVal: ChangeEvent<HTMLInputElement>
@@ -86,16 +77,21 @@ const PlayroomJoin = (): ReactNode => {
 
     const handleJoinPlayroom = () =>{
         //webSocket
-        if (readyState === ReadyState.OPEN) {
-            console.log("ready");
-            if(!joinSuccessfully){
-                if(useUsername){
-                    sendJsonMessage(buildJoinWaitingRoomMessage(code, user.username, uuid));
-                } else{
-                    sendJsonMessage(buildJoinWaitingRoomMessage(code, nick));
+            if (readyState === ReadyState.OPEN) {
+                if(!joinSuccessfully){
+                    if(useUsername && uuid !== ""){
+                        setUsername(user.username);
+                        sendJsonMessage(buildJoinWaitingRoomMessage(code, user.username, uuid));
+                    } else{
+                        setUsername(nick);
+                        sendJsonMessage(buildJoinWaitingRoomMessage(code, nick));
+                    }
                 }
             }
-        }
+    } 
+
+    const isJoinPlayroomButtonDisabled = () => {
+        return !((code !== "" && useUsername) || (code !== "" && nick !== ""))
     }
 
     return ( joinSuccessfully ? <div className={styles.container}>
@@ -140,7 +136,7 @@ const PlayroomJoin = (): ReactNode => {
                         </FormGroup>
                     </div>
                 </div>
-                <Button variant="contained" sx={{marginTop: "10px"}} onClick={handleJoinPlayroom}>
+                <Button variant="contained" sx={{marginTop: "10px"}} onClick={handleJoinPlayroom} disabled={isJoinPlayroomButtonDisabled()}>
                     Join playroom
                 </Button>
                 <br/>

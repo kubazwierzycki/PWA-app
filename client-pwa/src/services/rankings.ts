@@ -30,6 +30,7 @@ export const getRanking = async (userId: string): Promise<BoardGameRank[]> => {
  * @param {BoardGameRank[]} ranking - list containing current ranking to be saved
  * @returns {Promise<any>} response status code
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const saveRanking = async (userId: string, token: string, ranking: BoardGameRank[]):Promise<any> => {
     if (token === undefined) {
         return;
