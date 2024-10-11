@@ -14,6 +14,7 @@ import pl.edu.pg.eti.playrooms.dto.GetPlayrooms;
 import pl.edu.pg.eti.playrooms.dto.Operation;
 import pl.edu.pg.eti.playrooms.dto.PlayroomInfo;
 import pl.edu.pg.eti.playrooms.dto.PutPlayroom;
+import pl.edu.pg.eti.playrooms.dto.PutPlayroomQueue;
 import pl.edu.pg.eti.playrooms.entity.Playroom;
 import pl.edu.pg.eti.playrooms.event.api.PlayroomEventRepository;
 import pl.edu.pg.eti.playrooms.service.api.PlayroomService;
@@ -101,6 +102,47 @@ public class PlayroomDefaultController implements PlayroomController {
                                 .build())
                         .toList())
                 .build();
+    }
+
+    @Override
+    public void updatePlayroomQueue(String playroomId, PutPlayroomQueue request) {
+        Playroom playroom = this.getPlayroom(playroomId);
+
+        if (playroom != null && !playroom.getPlayers().isEmpty()) {
+            PutPlayroomQueue oldPlayersQueue =
+                    PutPlayroomQueue.builder()
+                            .players(playroom.getPlayers().values().stream()
+                                    .map(player -> PutPlayroomQueue.Player.builder()
+                                            .playerId(player.getUuid())
+                                            .build())
+                                    .toList())
+                            .build();
+
+            if (oldPlayersQueue.getPlayers().size() != request.getPlayers().size()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            }
+            for (PutPlayroomQueue.Player player : request.getPlayers()) {
+                if (!oldPlayersQueue.getPlayers().contains(player)) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+                }
+            }
+
+            Map<Integer, Playroom.Player> newPlayersMap = new HashMap<>();
+            for (PutPlayroomQueue.Player player : request.getPlayers()) {
+                for (int playerNumber : playroom.getPlayers().keySet()) {
+                    if (playroom.getPlayers().get(playerNumber).getPlayerId().equals(player.getPlayerId())) {
+                        newPlayersMap.put(newPlayersMap.size() + 1, playroom.getPlayers().get(playerNumber));
+                        break;
+                    }
+                }
+            }
+
+            playroom.setPlayers(newPlayersMap);
+            playroomService.update(playroom);
+        }
+        else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
     }
 
     @Override
