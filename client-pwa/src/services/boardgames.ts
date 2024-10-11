@@ -2,10 +2,10 @@ import axios from "axios";
 import {parseXml} from "../utils/XMLToJSON.ts";
 import {BoardGameDetails, BoardGameStub, TopBoardGame} from "../types/IBoardgames.ts";
 import {clearCharEntities, getShortDescription} from "../utils/DescriptionParser.ts";
-import apiAddress from "../config/api_address.json"
 import axiosRetry from "axios-retry";
+import api_address from "../config/api_address.ts";
 
-const baseApiAddress: string = apiAddress.bgg;
+const baseApiAddress: string = api_address.bgg;
 
 
 // Configure axios to retry up to 3 times with a 2-second delay between retries

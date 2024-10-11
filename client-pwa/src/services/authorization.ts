@@ -1,5 +1,8 @@
 import axios from "axios";
-const baseUrl = "http://localhost:8080/api/users";
+import api_address from "../config/api_address.ts";
+
+
+const baseUrl = `${api_address.backend}/users`;
 
 /**
  * Separate Module for communication with the Backend.
