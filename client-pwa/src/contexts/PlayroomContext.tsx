@@ -6,9 +6,14 @@ import {
     useState,
 } from "react";
 
+
 type PlayroomContextType = {
-    code: string;
-    setCode: React.Dispatch<React.SetStateAction<string>>;
+    username : string,
+    code : string,
+    timer: number,
+    setUsername : React.Dispatch<React.SetStateAction<string>>,
+    setCode : React.Dispatch<React.SetStateAction<string>>,
+    setTimer : React.Dispatch<React.SetStateAction<number>>,
 }
 
 const PlayroomContext = createContext<PlayroomContextType>(
@@ -22,11 +27,13 @@ const PlayroomContext = createContext<PlayroomContextType>(
  */
 export const PlayroomProvider = ({children}: {children: ReactElement}): ReactNode => {
 
-    const [code, setCode] = useState("");
+    const [username, setUsername] = useState<string>("");
+    const [code, setCode] = useState<string>("");
+    const [timer, setTimer] = useState<number>(100);
 
     return (
         <PlayroomContext.Provider
-            value={{ code, setCode }}
+            value={{ username, code, timer, setUsername, setCode, setTimer }}
         >
             {children}
         </PlayroomContext.Provider>

@@ -1,0 +1,11 @@
+
+.gameImage{
+    border-radius: 3%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    opacity: 0.9;
+    width: 40%;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}

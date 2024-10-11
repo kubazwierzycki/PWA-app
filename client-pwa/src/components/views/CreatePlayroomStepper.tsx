@@ -17,7 +17,7 @@ import { useNavigate } from "react-router-dom";
 import { useWebSocketContext } from "../../contexts/WebSocketContext.tsx";
 import { usePlayroomContext } from "../../contexts/PlayroomContext.tsx";
 import TimerSettingsView from "./playroom/TimerSettingsView.tsx";
-
+import WaitingRoomSummaryView from "./playroom/WaitingRoomSummaryView.tsx";
 
 
 
@@ -38,10 +38,10 @@ const CreatePlayroomStepper = (): ReactNode => {
     const [waitingRoomPlayers, setWaitingRoomPlayers] = useState<WaitingPlayer[]>([]);
     const [isTimerSet, setIsTimerSet] = useState(false);
     const navigate = useNavigate();
-    const {uuid, user } = useAuth();
+    const {uuid, user} = useAuth();
 
     // code generated for the new playroom
-    const {code, setCode} = usePlayroomContext();
+    const {code, timer, setUsername, setCode, setTimer} = usePlayroomContext();
 
     // webSocket
     const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocketContext();
@@ -65,6 +65,7 @@ const CreatePlayroomStepper = (): ReactNode => {
                     break;
                 }
                 case "playroom": {
+                    setUsername(user.username);
                     navigate("/playroom");
                     console.log("playroom");
                     break;
@@ -79,29 +80,28 @@ const CreatePlayroomStepper = (): ReactNode => {
         }
     }, [lastJsonMessage]);
 
-    // dialog
+    // dialog start playroom
     useEffect(()=>{
         if(isTimerSet === true){
-            handleStart();
+            //handleStartPlayroom();
+            handleNext();
         }
     }, [isTimerSet])
 
     // current chosen game name
-    const [name, setName] = useState<string>("");
+    const [name, setName] = useState<string>("Test Game Title");
 
     // current chosen game id
-    const [choice, setChoice] = useState("");
+    const [choice, setChoice] = useState("1");
 
     // current chosen timer mode
     const [isGlobalTimer, setIsGlobalTimer] = useState(true);
-    
-    // current chosen timer value
-    const [timer, setTimer] = useState(100);
 
     // visibility of timer dialog
     const [isTimerDialogOpen, setIsTimerDialogOpen] = useState(false);
 
-    const [activeStep, setActiveStep] = React.useState(0);
+    // current setp in stepper
+    const [activeStep, setActiveStep] = useState(0);
 
     // function checking if next is possible
     const isNextValid = (step: number) => {
@@ -113,22 +113,14 @@ const CreatePlayroomStepper = (): ReactNode => {
         }
     };
 
-    const handleStartGame = () => {
-        console.log("Start");
-        sendJsonMessage(buildFinishWaitingRoomMessage(code));
-    }
-
     const handleNext = () => {
         if (isNextValid(activeStep)) {
             setActiveStep((prevActiveStep) => prevActiveStep + 1);
             //webSocket
             if (readyState === ReadyState.OPEN) {
-                console.log("ready");
                 if(!joinSuccessfully){
                     sendJsonMessage(buildJoinWaitingRoomMessage(code, user.username, uuid));
                 }
-            } else {
-                console.log(readyState);
             }
         } else {
             alert("Can't go next yet");
@@ -152,7 +144,7 @@ const CreatePlayroomStepper = (): ReactNode => {
         }
     };
 
-    const handleStart = async () => {
+    const handleStartPlayroom = async () => {
         if (name === "") {
             // game not chosen yet
             alert("Please choose a game to be played");
@@ -202,8 +194,7 @@ const CreatePlayroomStepper = (): ReactNode => {
     return (
         <Box>
             {isTimerDialogOpen 
-                && <TimerSettingsView 
-                    isGlobalTimer={isGlobalTimer} 
+                && <TimerSettingsView
                     timer={timer} 
                     isTimerDialogOpen={isTimerDialogOpen}
                     setIsGlobalTimer={setIsGlobalTimer} 
@@ -237,13 +228,14 @@ const CreatePlayroomStepper = (): ReactNode => {
                         <Typography sx={{ mt: 2, mb: 1 }}>
                             All steps completed - playroom is ready for the game
                         </Typography>
+                        <WaitingRoomSummaryView/>
                         <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
                             <Box sx={{ flex: "1 1 auto" }} />
                             <Button onClick={handleReset}>Reset</Button>
                         </Box>
                         <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
                             <Box sx={{ flex: "1 1 auto" }} />
-                            <Button onClick={handleStartGame}>Start game</Button>
+                            <Button onClick={handleStartPlayroom}>Start playroom</Button>
                         </Box>
                     </React.Fragment>
                 ) : (
