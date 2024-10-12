@@ -1,9 +1,9 @@
 import axios from "axios";
 import {BoardGameRank} from "../types/IBoardgames.ts";
-import apiAddress from "../config/api_address.json"
+import api_address from "../config/api_address.ts";
 
 
-const baseUrl = apiAddress.backend + "/users";
+const baseUrl = api_address.backend + "/users";
 
 /**
  * GET boardgames ranking

@@ -1,5 +1,5 @@
-import apiAddress from "../config/api_address.json"
 import axios from "axios";
+import api_address from "../config/api_address.ts";
 
 
 export interface PutPlayroom {
@@ -10,7 +10,7 @@ export interface PutPlayroom {
 }
 
 
-const baseApiAddress: string = apiAddress.backend + '/playrooms';
+const baseApiAddress: string = api_address.backend + '/playrooms';
 
 /**
  * POST creating empty playroom
