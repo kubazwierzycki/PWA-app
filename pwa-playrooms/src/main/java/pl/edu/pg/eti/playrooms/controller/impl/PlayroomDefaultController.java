@@ -113,7 +113,7 @@ public class PlayroomDefaultController implements PlayroomController {
                     PutPlayroomQueue.builder()
                             .players(playroom.getPlayers().values().stream()
                                     .map(player -> PutPlayroomQueue.Player.builder()
-                                            .playerId(player.getUuid())
+                                            .playerId(player.getPlayerId())
                                             .build())
                                     .toList())
                             .build();
@@ -122,7 +122,7 @@ public class PlayroomDefaultController implements PlayroomController {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
             }
             for (PutPlayroomQueue.Player player : request.getPlayers()) {
-                if (!oldPlayersQueue.getPlayers().contains(player)) {
+                if (!isPlayerInPlayroomQueue(oldPlayersQueue.getPlayers(), player)) {
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
                 }
             }
@@ -139,6 +139,8 @@ public class PlayroomDefaultController implements PlayroomController {
 
             playroom.setPlayers(newPlayersMap);
             playroomService.update(playroom);
+
+            sendMessagesWithUpdate(playroom.getPlayers(), playroomId);
         }
         else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
@@ -610,6 +612,16 @@ public class PlayroomDefaultController implements PlayroomController {
             System.err.println("Cannot resolve the value for key: " + key);
             return null;
         }
+    }
+
+    private boolean isPlayerInPlayroomQueue(List <PutPlayroomQueue.Player> oldQueue,
+                                            PutPlayroomQueue.Player player) {
+        for (PutPlayroomQueue.Player oldPlayer : oldQueue) {
+            if (player.getPlayerId().equals(oldPlayer.getPlayerId())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void sendMessagesWithUpdate(Map<Integer, Playroom.Player> players, String playroomId) {

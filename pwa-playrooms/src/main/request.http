@@ -11,3 +11,18 @@ Content-Type: application/json
   "isGlobalTimer": true,
   "timer": 100
 }
+
+### UPDATE playroom queue
+PUT http://localhost:8080/api/playrooms/a01b15d4-93ab-4dcf-bba2-639a1dce9158/queue
+Content-Type: application/json
+
+{
+  "players": [
+    {
+      "playerId": "819339d1-941b-4eff-88d6-d54a5eb03977"
+    },
+    {
+      "playerId": "7e836102-b9ad-457e-9e51-f8202a1efd93"
+    }
+  ]
+}

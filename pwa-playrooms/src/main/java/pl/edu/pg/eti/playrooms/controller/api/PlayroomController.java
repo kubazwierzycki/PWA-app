@@ -17,8 +17,6 @@ import pl.edu.pg.eti.playrooms.dto.PutPlayroom;
 import pl.edu.pg.eti.playrooms.dto.PutPlayroomQueue;
 import pl.edu.pg.eti.playrooms.entity.Playroom;
 
-import java.util.List;
-
 /**
  * The controller used for the {@link Playroom} entity
  */
