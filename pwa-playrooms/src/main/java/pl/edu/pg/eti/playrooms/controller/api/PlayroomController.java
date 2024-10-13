@@ -14,6 +14,7 @@ import org.springframework.web.socket.WebSocketSession;
 import pl.edu.pg.eti.playrooms.dto.GetPlayrooms;
 import pl.edu.pg.eti.playrooms.dto.PlayroomInfo;
 import pl.edu.pg.eti.playrooms.dto.PutPlayroom;
+import pl.edu.pg.eti.playrooms.dto.PutPlayroomQueue;
 import pl.edu.pg.eti.playrooms.entity.Playroom;
 
 /**
@@ -51,6 +52,20 @@ public interface PlayroomController {
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     GetPlayrooms getPlayrooms();
+
+    /**
+     * Put request to update playroom queue
+     * @param playroomId - playroom ID
+     * @param request - players queue
+     */
+    @PutMapping("/api/playrooms/{playroomId}/queue")
+    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseBody
+    void updatePlayroomQueue(
+            @PathVariable("playroomId") String playroomId,
+            @RequestBody PutPlayroomQueue request
+    );
+
 
     /**
      * Join the waiting room
