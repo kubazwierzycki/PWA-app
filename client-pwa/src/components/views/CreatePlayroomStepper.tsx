@@ -44,13 +44,11 @@ const CreatePlayroomStepper = (): ReactNode => {
     const {code, timer, setUsername, setCode, setTimer} = usePlayroomContext();
 
     // webSocket
-    const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocketContext();
+    const { sendJsonMessage, lastJsonMessage, readyState, setSocketUrl } = useWebSocketContext();
 
     // API message
     useEffect(() => {
         if (lastJsonMessage) {
-            console.log(lastJsonMessage);
-            
             const messageType : string = (lastJsonMessage as SimpleMessage).type;
             switch(messageType){
                 case "welcomeInfo": {
@@ -75,8 +73,8 @@ const CreatePlayroomStepper = (): ReactNode => {
                     break;
                 }
             }
-        } else {
-            console.log("None");
+        } else{
+            setSocketUrl("ws://localhost:8080/ws-playrooms");
         }
     }, [lastJsonMessage]);
 

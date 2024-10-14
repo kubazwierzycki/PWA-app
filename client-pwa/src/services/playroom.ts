@@ -162,6 +162,16 @@ export const buildConfirmOperation = (playroomId: string, operationId: string ) 
     }
 }
 
+/**
+ * @param {string} playroomId - uuid of the playroom assigned by server
+ * @returns {Promise<boolean>} websocket message
+ */
+export const buildQuitPlayroomMessage = (playroomId: string) : object => {
+    return {
+        "operation": "quitPlayroom",
+        "playroomId": playroomId,
+    }
+}
 
 /**
  * @param {string} playroomId - uuid of the playroom assigned by server
