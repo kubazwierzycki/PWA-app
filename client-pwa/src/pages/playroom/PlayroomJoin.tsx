@@ -21,7 +21,7 @@ const PlayroomJoin = (): ReactNode => {
     
     const {code, setCode, setUsername, setTimer} = usePlayroomContext();
 
-    const {sendJsonMessage, lastJsonMessage, readyState } = useWebSocketContext();
+    const {sendJsonMessage, lastJsonMessage, readyState, setSocketUrl } = useWebSocketContext();
 
     // entered nick value for playroom
     const [nick, setNick] = useState<string>("");
@@ -37,6 +37,8 @@ const PlayroomJoin = (): ReactNode => {
 
     // web socket messages processing
     useEffect(() => {
+        console.log(lastJsonMessage);
+        
         if (lastJsonMessage) {
             const messageType : string = (lastJsonMessage as SimpleMessage).type;
             switch(messageType){
@@ -60,6 +62,8 @@ const PlayroomJoin = (): ReactNode => {
                     break;
                 }
             }
+        } else{            
+            setSocketUrl("ws://localhost:8080/ws-playrooms");
         }
     }, [lastJsonMessage, navigate]);
 

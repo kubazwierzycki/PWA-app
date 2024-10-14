@@ -1,7 +1,7 @@
 import { Alert, AlertTitle, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, ThemeProvider, Typography } from "@mui/material";
 import {ReactNode, useEffect, useState} from "react";
 import { useWebSocketContext } from "../../contexts/WebSocketContext";
-import { buildConfirmOperation, PlayroomPlayer, buildEndGameMessage, buildEndTurnMessage, buildPauseGameMessage, buildStartGameMessage, SimpleMessage, ConfirmOperationMessage, PlayroomMessage, ConfirmOperationAlert } from "../../services/playroom";
+import { buildConfirmOperation, PlayroomPlayer, buildEndGameMessage, buildEndTurnMessage, buildPauseGameMessage, buildStartGameMessage, SimpleMessage, ConfirmOperationMessage, PlayroomMessage, ConfirmOperationAlert, buildQuitPlayroomMessage } from "../../services/playroom";
 import Grid from '@mui/material/Grid';
 import { usePlayroomContext } from "../../contexts/PlayroomContext";
 import TimerView from "../../components/views/playroom/TimerView";
@@ -20,7 +20,7 @@ const Playroom = (): ReactNode => {
     let theme = createTheme();
     theme = responsiveFontSizes(theme);
 
-    const { sendJsonMessage, lastJsonMessage} = useWebSocketContext();
+    const { sendJsonMessage, lastJsonMessage, setSocketUrl} = useWebSocketContext();
     const {username, code, timer} = usePlayroomContext();
     const [isCurrentPlayer, setIsCurrentPlayer] = useState<boolean>(false);
     const navigate = useNavigate();
@@ -84,10 +84,15 @@ const Playroom = (): ReactNode => {
                 }
             }
         } else{
-            //Block site for non playing
             navigate("/");
         }
     }, [lastJsonMessage]);
+
+    // closes alert
+    const handleQuitPlayroom = () => {
+            sendJsonMessage(buildQuitPlayroomMessage(code));
+            setSocketUrl(null);
+        };
 
     // closes alert
     const handleClose = () => {
@@ -184,7 +189,17 @@ const Playroom = (): ReactNode => {
                                 ? <Button sx={{m:1}} variant="outlined" onClick={handleStartGame}>Start</Button>
                                 : <Button sx={{m:1}} variant="outlined" onClick={handlePauseGame}>Pause</Button> 
                             }
-                            <Button sx={{m:1}} variant="outlined" onClick={handleEndGame}>End game</Button>
+                            {(gameState.players.length > 1) ?
+                                <Button sx={{m:1}} variant="outlined" onClick={handleEndGame}>
+                                    End game
+                                </Button> : null
+                            }
+                            <Button
+                                sx={{m:1}}
+                                variant="outlined"
+                                onClick={handleQuitPlayroom}>
+                                Quit playroom
+                            </Button>
                         </Box>
                     </Grid>
 
