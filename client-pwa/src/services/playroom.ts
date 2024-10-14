@@ -9,6 +9,14 @@ export interface PutPlayroom {
     timer: number
 }
 
+export interface playerIdObj {
+    playerId: string
+}
+
+export interface PutPlayroomQueue {
+    players: playerIdObj[]
+}
+
 
 const baseApiAddress: string = api_address.backend + '/playrooms';
 
@@ -52,6 +60,28 @@ export const updatePlayroom = async (id: string, body: PutPlayroom):Promise<bool
     console.log(response.status)
     return response.status === 201;
 }
+
+/**
+ * PUT update playroom queue
+ * @param {string} id - uuid of the playroom assigned by server
+ * @param {@link PutPlayroomQueue} body - request body with queue
+ * @returns {Promise<boolean>} feedback if request was successful
+ */
+export const updatePlayroomQueue = async (id: string, body: PutPlayroomQueue):Promise<boolean> => {
+    const request = axios({
+        method: "put",
+        url: baseApiAddress + '/' + id + '/queue',
+        headers: {
+            "Content-Type": "application/json",
+        },
+        data: body
+    });
+
+    const response = await request;
+    console.log(response.status)
+    return response.status === 201;
+}
+
 
 /**
  * @param {string} playroomId - uuid of the playroom assigned by server
