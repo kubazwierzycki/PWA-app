@@ -2,6 +2,7 @@ import {ReactNode} from "react";
 import {Avatar, Box, Card, Grid, Typography} from "@mui/material";
 import { PlayroomPlayer } from "../../../services/playroom";
 import TimerView from "./TimerView";
+import { blue } from "@mui/material/colors";
 
 
 /**
@@ -24,18 +25,26 @@ const PlayroomPlayersView = ({players, paused, currentPlayer}:
         }
     }
 
+    //color for current player
+    const getAvatarColor = (queueNumber : number): string =>{
+        if(currentPlayer === queueNumber) {
+            return blue[500];
+        } else {
+            return blue[100];
+        }
+    }
+
     return (
         <Card sx={{borderRadius: "20px"}}>
             <Box>
                 {
                     players.map(player => {
                         return (
-
                             <Card sx={{marginTop: "10px", padding: "5px"}} key={player.name}>
                             <Grid container>
                                 <Grid item xs={6}>
-                                <Box display="flex" justifyContent="flex-start">
-                                    <Avatar />
+                                <Box display="flex" justifyContent="flex-start" >
+                                    <Avatar sx={{ bgcolor: getAvatarColor(player.queueNumber) }}/>
                                     <Typography sx={{marginLeft: "10px"}}>
                                          {player.name}&nbsp;
                                     </Typography>

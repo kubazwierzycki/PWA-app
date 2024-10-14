@@ -21,7 +21,7 @@ const Playroom = (): ReactNode => {
     theme = responsiveFontSizes(theme);
 
     const { sendJsonMessage, lastJsonMessage, setSocketUrl} = useWebSocketContext();
-    const {username, code, timer} = usePlayroomContext();
+    const {username, code, setCode, timer} = usePlayroomContext();
     const [isCurrentPlayer, setIsCurrentPlayer] = useState<boolean>(false);
     const navigate = useNavigate();
     const [open, setOpen] = useState(false);
@@ -60,7 +60,8 @@ const Playroom = (): ReactNode => {
                     }
 
                     if(playroomMessage.ended){
-                        setTimeout(()=> navigate("/"), 4000);
+                        setTimeout(()=> {setSocketUrl(null);}, 4000);
+                        setCode("");
                     }
 
                     break;
@@ -90,6 +91,7 @@ const Playroom = (): ReactNode => {
 
     // closes alert
     const handleQuitPlayroom = () => {
+            setCode("");
             sendJsonMessage(buildQuitPlayroomMessage(code));
             setSocketUrl(null);
         };
@@ -184,18 +186,17 @@ const Playroom = (): ReactNode => {
                         </Box>
                     </Grid>
                     <Grid item xs={12} md={3}>
-                        <Box sx={{display:"flex", flexDirection:"column"}}>
+                        <Box className={styles.actionsButtonsContainer}>
                             {gameState.paused 
-                                ? <Button sx={{m:1}} variant="outlined" onClick={handleStartGame}>Start</Button>
-                                : <Button sx={{m:1}} variant="outlined" onClick={handlePauseGame}>Pause</Button> 
+                                ? <Button variant="outlined" onClick={handleStartGame}>Start</Button>
+                                : <Button variant="outlined" onClick={handlePauseGame}>Pause</Button> 
                             }
                             {(gameState.players.length > 1) ?
-                                <Button sx={{m:1}} variant="outlined" onClick={handleEndGame}>
+                                <Button variant="outlined" onClick={handleEndGame}>
                                     End game
                                 </Button> : null
                             }
                             <Button
-                                sx={{m:1}}
                                 variant="outlined"
                                 onClick={handleQuitPlayroom}>
                                 Quit playroom
@@ -206,12 +207,14 @@ const Playroom = (): ReactNode => {
                     <Grid item xs={3} md={3}>
                     </Grid>
                     <Grid item xs={6} md={6} style={{textAlign: 'center'}}>
-                        <Button
-                            disabled={isEndTurnButtonDisabled()}
-                            variant="outlined"
-                            onClick={handleEndTurn}>
-                            End Turn
-                        </Button>
+                        <Box className={styles.endTurnButtonContainer}>
+                            <Button 
+                                disabled={isEndTurnButtonDisabled()}
+                                variant="outlined"
+                                onClick={handleEndTurn}>
+                                End Turn
+                            </Button>
+                        </Box>
                     </Grid>
                     <Grid item xs={3} md={3}>
                     </Grid>
