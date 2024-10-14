@@ -1,3 +1,6 @@
+### GET all playrooms
+GET http://localhost:8080/api/playrooms
+
 ### CREATE playroom
 POST http://localhost:8080/api/playrooms
 

@@ -651,9 +651,16 @@ public class PlayroomDefaultController implements PlayroomController {
 
     private void updateLastModDate(Playroom playroom) {
         if (!playroom.isPaused()) {
+            LocalTime lastOperationTime = playroom.getLastOperationTime();
+            LocalTime nowTime = LocalTime.now();
+
             if (playroom.isGlobalTimer()) {
-                playroom.setGlobalTimerValue(playroom.getGlobalTimerValue() +
-                        (Duration.between(LocalTime.now(), playroom.getLastOperationTime()).toMillis() / 1000.0));
+                Double timeDiff = Duration.between(nowTime, lastOperationTime).toMillis() / 1000.0;
+                if (nowTime.isBefore(lastOperationTime)) {
+                    timeDiff = Duration.between(LocalTime.MAX, lastOperationTime).toMillis() / 1000.0;
+                    timeDiff += Duration.between(nowTime, LocalTime.MIN).toMillis() / 1000.0;
+                }
+                playroom.setGlobalTimerValue(playroom.getGlobalTimerValue() + timeDiff);
                 if (playroom.getGlobalTimerValue() <= 0.0) {
                     playroomService.update(playroom);
                     endGameRequest(playroom);
@@ -663,8 +670,12 @@ public class PlayroomDefaultController implements PlayroomController {
             else if (!playroom.getPlayers().isEmpty()) {
                 Map<Integer, Playroom.Player> players = playroom.getPlayers();
                 Playroom.Player player = players.get(playroom.getCurrentPlayer());
-                player.setTimer(player.getTimer() +
-                        (Duration.between(LocalTime.now(), playroom.getLastOperationTime()).toMillis() / 1000.0));
+                Double timeDiff = Duration.between(nowTime, lastOperationTime).toMillis() / 1000.0;
+                if (nowTime.isBefore(lastOperationTime)) {
+                    timeDiff = Duration.between(LocalTime.MAX, lastOperationTime).toMillis() / 1000.0;
+                    timeDiff += Duration.between(nowTime, LocalTime.MIN).toMillis() / 1000.0;
+                }
+                player.setTimer(player.getTimer() + timeDiff);
                 if (player.getTimer() <= 0.0 && !playroom.isEnded()) {
                     player.setSkip(true);
                     players.put(playroom.getCurrentPlayer(), player);
