@@ -18,7 +18,7 @@ import { useNavigate } from "react-router-dom";
 const Playroom = (): ReactNode => {
 
     const { sendJsonMessage, lastJsonMessage, setSocketUrl} = useWebSocketContext();
-    const {username, code, setCode, timer} = usePlayroomContext();
+    const {username, code, setCode, timer, gameImgSrc} = usePlayroomContext();
     const [isCurrentPlayer, setIsCurrentPlayer] = useState<boolean>(false);
     const navigate = useNavigate();
     const [open, setOpen] = useState(false);
@@ -176,8 +176,8 @@ const Playroom = (): ReactNode => {
                         <PlayroomPlayersView paused={gameState.paused} players={gameState.players} currentPlayer={gameState.currentPlayer}/>
                     </Grid>
                     <Grid item xs={0} md={6}>
-                        <Box>
-                            <img className={styles.gameImage} src="https://cf.geekdo-images.com/MQs6Py-AE4sFFhmkh04GHA__imagepage/img/Xgzvg6vldykBRO6UNiZV1kZfLNs=/fit-in/900x600/filters:no_upscale():strip_icc()/pic8470681.jpg"/>
+                        <Box className={styles.imgContainer}>
+                            <img className={styles.gameImage} src={gameImgSrc}/>
                         </Box>
                     </Grid>
                     <Grid item xs={12} md={3}>
