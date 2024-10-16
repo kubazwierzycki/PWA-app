@@ -1,0 +1,12 @@
+.playerContainer{
+    padding: 0.5rem;
+    border-radius:0.4rem;
+}
+
+.playerDetails{
+    align-items: center;
+}
+
+.playerTimer{
+    align-items: center;
+}
