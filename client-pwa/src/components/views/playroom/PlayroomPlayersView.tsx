@@ -2,9 +2,7 @@ import {ReactNode} from "react";
 import {Avatar, Box, Card, Grid, Typography} from "@mui/material";
 import { PlayroomPlayer } from "../../../services/playroom";
 import TimerView from "./TimerView";
-import { blue } from "@mui/material/colors";
-
-
+import styles from '../../../styles/playroomPlayersView.module.css'
 /**
  * View component showing players who have joined the room
  * @param {PlayroomPlayer[]} players - list of players in playroom
@@ -25,14 +23,10 @@ const PlayroomPlayersView = ({players, paused, currentPlayer}:
         }
     }
 
-    //color for current player
-    const getAvatarColor = (queueNumber : number): string =>{
-        if(currentPlayer === queueNumber) {
-            return blue[500];
-        } else {
-            return blue[100];
-        }
+    const isActivePlayer = (queueNumber : number): boolean =>{
+        return (currentPlayer === queueNumber) ? true:  false
     }
+
 
     return (
         <Card sx={{borderRadius: "20px"}}>
@@ -41,16 +35,22 @@ const PlayroomPlayersView = ({players, paused, currentPlayer}:
                     players.map(player => {
                         return (
                             <Card sx={{marginTop: "10px", padding: "5px"}} key={player.name}>
-                            <Grid container>
+                            <Grid container
+                            className={styles.playerContainer}
+                            sx={{backgroundColor: isActivePlayer(player.queueNumber) ?
+                                (theme) => `${theme.palette.background.player}`
+                                : null
+                            }}
+                              >
                                 <Grid item xs={6}>
-                                <Box display="flex" justifyContent="flex-start" >
-                                    <Avatar sx={{ bgcolor: getAvatarColor(player.queueNumber) }}/>
+                                <Box className={styles.playerDetails} display="flex" justifyContent="flex-start" >
+                                    <Avatar/>
                                     <Typography sx={{marginLeft: "10px"}}>
                                          {player.name}&nbsp;
                                     </Typography>
                                 </Box>
                                </Grid>
-                                <Grid item xs={5}>
+                                <Grid className={styles.playerTimer} item xs={5}>
                                     <Box display="flex" justifyContent="flex-end">
                                     {(player.timer !== null) ? 
                                     <TimerView paused={isTimerPaused(player.queueNumber)}

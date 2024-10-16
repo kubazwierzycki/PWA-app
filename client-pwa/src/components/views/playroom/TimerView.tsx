@@ -107,9 +107,9 @@ const TimerView = ({timer, paused, hiddenButtons}: {timer: number, paused:boolea
         <Box>
             {!hiddenButtons ?               
                 <Box>
-                    <Button sx={{m:1}} variant="outlined" onClick={() => handleChangeTimerType(TimerType.HMS)}>HMS</Button>
-                    <Button sx={{m:1}} variant="outlined" onClick={() => handleChangeTimerType(TimerType.MS)}>MS</Button>
-                    <Button sx={{m:1}} variant="outlined" onClick={() => handleChangeTimerType(TimerType.S)}>S</Button>
+                    <Button sx={{m:1}} variant="contained" onClick={() => handleChangeTimerType(TimerType.HMS)}>HMS</Button>
+                    <Button sx={{m:1}} variant="contained" onClick={() => handleChangeTimerType(TimerType.MS)}>MS</Button>
+                    <Button sx={{m:1}} variant="contained" onClick={() => handleChangeTimerType(TimerType.S)}>S</Button>
                 </Box>
                 : null
             }

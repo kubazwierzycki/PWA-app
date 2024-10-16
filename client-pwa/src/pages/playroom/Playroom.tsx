@@ -1,4 +1,4 @@
-import { Alert, AlertTitle, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, ThemeProvider, Typography } from "@mui/material";
+import { Alert, AlertTitle, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Typography } from "@mui/material";
 import {ReactNode, useEffect, useState} from "react";
 import { useWebSocketContext } from "../../contexts/WebSocketContext";
 import { buildConfirmOperation, PlayroomPlayer, buildEndGameMessage, buildEndTurnMessage, buildPauseGameMessage, buildStartGameMessage, SimpleMessage, ConfirmOperationMessage, PlayroomMessage, ConfirmOperationAlert, buildQuitPlayroomMessage } from "../../services/playroom";
@@ -8,7 +8,6 @@ import TimerView from "../../components/views/playroom/TimerView";
 import PlayroomPlayersView from "../../components/views/playroom/PlayroomPlayersView";
 import styles from '../../styles/playroom.module.css'
 import { useNavigate } from "react-router-dom";
-import { createTheme, responsiveFontSizes } from '@mui/material/styles';
 
 
 
@@ -17,8 +16,6 @@ import { createTheme, responsiveFontSizes } from '@mui/material/styles';
  * @returns {ReactNode}
  */
 const Playroom = (): ReactNode => {
-    let theme = createTheme();
-    theme = responsiveFontSizes(theme);
 
     const { sendJsonMessage, lastJsonMessage, setSocketUrl} = useWebSocketContext();
     const {username, code, setCode, timer} = usePlayroomContext();
@@ -127,8 +124,6 @@ const Playroom = (): ReactNode => {
     }
 
     return (
-        <ThemeProvider theme={theme}>
-
         <div>
             <Dialog
                 open={open}
@@ -188,16 +183,16 @@ const Playroom = (): ReactNode => {
                     <Grid item xs={12} md={3}>
                         <Box className={styles.actionsButtonsContainer}>
                             {gameState.paused 
-                                ? <Button variant="outlined" onClick={handleStartGame}>Start</Button>
-                                : <Button variant="outlined" onClick={handlePauseGame}>Pause</Button> 
+                                ? <Button variant="contained" onClick={handleStartGame}>Start</Button>
+                                : <Button variant="contained" onClick={handlePauseGame}>Pause</Button> 
                             }
                             {(gameState.players.length > 1) ?
-                                <Button variant="outlined" onClick={handleEndGame}>
+                                <Button variant="contained" onClick={handleEndGame}>
                                     End game
                                 </Button> : null
                             }
                             <Button
-                                variant="outlined"
+                                variant="contained"
                                 onClick={handleQuitPlayroom}>
                                 Quit playroom
                             </Button>
@@ -210,7 +205,7 @@ const Playroom = (): ReactNode => {
                         <Box className={styles.endTurnButtonContainer}>
                             <Button 
                                 disabled={isEndTurnButtonDisabled()}
-                                variant="outlined"
+                                variant="contained"
                                 onClick={handleEndTurn}>
                                 End Turn
                             </Button>
@@ -221,7 +216,6 @@ const Playroom = (): ReactNode => {
                 </Grid>
             </Box>
         </div>
-        </ThemeProvider>
     )
 }
 
