@@ -8,7 +8,8 @@ import TimerView from "../../components/views/playroom/TimerView";
 import PlayroomPlayersView from "../../components/views/playroom/PlayroomPlayersView";
 import styles from '../../styles/playroom.module.css'
 import { useNavigate } from "react-router-dom";
-
+import bgg from "../../services/bgg";
+import axios from "axios";
 
 
 /**
@@ -18,7 +19,7 @@ import { useNavigate } from "react-router-dom";
 const Playroom = (): ReactNode => {
 
     const { sendJsonMessage, lastJsonMessage, setSocketUrl} = useWebSocketContext();
-    const {username, code, setCode, timer, gameImgSrc} = usePlayroomContext();
+    const {username, code, setCode, timer} = usePlayroomContext();
     const [isCurrentPlayer, setIsCurrentPlayer] = useState<boolean>(false);
     const navigate = useNavigate();
     const [open, setOpen] = useState(false);
@@ -26,6 +27,7 @@ const Playroom = (): ReactNode => {
         operationId : "",
         question : "",
     });
+    const [gameImageSrc, setGameImageSrc] = useState("");
     
     const [gameState, setGameState] = useState<PlayroomMessage>({
         type: "init",
@@ -37,6 +39,26 @@ const Playroom = (): ReactNode => {
         ended : false,
         hostId : "",
     });
+
+    async function fetchImageSrc(gameId : number) {
+        try{
+            const bggResponse = await bgg.getBggGameById(gameId);
+            const imageSrc = bgg.getGameImageSrcFromResponse(bggResponse);
+            setGameImageSrc(imageSrc);
+        } catch(err){
+            if (axios.isAxiosError(err)) {
+                switch (err.code) {
+                    default:
+                        break;
+                }
+            }
+        }
+    }
+
+    useEffect(()=>{
+        fetchImageSrc(gameState.game.gameID);
+    }, [gameState.game.gameID])
+
 
     // actions performed for a given message type
     useEffect(() => {
@@ -159,7 +181,7 @@ const Playroom = (): ReactNode => {
                     <Grid item xs={0} md={3}>
                     </Grid>
                     <Grid item xs={12} md={6} style={{textAlign: 'center'}}>
-                        <Typography variant="h4" gutterBottom className={styles.gameTitle}>{gameState.game.name}</Typography>
+                        <Typography variant="h5" gutterBottom className={styles.gameTitle}>{gameState.game.name}</Typography>
                         {(gameState.timer !== null && gameState.timer !== 0) ? 
                             <TimerView
                                 timer={gameState.timer}
@@ -173,11 +195,16 @@ const Playroom = (): ReactNode => {
                     </Grid>
 
                     <Grid item xs={12} md={3}>
-                        <PlayroomPlayersView paused={gameState.paused} players={gameState.players} currentPlayer={gameState.currentPlayer}/>
+                        <Box className={styles.playroomPlayersView}>
+                            <PlayroomPlayersView 
+                                paused={gameState.paused} 
+                                players={gameState.players} 
+                                currentPlayer={gameState.currentPlayer}/>
+                        </Box>
                     </Grid>
                     <Grid item xs={0} md={6}>
                         <Box className={styles.imgContainer}>
-                            <img className={styles.gameImage} src={gameImgSrc}/>
+                            <img className={styles.gameImage} src={gameImageSrc}/>
                         </Box>
                     </Grid>
                     <Grid item xs={12} md={3}>

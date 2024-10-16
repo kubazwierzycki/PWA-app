@@ -1,5 +1,5 @@
 import {ReactNode} from "react";
-import {Avatar, Card, Chip, Stack, Typography} from "@mui/material";
+import {Avatar, Card, Chip, Stack, Tooltip, Typography} from "@mui/material";
 import styles from "../../../styles/createPlayroom.module.css";
 import { WaitingPlayer } from "../../../services/playroom";
 
@@ -12,6 +12,9 @@ import { WaitingPlayer } from "../../../services/playroom";
  */
 const AwaitingPlayersView = ({code, players}: {code: string, players : WaitingPlayer[]}): ReactNode => {
 
+    const copyToClipboard = () =>{
+        navigator.clipboard.writeText(code);
+    }
 
     return (
         <Card className={styles.awaitBox} sx={{borderRadius: "20px"}}>
@@ -35,7 +38,9 @@ const AwaitingPlayersView = ({code, players}: {code: string, players : WaitingPl
                 <Typography className={styles.infoElement}>
                     Your playroom code:
                 </Typography>
-                <Chip label={code} className={styles.infoElement}/>
+                <Tooltip disableFocusListener title="Click to copy" >
+                    <Chip label={code} className={styles.infoElement} onClick={copyToClipboard}/>
+                </Tooltip>
                 <Typography className={styles.infoElement}>
                     Please share it with your friends so that they can join
                 </Typography>

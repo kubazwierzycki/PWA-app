@@ -166,6 +166,12 @@ const CreatePlayroomStepper = (): ReactNode => {
     };
 
     const handleReset = () => {
+        setJoinSuccessfully(false);
+        setIsTimerSet(false);
+        setSocketUrl("");
+        setName("");
+        setChoice("");
+        setCode("");
         setActiveStep(0);
     };
 
@@ -223,17 +229,13 @@ const CreatePlayroomStepper = (): ReactNode => {
                 </Stepper>
                 {activeStep === steps.length ? (
                     <React.Fragment>
-                        <Typography sx={{ mt: 2, mb: 1 }}>
+                        <Typography variant="subtitle1"  sx={{ mt: 2, mb: 1 }}>
                             All steps completed - playroom is ready for the game
                         </Typography>
-                        <WaitingRoomSummaryView/>
-                        <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
-                            <Box sx={{ flex: "1 1 auto" }} />
-                            <Button onClick={handleReset}>Reset</Button>
-                        </Box>
-                        <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
-                            <Box sx={{ flex: "1 1 auto" }} />
-                            <Button onClick={handleStartPlayroom}>Start playroom</Button>
+                        <WaitingRoomSummaryView isGlobal={isGlobalTimer} timer={timer} name={name}/>
+                        <Box sx={{ display: "flex", flexDirection: "column", mt:1}}>
+                            <Button className={styles.summaryButton} variant="contained" sx={{mb:1, mt:2}} onClick={handleReset}>Reset</Button>
+                            <Button className={styles.summaryButton} variant="contained" onClick={handleStartPlayroom}>Start playroom</Button>
                         </Box>
                     </React.Fragment>
                 ) : (

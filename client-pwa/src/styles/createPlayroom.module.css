@@ -101,6 +101,9 @@
     padding: 0 5%;
 }
 
+.summaryButton{
+    height: 2rem;
+}
 
 @media screen and (min-width: 1000px) {
 
