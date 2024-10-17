@@ -1,4 +1,4 @@
-import apiAddress from "../config/api_address.json"
+import apiAddress from "../config/api_address"
 import axios from "axios";
 
 
