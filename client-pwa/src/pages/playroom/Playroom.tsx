@@ -182,7 +182,7 @@ const Playroom = (): ReactNode => {
                     <Grid item xs={0} md={3}>
                     </Grid>
                     <Grid item xs={12} md={6} style={{textAlign: 'center'}}>
-                        <Typography variant="h5" gutterBottom className={styles.gameTitle}>{gameState.game.name}</Typography>
+                        <Typography variant="h4" gutterBottom className={styles.gameTitle}>{gameState.game.name}</Typography>
                         {(gameState.timer !== null && gameState.timer !== 0) ?
                         <Box>
                             <TimerTypeButtons setTimerType={setTimerType}/>
@@ -208,7 +208,10 @@ const Playroom = (): ReactNode => {
                     </Grid>
                     <Grid item xs={0} md={6}>
                         <Box className={styles.imgContainer}>
-                            <img className={styles.gameImage} src={gameImageSrc}/>
+                            <img
+                                alt="Image of the selected game"
+                                className={gameImageSrc ? styles.gameImage : styles.gameImageNotLoaded} 
+                                src={gameImageSrc}/>
                         </Box>
                     </Grid>
                     <Grid item xs={12} md={3}>

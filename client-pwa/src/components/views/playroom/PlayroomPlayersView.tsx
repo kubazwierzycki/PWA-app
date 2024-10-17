@@ -34,7 +34,6 @@ const PlayroomPlayersView = ({players, paused, currentPlayer}:
                 {
                     players.map(player => {
                         return (
-                            <Card sx={{marginTop: "10px", padding: "5px"}} key={player.name}>
                             <Grid container
                             className={styles.playerContainer}
                             sx={{backgroundColor: isActivePlayer(player.queueNumber) ?
@@ -42,29 +41,24 @@ const PlayroomPlayersView = ({players, paused, currentPlayer}:
                                 : null
                             }}
                               >
-                                <Grid item xs={6}>
-                                <Box className={styles.playerDetails} display="flex" justifyContent="flex-start" >
+                                <Grid item xs={6} sx={{alignItems:"center", display:"flex", justifyContent:"flex-start"}}>
                                     <Avatar/>
-                                    <Typography sx={{marginLeft: "10px"}}>
+                                    <Typography variant="subtitle2" sx={{ml: "10px"}}>
                                          {player.name}&nbsp;
                                     </Typography>
-                                </Box>
                                </Grid>
-                                <Grid className={styles.playerTimer} item xs={5}>
-                                    <Box display="flex" justifyContent="flex-end">
+                                <Grid item xs={5} sx={{alignItems:"center", display:"flex", justifyContent:"flex-end"}}>
                                     {(player.timer !== null) ? 
                                     <TimerView paused={isTimerPaused(player.queueNumber)}
                                         timer={player.timer}
                                         key={player.name}
                                         timerType={TimerType.MS}
-                                        variant="subtitle1"
+                                        variant="subtitle2"
                                     /> : null
                                     }
-                                    </Box>
                                     </Grid>
+                                    <Grid item xs={1}></Grid>
                                 </Grid>
-                                <Grid item xs={1}></Grid>
-                            </Card>
                         )
                     })
                 }

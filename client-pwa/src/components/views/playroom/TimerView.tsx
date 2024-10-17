@@ -1,10 +1,9 @@
-import { Box, Typography, TypographyProps} from "@mui/material";
+import {Typography, TypographyProps} from "@mui/material";
 import {ReactNode, useEffect, useState} from "react";
 import { useTimer } from "react-timer-hook";
 import { usePlayroomContext } from "../../../contexts/PlayroomContext";
 import { useWebSocketContext } from "../../../contexts/WebSocketContext";
 import { buildCheckStatusMessage, TimerType } from "../../../services/playroom";
-import { Variant } from "@testing-library/dom";
 
 
 /**
@@ -95,14 +94,12 @@ const TimerView = ({timer, paused, timerType, variant}: {timer: number, paused:b
 
 
     return (
-        <Box>
             <DisplayTime 
                 hours={hours} 
                 minutes={minutes} 
                 seconds={seconds} 
                 totalSeconds={totalSeconds} 
                 timerType={timerType}/>
-        </Box>
     )
 }
 

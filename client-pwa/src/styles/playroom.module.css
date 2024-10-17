@@ -8,6 +8,11 @@
     height: 250px;
     margin-top: 1rem;
     margin-bottom: 1rem;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
+}
+
+.gameImageNotLoaded{
+    display: none;
 }
 
 .actionsButtonsContainer {
@@ -54,7 +59,7 @@
     }
 
     .actionsButtonsContainer button{
-        height: 4rem;
+        height: 3rem;
     }
 
     .endTurnButtonContainer button{
