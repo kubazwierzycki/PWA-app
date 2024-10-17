@@ -1,16 +1,11 @@
-import { Box, Button } from "@mui/material";
+import { Box, Typography, TypographyProps} from "@mui/material";
 import {ReactNode, useEffect, useState} from "react";
 import { useTimer } from "react-timer-hook";
 import { usePlayroomContext } from "../../../contexts/PlayroomContext";
 import { useWebSocketContext } from "../../../contexts/WebSocketContext";
-import { buildCheckStatusMessage } from "../../../services/playroom";
+import { buildCheckStatusMessage, TimerType } from "../../../services/playroom";
+import { Variant } from "@testing-library/dom";
 
-
-enum TimerType{
-    HMS,
-    MS,
-    S,
-}
 
 /**
  * View component showing timer
@@ -18,13 +13,12 @@ enum TimerType{
  * @param {number} paused - game status
  * @returns {ReactNode}
  */
-const TimerView = ({timer, paused, hiddenButtons}: {timer: number, paused:boolean, hiddenButtons:boolean}): ReactNode => {
+const TimerView = ({timer, paused, timerType, variant}: {timer: number, paused:boolean, timerType:TimerType, variant?: TypographyProps['variant']}): ReactNode => {
     
 
     const initTime = new Date();
     initTime.setSeconds(initTime.getSeconds() + Math.floor(timer));
     const [expiryTimestamp] = useState(initTime);
-    const [timerType, setTimerType] = useState<TimerType>(TimerType.MS);
     const {code} = usePlayroomContext();
     const {sendJsonMessage} = useWebSocketContext();
 
@@ -70,53 +64,44 @@ const TimerView = ({timer, paused, hiddenButtons}: {timer: number, paused:boolea
     const displayHMS = ({hours, minutes , seconds}:
             {hours: number, minutes: number, seconds: number}): JSX.Element =>{
         return(
-            <>
+            <Typography variant={variant}>
                 <span>{hours}</span>
                 :
                 {minutes < 10 ? <span>0{minutes}</span> : <span>{minutes}</span>}
                 :
                 {seconds < 10 ? <span>0{seconds}</span> : <span>{seconds}</span>}
-            </>
+            </Typography>
         )
     }
 
     const displayMS = ({hours, minutes , seconds} :
             {hours: number, minutes: number, seconds: number}): JSX.Element =>{
         return(
-            <>
+            <Typography variant={variant}>
                 {minutes < 10 ? <span>0{minutes + hours*60}</span> : <span>{minutes + hours*60}</span>}
                 :
                 {seconds < 10 ? <span>0{seconds}</span> : <span>{seconds}</span>}
-            </>
+            </Typography>
         )
     }
 
     const displayS = ({totalSeconds} : {totalSeconds: number}): JSX.Element =>{
         return(
-            <>
+            <Typography variant={variant}>
                 <span>{totalSeconds}</span>
-            </>
+            </Typography>
         )
     }
 
-    const handleChangeTimerType = (timerType : TimerType) =>{
-        setTimerType(timerType);
-    }
 
     return (
         <Box>
-            {!hiddenButtons ?               
-                <Box>
-                    <Button sx={{m:1}} variant="contained" onClick={() => handleChangeTimerType(TimerType.HMS)}>HMS</Button>
-                    <Button sx={{m:1}} variant="contained" onClick={() => handleChangeTimerType(TimerType.MS)}>MS</Button>
-                    <Button sx={{m:1}} variant="contained" onClick={() => handleChangeTimerType(TimerType.S)}>S</Button>
-                </Box>
-                : null
-            }
-            <Box>
-                <DisplayTime hours={hours} minutes={minutes} seconds={seconds} 
-                        totalSeconds={totalSeconds} timerType={timerType}/>
-            </Box>
+            <DisplayTime 
+                hours={hours} 
+                minutes={minutes} 
+                seconds={seconds} 
+                totalSeconds={totalSeconds} 
+                timerType={timerType}/>
         </Box>
     )
 }

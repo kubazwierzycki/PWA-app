@@ -264,3 +264,9 @@ export interface ConfirmOperationAlert {
     operationId : string
     question : string
 }
+
+export enum TimerType{
+    HMS = "H:MM:SS",
+    MS = "MM:SS",
+    S = "S",
+}
