@@ -12,9 +12,9 @@ const WaitingRoomSummaryView = ({name, timer, isGlobal} : {name : string, timer 
 
     return (
         <>
-            <Typography variant="h5" sx={{ mb: 1 }}>{name}</Typography>
-            <Typography variant="subtitle1">Time: {timer}</Typography>
-            <Typography variant="subtitle1" sx={{ mb: 1 }}>Type: {isGlobal ? "Global" : "Per user"}</Typography>
+            <Typography variant="h4" sx={{ mb: 1 }}>{name}</Typography>
+            <Typography variant="subtitle2">Time: {timer}</Typography>
+            <Typography variant="subtitle2" sx={{ mb: 1 }}>Type: {isGlobal ? "Global" : "Per user"}</Typography>
             <img src={gameImgSrc} className={styles.gameImage}/>
         </>
     )

@@ -20,7 +20,7 @@ export const ThemeModeProvider = ({children}: {children: ReactElement}): ReactNo
      */
     const getDesignTokens = (mode: PaletteMode) => ({
         typography: {
-            fontFamily: 'Oxanium',
+            fontFamily: 'Quicksand', //Oxanium, Nunito, Quicksand, 
         },
         palette: {
             mode,
