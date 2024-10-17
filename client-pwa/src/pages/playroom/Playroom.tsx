@@ -1,7 +1,7 @@
 import { Alert, AlertTitle, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Typography } from "@mui/material";
 import {ReactNode, useEffect, useState} from "react";
 import { useWebSocketContext } from "../../contexts/WebSocketContext";
-import { buildConfirmOperation, PlayroomPlayer, buildEndGameMessage, buildEndTurnMessage, buildPauseGameMessage, buildStartGameMessage, SimpleMessage, ConfirmOperationMessage, PlayroomMessage, ConfirmOperationAlert, buildQuitPlayroomMessage } from "../../services/playroom";
+import { buildConfirmOperation, PlayroomPlayer, buildEndGameMessage, buildEndTurnMessage, buildPauseGameMessage, buildStartGameMessage, SimpleMessage, ConfirmOperationMessage, PlayroomMessage, ConfirmOperationAlert, buildQuitPlayroomMessage, TimerType } from "../../services/playroom";
 import Grid from '@mui/material/Grid';
 import { usePlayroomContext } from "../../contexts/PlayroomContext";
 import TimerView from "../../components/views/playroom/TimerView";
@@ -10,6 +10,7 @@ import styles from '../../styles/playroom.module.css'
 import { useNavigate } from "react-router-dom";
 import bgg from "../../services/bgg";
 import axios from "axios";
+import TimerTypeButtons from "../../components/controls/buttons/TimerTypeButtons";
 
 
 /**
@@ -28,7 +29,7 @@ const Playroom = (): ReactNode => {
         question : "",
     });
     const [gameImageSrc, setGameImageSrc] = useState("");
-    
+    const [timerType, setTimerType] = useState<TimerType>(TimerType.MS);
     const [gameState, setGameState] = useState<PlayroomMessage>({
         type: "init",
         timer : timer,
@@ -182,12 +183,15 @@ const Playroom = (): ReactNode => {
                     </Grid>
                     <Grid item xs={12} md={6} style={{textAlign: 'center'}}>
                         <Typography variant="h5" gutterBottom className={styles.gameTitle}>{gameState.game.name}</Typography>
-                        {(gameState.timer !== null && gameState.timer !== 0) ? 
+                        {(gameState.timer !== null && gameState.timer !== 0) ?
+                        <Box>
+                            <TimerTypeButtons setTimerType={setTimerType}/>
                             <TimerView
                                 timer={gameState.timer}
                                 paused={gameState.paused}
-                                hiddenButtons={false}
-                            /> : null
+                                timerType={timerType}
+                                variant="h5"/> 
+                            </Box> : null
                         }
    
                     </Grid>

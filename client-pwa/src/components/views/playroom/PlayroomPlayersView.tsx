@@ -1,6 +1,6 @@
 import {ReactNode} from "react";
 import {Avatar, Box, Card, Grid, Typography} from "@mui/material";
-import { PlayroomPlayer } from "../../../services/playroom";
+import { PlayroomPlayer, TimerType } from "../../../services/playroom";
 import TimerView from "./TimerView";
 import styles from '../../../styles/playroomPlayersView.module.css'
 /**
@@ -56,9 +56,9 @@ const PlayroomPlayersView = ({players, paused, currentPlayer}:
                                     <TimerView paused={isTimerPaused(player.queueNumber)}
                                         timer={player.timer}
                                         key={player.name}
-                                        hiddenButtons={true}
-                                    />
-                                    : null
+                                        timerType={TimerType.MS}
+                                        variant="subtitle1"
+                                    /> : null
                                     }
                                     </Box>
                                     </Grid>
