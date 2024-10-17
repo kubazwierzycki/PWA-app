@@ -8,6 +8,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import AwaitingPlayersView from "../../components/views/playroom/AwaitingPlayersView";
 import { useWebSocketContext } from "../../contexts/WebSocketContext";
 import { usePlayroomContext } from "../../contexts/PlayroomContext";
+import api_address from "../../config/api_address";
 
 /**
  * Live board game playing room joining page
@@ -63,7 +64,7 @@ const PlayroomJoin = (): ReactNode => {
                 }
             }
         } else{            
-            setSocketUrl("ws://localhost:8080/ws-playrooms");
+            setSocketUrl(api_address.backend_ws);
         }
     }, [lastJsonMessage, navigate]);
 

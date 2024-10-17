@@ -18,6 +18,7 @@ import { useWebSocketContext } from "../../contexts/WebSocketContext.tsx";
 import { usePlayroomContext } from "../../contexts/PlayroomContext.tsx";
 import TimerSettingsView from "./playroom/TimerSettingsView.tsx";
 import WaitingRoomSummaryView from "./playroom/WaitingRoomSummaryView.tsx";
+import api_address from "../../config/api_address.ts";
 
 
 
@@ -74,7 +75,7 @@ const CreatePlayroomStepper = (): ReactNode => {
                 }
             }
         } else{
-            setSocketUrl("ws://localhost:8080/ws-playrooms");
+            setSocketUrl(api_address.backend_ws);
         }
     }, [lastJsonMessage]);
 

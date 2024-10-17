@@ -1,5 +1,6 @@
 import axios from "axios";
-const baseUrl = "https://boardgamegeek.com/xmlapi2";
+import api_address from "../config/api_address";
+const baseUrl = api_address.bgg;
 
 const getUserByUsername = (bggUsername: string) => {
     const request = axios({
