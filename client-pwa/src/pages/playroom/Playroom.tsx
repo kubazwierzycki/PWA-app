@@ -1,7 +1,7 @@
-import { Alert, AlertTitle, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Typography } from "@mui/material";
+import { Alert, AlertTitle, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Tooltip, Typography } from "@mui/material";
 import {ReactNode, useEffect, useState} from "react";
 import { useWebSocketContext } from "../../contexts/WebSocketContext";
-import { buildConfirmOperation, PlayroomPlayer, buildEndGameMessage, buildEndTurnMessage, buildPauseGameMessage, buildStartGameMessage, SimpleMessage, ConfirmOperationMessage, PlayroomMessage, ConfirmOperationAlert, buildQuitPlayroomMessage, TimerType } from "../../services/playroom";
+import { buildConfirmOperation, PlayroomPlayer, buildEndGameMessage, buildEndTurnMessage, buildPauseGameMessage, buildStartGameMessage, SimpleMessage, ConfirmOperationMessage, PlayroomMessage, ConfirmOperationAlert, buildQuitPlayroomMessage, TimerType, buildWinGameMessage } from "../../services/playroom";
 import Grid from '@mui/material/Grid';
 import { usePlayroomContext } from "../../contexts/PlayroomContext";
 import TimerView from "../../components/views/playroom/TimerView";
@@ -121,7 +121,7 @@ const Playroom = (): ReactNode => {
         setOpen(false);
       };
     // operation agreed by user
-    const handleAgreeEndGame = () => {
+    const handleAgreeOperation = () => {
         handleClose();
         sendJsonMessage(buildConfirmOperation(code, confirmOperationAlert.operationId))
     }
@@ -146,6 +146,10 @@ const Playroom = (): ReactNode => {
         return !(isCurrentPlayer && !gameState.paused)
     }
 
+    const handleWinGame = () =>{
+        sendJsonMessage(buildWinGameMessage(code))
+    }
+
     return (
         <div>
             <Dialog
@@ -163,8 +167,8 @@ const Playroom = (): ReactNode => {
                 </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                <Button onClick={handleClose}>Disagree</Button>
-                <Button onClick={handleAgreeEndGame} autoFocus>
+                <Button onClick={handleClose}>Close</Button>
+                <Button onClick={handleAgreeOperation} autoFocus>
                     Agree
                 </Button>
                 </DialogActions>
@@ -221,9 +225,26 @@ const Playroom = (): ReactNode => {
                                 : <Button variant="contained" onClick={handlePauseGame}>Pause</Button> 
                             }
                             {(gameState.players.length > 1) ?
-                                <Button variant="contained" onClick={handleEndGame}>
-                                    End game
-                                </Button> : null
+                                <>
+                                    <Tooltip
+                                        disableFocusListener
+                                        disableTouchListener
+                                        title="End game without saving."
+                                        placement="bottom">
+                                        <Button variant="contained" onClick={handleEndGame}>
+                                            End game
+                                        </Button>
+                                    </Tooltip>
+                                    <Tooltip
+                                        disableFocusListener
+                                        disableTouchListener
+                                        title="End game as a winner and save game."
+                                        placement="bottom">
+                                        <Button variant="contained" onClick={handleWinGame}>
+                                            Win game
+                                        </Button>
+                                    </Tooltip>
+                                </>: null
                             }
                             <Button
                                 variant="contained"

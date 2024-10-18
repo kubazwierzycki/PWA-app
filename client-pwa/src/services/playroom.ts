@@ -157,6 +157,18 @@ export const buildEndTurnMessage = (playroomId: string) : object => {
     }
 }
 
+
+/**
+ * @param {string} playroomId - uuid of the playroom assigned by server
+ * @returns {Promise<boolean>} websocket message
+ */
+export const buildWinGameMessage = (playroomId: string) : object => {
+    return {
+        "operation": "win",
+        "playroomId": playroomId,
+    }
+}
+
 /**
  * @param {string} playroomId - uuid of the playroom assigned by server
  * @returns {Promise<boolean>} websocket message
