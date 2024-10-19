@@ -36,10 +36,10 @@ export const AuthProvider = ({children}: {children: ReactElement}): ReactNode =>
     const [uuid, setUuid] = useState("");
     const [token, setToken] = useState("");
     const [user, setUser] = useState<User>({
-        username: "undefinedUser",
-        bggUsername: "undefinedUser",
-        bggId: "undefinedUser",
-        email: "undefinedUser",
+        username: "",
+        bggUsername: "",
+        bggId: "",
+        email: "",
     });
 
     return (

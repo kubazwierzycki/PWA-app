@@ -7,10 +7,12 @@ import * as React from "react";
 import WizardGameSelect from "./WizardGameSelect.tsx";
 import SearchGameSelect from "./SearchGameSelect.tsx";
 import {TextField} from "@mui/material";
+import CustomGameSelect from "./CustomGameSelect.tsx";
 
 enum SELECTION_MODES {
     WIZARD,
-    SEARCH
+    SEARCH,
+    CUSTOM
 }
 
 interface ChoosingViewProps {
@@ -41,6 +43,7 @@ const ChoosingGameView = ({name, setName, choice, setChoice}: ChoosingViewProps)
         setSelectionMode(newSelection);
     };
 
+
     return (
         <div className={styles.container}>
             <div className={styles.chooseGameTopBar}>
@@ -66,6 +69,9 @@ const ChoosingGameView = ({name, setName, choice, setChoice}: ChoosingViewProps)
                         <ToggleButton value={SELECTION_MODES.SEARCH} aria-label="search">
                             SEARCH
                         </ToggleButton>
+                        <ToggleButton value={SELECTION_MODES.CUSTOM} aria-label="search">
+                            CUSTOM
+                        </ToggleButton>
                     </StyledToggleButtonGroup>
                 </Paper>
                 <div className={styles.gameChoiceNameField}>
@@ -80,12 +86,18 @@ const ChoosingGameView = ({name, setName, choice, setChoice}: ChoosingViewProps)
             </div>
             <div className={styles.gameSelectWindow}>
                 <Paper style={{height: "100%"}}>
-                    {
-                        selectionMode === SELECTION_MODES.WIZARD ?
-                            <WizardGameSelect setName={setName} choice={choice} setChoice={setChoice}/>
-                            :
-                            <SearchGameSelect setName={setName} choice={choice} setChoice={setChoice}/>
+                {(() => {
+                    switch (selectionMode) {
+                    case SELECTION_MODES.WIZARD:
+                        return <WizardGameSelect setName={setName} choice={choice} setChoice={setChoice}/>
+                    case SELECTION_MODES.SEARCH:
+                        return  <SearchGameSelect setName={setName} choice={choice} setChoice={setChoice}/>
+                    case SELECTION_MODES.CUSTOM:
+                        return <CustomGameSelect setName={setName} name={name} setChoice={setChoice}/>
+                    default:
+                        return null
                     }
+                })()}
                 </Paper>
             </div>
         </div>

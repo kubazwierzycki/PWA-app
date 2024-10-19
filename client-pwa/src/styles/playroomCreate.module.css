@@ -1,0 +1,10 @@
+.paper {
+    padding: 20px;
+    width: fit-content;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    box-sizing: border-box;
+    align-items: 'center'
+}

@@ -3,6 +3,7 @@ import {BoardGameStub} from "../../../types/IBoardgames.ts";
 import {Typography} from "@mui/material";
 import styles from "../../../styles/createPlayroom.module.css"
 import DoneOutlineIcon from '@mui/icons-material/DoneOutline';
+import { usePlayroomContext } from "../../../contexts/PlayroomContext.tsx";
 
 
 interface SearchResultProps {
@@ -21,12 +22,14 @@ interface SearchResultProps {
  * @returns {ReactNode}
  */
 const GameSearchResult = ({game, choice, setChoice, setName}: SearchResultProps): ReactNode => {
+    const {setGameImgSrc} = usePlayroomContext();
 
     const gameId = game["@_objectid"];
 
     const handleClick = () => {
         setChoice(gameId);
         setName(game.name["#text"]);
+        setGameImgSrc(game.thumbnail);
     }
 
     return (

@@ -1,7 +1,14 @@
-import {ChangeEvent, ReactNode, useState} from "react";
+import {ChangeEvent, ReactNode, useEffect, useState} from "react";
 import styles from "../../styles/createPlayroom.module.css";
 import {Button, Card, Checkbox, FormControlLabel, FormGroup, Input, Typography} from "@mui/material";
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
+import { ReadyState }  from "react-use-websocket";
+import { buildJoinWaitingRoomMessage, WaitingPlayer, SimpleMessage, WaitingRoomMessage, PlayroomMessage, WelcomeInfoMessage } from "../../services/playroom";
+import { useAuth } from "../../contexts/AuthContext";
+import AwaitingPlayersView from "../../components/views/playroom/AwaitingPlayersView";
+import { useWebSocketContext } from "../../contexts/WebSocketContext";
+import { usePlayroomContext } from "../../contexts/PlayroomContext";
+import api_address from "../../config/api_address";
 
 /**
  * Live board game playing room joining page
@@ -9,14 +16,59 @@ import {Link} from "react-router-dom";
  */
 const PlayroomJoin = (): ReactNode => {
 
-    // playroom code entered by user
-    const [code, setCode] = useState<string>("");
+    const navigate = useNavigate();
+
+    const {uuid, user } = useAuth();
+    
+    const {code, setCode, setUsername, setTimer, setPlayerId} = usePlayroomContext();
+
+    const {sendJsonMessage, lastJsonMessage, readyState, setSocketUrl } = useWebSocketContext();
 
     // entered nick value for playroom
     const [nick, setNick] = useState<string>("");
 
     // should username be used as nick
     const [useUsername, setUseUsername] = useState<boolean>(true);
+
+    // waiting room joining status
+    const [joinSuccessfully, setJoinSuccessfully] = useState<boolean>(false);
+
+    // waiting room player list
+    const [waitingRoomPlayers, setWaitingRoomPlayers] = useState<WaitingPlayer[]>([]);
+
+    // web socket messages processing
+    useEffect(() => {
+        console.log(lastJsonMessage);
+        
+        if (lastJsonMessage) {
+            const messageType : string = (lastJsonMessage as SimpleMessage).type;
+            switch(messageType){
+                case "welcomeInfo": {
+                    const welcomeInfoMessage : WelcomeInfoMessage = (lastJsonMessage as WelcomeInfoMessage);                
+                    setPlayerId(welcomeInfoMessage.playerId);
+                    setJoinSuccessfully(true);
+                    break;
+                }
+                case "waitingRoom": {
+                    const waitingRoomMessage : WaitingRoomMessage = (lastJsonMessage as WaitingRoomMessage);
+                    setWaitingRoomPlayers(waitingRoomMessage.players);
+                    break;
+                }
+                case "playroom": {
+                    const playroomMessage : PlayroomMessage = (lastJsonMessage as PlayroomMessage);
+                    setTimer(playroomMessage.timer);
+                    navigate("/playroom");
+                    break;
+                }
+                default: {
+                    console.log("Unknown message type");
+                    break;
+                }
+            }
+        } else{            
+            setSocketUrl(api_address.backend_ws);
+        }
+    }, [lastJsonMessage, navigate]);
 
     const handleCodeInputChange = (
         inputVal: ChangeEvent<HTMLInputElement>
@@ -30,7 +82,27 @@ const PlayroomJoin = (): ReactNode => {
         event: ChangeEvent<HTMLInputElement>
     ) => setUseUsername(event.target.checked);
 
-    return (
+    const handleJoinPlayroom = () =>{
+        //webSocket
+            if (readyState === ReadyState.OPEN) {
+                if(!joinSuccessfully){
+                    if(useUsername && uuid !== ""){
+                        setUsername(user.username);
+                        sendJsonMessage(buildJoinWaitingRoomMessage(code, user.username, uuid));
+                    } else{
+                        setUsername(nick);
+                        sendJsonMessage(buildJoinWaitingRoomMessage(code, nick));
+                    }
+                }
+            }
+    } 
+
+    const isJoinPlayroomButtonDisabled = () => {
+        return !((code !== "" && useUsername) || (code !== "" && nick !== ""))
+    }
+
+    return ( joinSuccessfully ? <div className={styles.container}>
+         <AwaitingPlayersView  code={code} players={waitingRoomPlayers}/></div> :
         <div className={styles.container}>
             <Card className={styles.generateBox} sx={{borderRadius: "20px"}}>
                 <Typography>
@@ -58,7 +130,7 @@ const PlayroomJoin = (): ReactNode => {
                             placeholder="Your nick"
                         />
                         <FormGroup>
-                            <FormControlLabel
+                            {uuid !== "" && <FormControlLabel
                                 label="Use my username"
                                 control={
                                     <Checkbox
@@ -67,11 +139,11 @@ const PlayroomJoin = (): ReactNode => {
                                         onChange={handleCheckboxChange}
                                     />
                                 }
-                            />
+                            />}
                         </FormGroup>
                     </div>
                 </div>
-                <Button variant="contained" sx={{marginTop: "10px"}}>
+                <Button variant="contained" sx={{marginTop: "10px"}} onClick={handleJoinPlayroom} disabled={isJoinPlayroomButtonDisabled()}>
                     Join playroom
                 </Button>
                 <br/>

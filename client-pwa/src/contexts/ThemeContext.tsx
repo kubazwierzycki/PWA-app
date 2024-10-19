@@ -1,6 +1,6 @@
 import {createContext, ReactElement, ReactNode, useContext, useMemo, useState} from "react";
 import {blue, green, grey, indigo, teal} from "@mui/material/colors";
-import {createTheme, CssBaseline, PaletteMode, ThemeProvider} from "@mui/material";
+import {createTheme, CssBaseline, PaletteMode, responsiveFontSizes, ThemeProvider} from "@mui/material";
 
 
 const ColorModeContext = createContext({
@@ -19,6 +19,9 @@ export const ThemeModeProvider = ({children}: {children: ReactElement}): ReactNo
      * @param {PaletteMode} mode - light or dark mode
      */
     const getDesignTokens = (mode: PaletteMode) => ({
+        typography: {
+            fontFamily: 'Quicksand', //Oxanium, Nunito, Quicksand, 
+        },
         palette: {
             mode,
             ...(mode === 'light'
@@ -30,6 +33,7 @@ export const ThemeModeProvider = ({children}: {children: ReactElement}): ReactNo
                     background: {
                         default: '#fff',
                         paper: 'rgba(239,246,248)',
+                        player: blue[200],
                     },
                     text: {
                         primary: '#000',
@@ -44,6 +48,7 @@ export const ThemeModeProvider = ({children}: {children: ReactElement}): ReactNo
                     background: {
                         default: '#3C3C3C',
                         paper: '#383838',
+                        player: indigo[400],
                     },
                     text: {
                         primary: '#fff',
@@ -68,7 +73,7 @@ export const ThemeModeProvider = ({children}: {children: ReactElement}): ReactNo
     );
 
     // Update the theme only if the mode changes
-    const theme = useMemo(() => createTheme(getDesignTokens(mode as "light" | "dark")), [mode]);
+    const theme = useMemo(() => responsiveFontSizes((createTheme(getDesignTokens(mode as "light" | "dark")))), [mode]);
 
     return (
         <ColorModeContext.Provider value={colorMode}>

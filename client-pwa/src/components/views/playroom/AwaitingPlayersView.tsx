@@ -1,27 +1,32 @@
 import {ReactNode} from "react";
-import {Avatar, Card, Chip, Stack, Typography} from "@mui/material";
+import {Avatar, Card, Chip, Stack, Tooltip, Typography} from "@mui/material";
 import styles from "../../../styles/createPlayroom.module.css";
+import { WaitingPlayer } from "../../../services/playroom";
 
 
 /**
  * View component showing players who have joined the room
  * @param {string} code - code of the created playroom
+ * @param {WaitingPlayer[]} players - list of awaiting players
  * @returns {ReactNode}
  */
-const AwaitingPlayersView = ({code}: {code: string}): ReactNode => {
+const AwaitingPlayersView = ({code, players}: {code: string, players : WaitingPlayer[]}): ReactNode => {
 
+    const copyToClipboard = () =>{
+        navigator.clipboard.writeText(code);
+    }
 
     return (
         <Card className={styles.awaitBox} sx={{borderRadius: "20px"}}>
             <div className={styles.joinedList}>
                 {
-                    [1,2,3,4,5].map(value => {
+                    players.map(player => {
                         return (
-                            <Card sx={{marginTop: "10px", padding: "5px"}} key={value}>
+                            <Card sx={{marginTop: "10px", padding: "5px"}} key={player.username}>
                                 <Stack direction="row">
                                     <Avatar />
                                     <Typography sx={{marginLeft: "10px"}}>
-                                        User{value}
+                                        {player.username}
                                     </Typography>
                                 </Stack>
                             </Card>
@@ -33,7 +38,9 @@ const AwaitingPlayersView = ({code}: {code: string}): ReactNode => {
                 <Typography className={styles.infoElement}>
                     Your playroom code:
                 </Typography>
-                <Chip label={code} className={styles.infoElement}/>
+                <Tooltip disableFocusListener title="Click to copy" >
+                    <Chip label={code} className={styles.infoElement} onClick={copyToClipboard}/>
+                </Tooltip>
                 <Typography className={styles.infoElement}>
                     Please share it with your friends so that they can join
                 </Typography>

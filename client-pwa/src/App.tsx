@@ -20,6 +20,8 @@ import authorisationService from "./services/authorization.ts";
 import ComparingGamesPage from "./pages/boardgame/ComparingGamesPage.tsx";
 import BoardGameDetailsPage from "./pages/boardgame/BoardGameDetailsPage.tsx";
 import PlayroomJoin from "./pages/playroom/PlayroomJoin.tsx";
+import Playroom from "./pages/playroom/Playroom.tsx";
+import axios from "axios";
 
 /**
  * Main app component, controls page routing
@@ -29,16 +31,34 @@ function App(): ReactNode {
     const { setToken, setUuid, setUser } = useAuth();
 
     useEffect(() => {
+
         async function fetchUserDetails(uuid: string) {
-            const resA = await authorisationService.getUserByUuid(uuid);
-            const resB = await bggService.getUserByUsername(resA.bggUsername);
-            const bggId = bggService.getUserIdFromResponse(resB);
-            setUser({
-                username: resA.username,
-                bggUsername: resA.bggUsername,
-                email: resA.email,
-                bggId: bggId,
-            });
+            try{
+                const responseApi = await authorisationService.getUserByUuid(uuid);
+                const responseBgg = await bggService.getUserByUsername(responseApi.bggUsername);
+                const bggId = bggService.getUserIdFromResponse(responseBgg);
+                setUser({
+                    username: responseApi.username,
+                    bggUsername: responseApi.bggUsername,
+                    email: responseApi.email,
+                    bggId: bggId,
+                });
+            } catch(err){
+                //TODO more errors
+                if (axios.isAxiosError(err)) {
+                    switch (err.code) {
+                        case "ERR_BAD_REQUEST":
+                            //token or uuid expired
+                            setToken("");
+                            setUuid("");
+                            Cookies.set("token","");
+                            Cookies.set("uuid","");
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
         }
 
         const token = Cookies.get("token");
@@ -60,6 +80,7 @@ function App(): ReactNode {
                 <Route path="/play/join" element={<PlayroomJoin />}></Route>
                 <Route path="/signIn" element={<SignIn />}></Route>
                 <Route path="/signUp" element={<SignUp />}></Route>
+                <Route path="/playroom" element={<Playroom />}></Route>
                 <Route path="/boardgames/collection" element={
                     <CollectionContextProvider>
                         <CollectionPage />
