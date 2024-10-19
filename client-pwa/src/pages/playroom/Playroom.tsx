@@ -1,7 +1,7 @@
-import { Alert, AlertTitle, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Tooltip, Typography } from "@mui/material";
+import { Alert, AlertTitle, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControlLabel, Switch, Tooltip, Typography } from "@mui/material";
 import {ReactNode, useEffect, useState} from "react";
 import { useWebSocketContext } from "../../contexts/WebSocketContext";
-import { buildConfirmOperation, PlayroomPlayer, buildEndGameMessage, buildEndTurnMessage, buildPauseGameMessage, buildStartGameMessage, SimpleMessage, ConfirmOperationMessage, PlayroomMessage, ConfirmOperationAlert, buildQuitPlayroomMessage, TimerType, buildWinGameMessage } from "../../services/playroom";
+import { buildConfirmOperation, PlayroomPlayer, buildEndGameMessage, buildEndTurnMessage, buildPauseGameMessage, buildStartGameMessage, SimpleMessage, ConfirmOperationMessage, PlayroomMessage, ConfirmOperationAlert, buildQuitPlayroomMessage, TimerType, buildWinGameMessage, updatePlayroomQueue, PutPlayroomQueue, playerIdObj } from "../../services/playroom";
 import Grid from '@mui/material/Grid';
 import { usePlayroomContext } from "../../contexts/PlayroomContext";
 import TimerView from "../../components/views/playroom/TimerView";
@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import bgg from "../../services/bgg";
 import axios from "axios";
 import TimerTypeButtons from "../../components/controls/buttons/TimerTypeButtons";
+import PlayroomPlayersEditView from "../../components/views/playroom/PlayroomPlayersEditView";
 
 
 /**
@@ -19,15 +20,19 @@ import TimerTypeButtons from "../../components/controls/buttons/TimerTypeButtons
  */
 const Playroom = (): ReactNode => {
 
+    const navigate = useNavigate();
+
     const { sendJsonMessage, lastJsonMessage, setSocketUrl} = useWebSocketContext();
     const {username, code, setCode, timer} = usePlayroomContext();
+
     const [isCurrentPlayer, setIsCurrentPlayer] = useState<boolean>(false);
-    const navigate = useNavigate();
     const [open, setOpen] = useState(false);
     const [confirmOperationAlert, setConfirmOperationAlert] = useState<ConfirmOperationAlert>({
         operationId : "",
         question : "",
     });
+    const [playersCopy, setPlayersCopy] = useState<PlayroomPlayer[]>([]);
+    const [isInEditState, setIsInEditState] = useState(false);
     const [gameImageSrc, setGameImageSrc] = useState("");
     const [timerType, setTimerType] = useState<TimerType>(TimerType.MS);
     const [gameState, setGameState] = useState<PlayroomMessage>({
@@ -40,6 +45,8 @@ const Playroom = (): ReactNode => {
         ended : false,
         hostId : "",
     });
+    const [isUpdateQueueAlertOpen, setIsUpdateQueueAlertOpen] = useState<boolean>(false);
+
 
     async function fetchImageSrc(gameId : number) {
         try{
@@ -69,9 +76,14 @@ const Playroom = (): ReactNode => {
                 case "playroom": {
                     const playroomMessage : PlayroomMessage = (lastJsonMessage as PlayroomMessage);
                     setGameState(playroomMessage);
-                    console.log(playroomMessage);
                     
+                    // copy players
                     const players : PlayroomPlayer[]  = playroomMessage.players;
+                    if(players.length > 0){
+                        setPlayersCopy(players);
+                    }
+
+                    // check if player is current player
                     const player : PlayroomPlayer | undefined = players.find(p => p.name === username);
                     if(player !== undefined){
                         player.queueNumber === playroomMessage.currentPlayer 
@@ -79,6 +91,12 @@ const Playroom = (): ReactNode => {
                             : setIsCurrentPlayer(false)
                     }
 
+                    // block players editing view
+                    if(playroomMessage.paused !== true) {
+                        setIsInEditState(false);
+                    }
+
+                    // handle game ending
                     if(playroomMessage.ended){
                         setTimeout(()=> {setSocketUrl(null);}, 4000);
                         setCode("");
@@ -88,7 +106,7 @@ const Playroom = (): ReactNode => {
                 }
                 case "confirmOperation": {
                     const confirmOperationMessage : ConfirmOperationMessage = (lastJsonMessage as ConfirmOperationMessage);
-                    console.log("confirmOperation");
+
                     setConfirmOperationAlert({
                         operationId : confirmOperationMessage.operationId,
                         question : confirmOperationMessage.question,
@@ -109,17 +127,16 @@ const Playroom = (): ReactNode => {
         }
     }, [lastJsonMessage]);
 
-    // closes alert
     const handleQuitPlayroom = () => {
-            setCode("");
-            sendJsonMessage(buildQuitPlayroomMessage(code));
-            setSocketUrl(null);
-        };
+        setCode("");
+        sendJsonMessage(buildQuitPlayroomMessage(code));
+        setSocketUrl(null);
+    };
 
     // closes alert
     const handleClose = () => {
         setOpen(false);
-      };
+    };
     // operation agreed by user
     const handleAgreeOperation = () => {
         handleClose();
@@ -142,13 +159,33 @@ const Playroom = (): ReactNode => {
         sendJsonMessage(buildEndGameMessage(code))
     }
 
+    const handleWinGame = () =>{
+        sendJsonMessage(buildWinGameMessage(code))
+    }
+
+    const handleStartEdit = (_event: React.ChangeEvent<HTMLInputElement>, checked: boolean) =>{
+        setIsInEditState(checked);
+    }
+
+    const handleUpdateList = async () => {
+        const newPlayersQueue : playerIdObj[] = [];
+        playersCopy.forEach(player => newPlayersQueue.push({playerId : player.playerId}));
+        const body : PutPlayroomQueue = {players: newPlayersQueue}
+        const isUpdated = await updatePlayroomQueue(code, body);
+        if(isUpdated) {
+            setIsUpdateQueueAlertOpen(true)
+           
+            setTimeout(() => {
+                setIsUpdateQueueAlertOpen(false);
+                setIsInEditState(false);
+              }, 3000);
+        }
+    }
+
     const isEndTurnButtonDisabled = () : boolean => {
         return !(isCurrentPlayer && !gameState.paused)
     }
 
-    const handleWinGame = () =>{
-        sendJsonMessage(buildWinGameMessage(code))
-    }
 
     return (
         <div>
@@ -204,10 +241,29 @@ const Playroom = (): ReactNode => {
 
                     <Grid item xs={12} md={3}>
                         <Box className={styles.playroomPlayersView}>
-                            <PlayroomPlayersView 
+                        <Tooltip placement="top" title="In order to edit, game must be paused">
+                            <FormControlLabel
+                                value="top"
+                                sx={{ml:2}}
+                                control={<Switch disabled={!gameState.paused} checked={isInEditState} onChange={handleStartEdit}/>}
+                                label="Edit queue"
+                                labelPlacement="start"
+                            />
+                        </Tooltip>
+                        {isInEditState 
+                            ? <>
+                                <PlayroomPlayersEditView playersToEdit={playersCopy} setPlayersToEdit={setPlayersCopy}/>
+                                <Button variant="contained" onClick={handleUpdateList} sx={{mt:2, ml:1}}>
+                                    Update queue
+                                </Button>
+                                <Alert severity="success" sx={{mt:2, visibility: isUpdateQueueAlertOpen ? "visible" : "hidden"}}>Queue updated</Alert>
+                            </>
+                            : <PlayroomPlayersView 
                                 paused={gameState.paused} 
                                 players={gameState.players} 
-                                currentPlayer={gameState.currentPlayer}/>
+                                currentPlayer={gameState.currentPlayer}
+                            />
+                        }
                         </Box>
                     </Grid>
                     <Grid item xs={0} md={6}>
@@ -229,7 +285,7 @@ const Playroom = (): ReactNode => {
                                     <Tooltip
                                         disableFocusListener
                                         disableTouchListener
-                                        title="End game without saving."
+                                        title="End game without saving"
                                         placement="bottom">
                                         <Button variant="contained" onClick={handleEndGame}>
                                             End game
@@ -238,7 +294,7 @@ const Playroom = (): ReactNode => {
                                     <Tooltip
                                         disableFocusListener
                                         disableTouchListener
-                                        title="End game as a winner and save game."
+                                        title="End game as a winner and save game"
                                         placement="bottom">
                                         <Button variant="contained" onClick={handleWinGame}>
                                             Win game

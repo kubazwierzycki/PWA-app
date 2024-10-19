@@ -79,19 +79,17 @@ const CreatePlayroomStepper = (): ReactNode => {
         }
     }, [lastJsonMessage]);
 
-    // dialog start playroom
     useEffect(()=>{
         if(isTimerSet === true){
-            //handleStartPlayroom();
             handleNext();
         }
     }, [isTimerSet])
 
     // current chosen game name
-    const [name, setName] = useState<string>("Test Game Title");
+    const [name, setName] = useState<string>("");
 
     // current chosen game id
-    const [choice, setChoice] = useState("1");
+    const [choice, setChoice] = useState("");
 
     // current chosen timer mode
     const [isGlobalTimer, setIsGlobalTimer] = useState(true);

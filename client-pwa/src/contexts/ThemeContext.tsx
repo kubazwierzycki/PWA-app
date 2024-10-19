@@ -48,7 +48,7 @@ export const ThemeModeProvider = ({children}: {children: ReactElement}): ReactNo
                     background: {
                         default: '#3C3C3C',
                         paper: '#383838',
-                        player: indigo[200],
+                        player: indigo[400],
                     },
                     text: {
                         primary: '#fff',
