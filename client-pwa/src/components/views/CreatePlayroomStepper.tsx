@@ -142,18 +142,10 @@ const CreatePlayroomStepper = (): ReactNode => {
     };
 
     const handleStartPlayroom = async () => {
-        if (name === "") {
-            // game not chosen yet
-            alert("Please choose a game to be played");
-        } else {
-            // game chosen - ready to play
-
-            // send update request about the playroom
-            await handleUpdate().then();
-            
-            //sendJsonMessage(buildCloseWaitingRoomMessage(code));
-            sendJsonMessage(buildFinishWaitingRoomMessage(code));
-        }
+        // send update request about the playroom
+        await handleUpdate().then();
+        //sendJsonMessage(buildCloseWaitingRoomMessage(code));
+        sendJsonMessage(buildFinishWaitingRoomMessage(code));
     };
 
     const handleSetTimer = () => {
@@ -261,6 +253,11 @@ const CreatePlayroomStepper = (): ReactNode => {
                             </Button>
                             <Box sx={{ flex: "1 1 auto" }} />
                             <Button
+                                disabled={
+                                    activeStep === steps.length - 1
+                                    ? name === ""
+                                    : false
+                                }
                                 onClick={
                                     activeStep === steps.length - 1
                                         ? handleSetTimer

@@ -34,7 +34,7 @@ const CustomGameSelect = ({setName, name, setChoice}: SearchSelectProps): ReactN
             <div style={{flex: 1}}>
                 <Stack direction="row" alignItems={"center"} spacing={2}>
                     <Typography>
-                        Title of game outside of collection:
+                        The title of a game outside your collection:
                     </Typography>
                     <TextField
                         value={name}
