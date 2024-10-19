@@ -9,10 +9,12 @@ import {
 
 type PlayroomContextType = {
     username : string,
+    playerId : string,
     code : string,
     timer: number,
     gameImgSrc: string,
     setUsername : React.Dispatch<React.SetStateAction<string>>,
+    setPlayerId : React.Dispatch<React.SetStateAction<string>>,
     setCode : React.Dispatch<React.SetStateAction<string>>,
     setTimer : React.Dispatch<React.SetStateAction<number>>,
     setGameImgSrc : React.Dispatch<React.SetStateAction<string>>,
@@ -29,14 +31,15 @@ const PlayroomContext = createContext<PlayroomContextType>(
  * @returns {ReactNode}
  */
 export const PlayroomProvider = ({children}: {children: ReactElement}): ReactNode => {
-
     const [username, setUsername] = useState<string>("");
+    const [playerId, setPlayerId] = useState<string>("");
     const [code, setCode] = useState<string>("");
     const [timer, setTimer] = useState<number>(0);
     const [gameImgSrc, setGameImgSrc] = useState<string>("");
 
     const clearPlayroomContex = () =>{
-        setUsername("");
+        setPlayerId("");
+        setUsername("")
         setCode("");
         setTimer(0);
         setGameImgSrc("");
@@ -44,7 +47,7 @@ export const PlayroomProvider = ({children}: {children: ReactElement}): ReactNod
 
     return (
         <PlayroomContext.Provider
-            value={{ username, code, timer, setUsername, setCode, setTimer,gameImgSrc, setGameImgSrc, clearPlayroomContex }}
+            value={{ username,playerId, code, timer, setUsername, setPlayerId, setCode, setTimer,gameImgSrc, setGameImgSrc, clearPlayroomContex }}
         >
             {children}
         </PlayroomContext.Provider>

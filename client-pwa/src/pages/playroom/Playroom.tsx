@@ -23,7 +23,7 @@ const Playroom = (): ReactNode => {
     const navigate = useNavigate();
 
     const { sendJsonMessage, lastJsonMessage, setSocketUrl} = useWebSocketContext();
-    const {username, code, setCode, timer, clearPlayroomContex} = usePlayroomContext();
+    const {playerId, code, setCode, timer, clearPlayroomContex} = usePlayroomContext();
 
     const [isCurrentPlayer, setIsCurrentPlayer] = useState<boolean>(false);
     const [open, setOpen] = useState(false);
@@ -84,7 +84,7 @@ const Playroom = (): ReactNode => {
                     }
 
                     // check if player is current player
-                    const player : PlayroomPlayer | undefined = players.find(p => p.name === username);
+                    const player : PlayroomPlayer | undefined = players.find(p => p.playerId === playerId);
                     if(player !== undefined){
                         player.queueNumber === playroomMessage.currentPlayer 
                             ? setIsCurrentPlayer(true)

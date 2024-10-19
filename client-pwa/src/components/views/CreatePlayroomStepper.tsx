@@ -10,7 +10,8 @@ import GeneratePlayroomView from "./playroom/GeneratePlayroomView.tsx";
 import styles from "../../styles/createPlayroom.module.css";
 import AwaitingPlayersView from "./playroom/AwaitingPlayersView.tsx";
 import ChoosingGameView from "./playroom/ChoosingGameView.tsx";
-import {buildFinishWaitingRoomMessage, buildJoinWaitingRoomMessage, WaitingPlayer, SimpleMessage, PutPlayroom, updatePlayroom, WaitingRoomMessage } from "../../services/playroom.ts";
+import {buildFinishWaitingRoomMessage, buildJoinWaitingRoomMessage, WaitingPlayer, SimpleMessage,
+     PutPlayroom, updatePlayroom, WaitingRoomMessage, WelcomeInfoMessage } from "../../services/playroom.ts";
 import { ReadyState } from "react-use-websocket";
 import { useAuth } from "../../contexts/AuthContext.tsx";
 import { useNavigate } from "react-router-dom";
@@ -42,7 +43,7 @@ const CreatePlayroomStepper = (): ReactNode => {
     const {uuid, user} = useAuth();
 
     // code generated for the new playroom
-    const {code, timer, setUsername, setCode, setTimer} = usePlayroomContext();
+    const {code, timer, setUsername, setCode, setTimer, setPlayerId} = usePlayroomContext();
 
     // webSocket
     const { sendJsonMessage, lastJsonMessage, readyState, setSocketUrl } = useWebSocketContext();
@@ -53,7 +54,8 @@ const CreatePlayroomStepper = (): ReactNode => {
             const messageType : string = (lastJsonMessage as SimpleMessage).type;
             switch(messageType){
                 case "welcomeInfo": {
-                    console.log("welcomeInfo");
+                    const welcomeInfoMessage : WelcomeInfoMessage = (lastJsonMessage as WelcomeInfoMessage);                
+                    setPlayerId(welcomeInfoMessage.playerId);
                     setJoinSuccessfully(true);
                     break;
                 }
@@ -281,3 +283,4 @@ const CreatePlayroomStepper = (): ReactNode => {
 };
 
 export default CreatePlayroomStepper;
+

@@ -3,7 +3,7 @@ import styles from "../../styles/createPlayroom.module.css";
 import {Button, Card, Checkbox, FormControlLabel, FormGroup, Input, Typography} from "@mui/material";
 import {Link, useNavigate} from "react-router-dom";
 import { ReadyState }  from "react-use-websocket";
-import { buildJoinWaitingRoomMessage, WaitingPlayer, SimpleMessage, WaitingRoomMessage, PlayroomMessage } from "../../services/playroom";
+import { buildJoinWaitingRoomMessage, WaitingPlayer, SimpleMessage, WaitingRoomMessage, PlayroomMessage, WelcomeInfoMessage } from "../../services/playroom";
 import { useAuth } from "../../contexts/AuthContext";
 import AwaitingPlayersView from "../../components/views/playroom/AwaitingPlayersView";
 import { useWebSocketContext } from "../../contexts/WebSocketContext";
@@ -20,7 +20,7 @@ const PlayroomJoin = (): ReactNode => {
 
     const {uuid, user } = useAuth();
     
-    const {code, setCode, setUsername, setTimer} = usePlayroomContext();
+    const {code, setCode, setUsername, setTimer, setPlayerId} = usePlayroomContext();
 
     const {sendJsonMessage, lastJsonMessage, readyState, setSocketUrl } = useWebSocketContext();
 
@@ -44,6 +44,8 @@ const PlayroomJoin = (): ReactNode => {
             const messageType : string = (lastJsonMessage as SimpleMessage).type;
             switch(messageType){
                 case "welcomeInfo": {
+                    const welcomeInfoMessage : WelcomeInfoMessage = (lastJsonMessage as WelcomeInfoMessage);                
+                    setPlayerId(welcomeInfoMessage.playerId);
                     setJoinSuccessfully(true);
                     break;
                 }

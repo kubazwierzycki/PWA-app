@@ -259,7 +259,10 @@ export interface WaitingRoomMessage extends SimpleMessage {
 export interface ConfirmOperationMessage extends SimpleMessage {
     operationId : string
     question : string
-    type : string
+}
+
+export interface WelcomeInfoMessage extends SimpleMessage {
+    playerId : string
 }
 
 export interface PlayroomMessage extends SimpleMessage {
