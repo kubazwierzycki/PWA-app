@@ -129,8 +129,8 @@ const Playroom = (): ReactNode => {
     }, [lastJsonMessage]);
 
     const handleQuitPlayroom = () => {
-        clearPlayroomContex();
         sendJsonMessage(buildQuitPlayroomMessage(code));
+        clearPlayroomContex();
         setSocketUrl(null);
     };
 
