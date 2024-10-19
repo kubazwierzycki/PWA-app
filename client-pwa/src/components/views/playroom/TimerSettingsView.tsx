@@ -2,21 +2,28 @@ import {
     Box,Button,Dialog,DialogActions, DialogContent, DialogTitle,FormControl, FormControlLabel,FormLabel,
     InputLabel,OutlinedInput,Radio,RadioGroup,TextField,
 } from "@mui/material";
-import { ChangeEvent, ReactNode, useState } from "react";
+import { ChangeEvent, Dispatch, ReactNode, SetStateAction, useState } from "react";
 
-const TimerSettingsView = ({
-    isTimerDialogOpen,
-    setIsGlobalTimer,
-    setTimer,
-    setIsTimerDialogOpen,
-    setIsTimerSet,
-}: {
-    isTimerDialogOpen: boolean;
-    setIsGlobalTimer: React.Dispatch<React.SetStateAction<boolean>>;
-    setTimer: React.Dispatch<React.SetStateAction<number>>;
-    setIsTimerDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
-    setIsTimerSet: React.Dispatch<React.SetStateAction<boolean>>;
-}): ReactNode => {
+interface TimerSettingsViewProps {
+    isTimerDialogOpen: boolean
+    setIsGlobalTimer: Dispatch<React.SetStateAction<boolean>>
+    setTimer: Dispatch<React.SetStateAction<number>>
+    setIsTimerDialogOpen: Dispatch<SetStateAction<boolean>>
+    setIsTimerSet : Dispatch<React.SetStateAction<boolean>>
+}
+
+
+/**
+ * View component for setting timer
+ * @param {boolean} isTimerDialogOpen - visibility of timer settings dialog
+ * @param {Dispatch<SetStateAction<boolean>>} setIsGlobalTimer - set timer mode global/per user
+ * @param {Dispatch<SetStateAction<number>>} setTimer - set time for game
+ * @param {Dispatch<SetStateAction<boolean>>} setIsTimerDialogOpen - set visibility of timer settings dialog
+ * @param {Dispatch<SetStateAction<boolean>>} setIsTimerSet - if set to true, user has prepared a timer
+ * @returns {ReactNode}
+ */
+const TimerSettingsView = ({isTimerDialogOpen, setIsGlobalTimer, setTimer, setIsTimerDialogOpen, setIsTimerSet}
+    : TimerSettingsViewProps): ReactNode => {
     const [formData, setFormData] = useState({
         hours: "0",
         minutes: "",
