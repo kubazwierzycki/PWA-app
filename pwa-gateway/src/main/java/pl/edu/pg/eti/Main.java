@@ -53,7 +53,7 @@ public class Main {
                 .route("playrooms", route -> route
                         .host(gateway)
                         .and()
-                        .path("/api/playrooms/{uuid}",
+                        .path("/api/playrooms/**",
                                 "/api/playrooms"
                         )
                         .uri(playroomsUrl)
