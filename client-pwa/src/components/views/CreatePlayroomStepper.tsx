@@ -190,7 +190,6 @@ const CreatePlayroomStepper = (): ReactNode => {
         <Box>
             {isTimerDialogOpen 
                 && <TimerSettingsView
-                    timer={timer} 
                     isTimerDialogOpen={isTimerDialogOpen}
                     setIsGlobalTimer={setIsGlobalTimer} 
                     setTimer={setTimer} 

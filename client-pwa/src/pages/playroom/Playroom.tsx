@@ -23,7 +23,7 @@ const Playroom = (): ReactNode => {
     const navigate = useNavigate();
 
     const { sendJsonMessage, lastJsonMessage, setSocketUrl} = useWebSocketContext();
-    const {username, code, setCode, timer} = usePlayroomContext();
+    const {username, code, setCode, timer, clearPlayroomContex} = usePlayroomContext();
 
     const [isCurrentPlayer, setIsCurrentPlayer] = useState<boolean>(false);
     const [open, setOpen] = useState(false);
@@ -98,6 +98,7 @@ const Playroom = (): ReactNode => {
 
                     // handle game ending
                     if(playroomMessage.ended){
+                        clearPlayroomContex();
                         setTimeout(()=> {setSocketUrl(null);}, 4000);
                         setCode("");
                     }
@@ -128,7 +129,7 @@ const Playroom = (): ReactNode => {
     }, [lastJsonMessage]);
 
     const handleQuitPlayroom = () => {
-        setCode("");
+        clearPlayroomContex();
         sendJsonMessage(buildQuitPlayroomMessage(code));
         setSocketUrl(null);
     };
