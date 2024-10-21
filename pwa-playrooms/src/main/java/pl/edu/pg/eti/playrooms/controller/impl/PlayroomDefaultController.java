@@ -109,6 +109,7 @@ public class PlayroomDefaultController implements PlayroomController {
         Playroom playroom = this.getPlayroom(playroomId);
 
         if (playroom != null && !playroom.getPlayers().isEmpty()) {
+            updateLastModDate(playroom);
             PutPlayroomQueue oldPlayersQueue =
                     PutPlayroomQueue.builder()
                             .players(playroom.getPlayers().values().stream()
@@ -139,6 +140,8 @@ public class PlayroomDefaultController implements PlayroomController {
 
             playroom.setPlayers(newPlayersMap);
             playroomService.update(playroom);
+            playroom.setCurrentPlayer(1);
+            updateLastModDate(playroom);
 
             sendMessagesWithUpdate(playroom.getPlayers(), playroomId);
         }
@@ -650,7 +653,7 @@ public class PlayroomDefaultController implements PlayroomController {
     }
 
     private void updateLastModDate(Playroom playroom) {
-        if (!playroom.isPaused()) {
+        if (!playroom.isPaused() && !playroom.getPlayers().isEmpty()) {
             LocalTime lastOperationTime = playroom.getLastOperationTime();
             LocalTime nowTime = LocalTime.now();
 
@@ -667,7 +670,7 @@ public class PlayroomDefaultController implements PlayroomController {
                     return;
                 }
             }
-            else if (!playroom.getPlayers().isEmpty()) {
+            else {
                 Map<Integer, Playroom.Player> players = playroom.getPlayers();
                 Playroom.Player player = players.get(playroom.getCurrentPlayer());
                 Double timeDiff = Duration.between(nowTime, lastOperationTime).toMillis() / 1000.0;
