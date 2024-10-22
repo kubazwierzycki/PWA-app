@@ -109,6 +109,7 @@ public class PlayroomDefaultController implements PlayroomController {
         Playroom playroom = this.getPlayroom(playroomId);
 
         if (playroom != null && !playroom.getPlayers().isEmpty()) {
+            updateLastModDate(playroom);
             PutPlayroomQueue oldPlayersQueue =
                     PutPlayroomQueue.builder()
                             .players(playroom.getPlayers().values().stream()
@@ -139,6 +140,8 @@ public class PlayroomDefaultController implements PlayroomController {
 
             playroom.setPlayers(newPlayersMap);
             playroomService.update(playroom);
+            playroom.setCurrentPlayer(1);
+            updateLastModDate(playroom);
 
             sendMessagesWithUpdate(playroom.getPlayers(), playroomId);
         }
@@ -650,21 +653,32 @@ public class PlayroomDefaultController implements PlayroomController {
     }
 
     private void updateLastModDate(Playroom playroom) {
-        if (!playroom.isPaused()) {
+        if (!playroom.isPaused() && !playroom.getPlayers().isEmpty()) {
+            LocalTime lastOperationTime = playroom.getLastOperationTime();
+            LocalTime nowTime = LocalTime.now();
+
             if (playroom.isGlobalTimer()) {
-                playroom.setGlobalTimerValue(playroom.getGlobalTimerValue() +
-                        (Duration.between(LocalTime.now(), playroom.getLastOperationTime()).toMillis() / 1000.0));
+                Double timeDiff = Duration.between(nowTime, lastOperationTime).toMillis() / 1000.0;
+                if (nowTime.isBefore(lastOperationTime)) {
+                    timeDiff = Duration.between(LocalTime.MAX, lastOperationTime).toMillis() / 1000.0;
+                    timeDiff += Duration.between(nowTime, LocalTime.MIN).toMillis() / 1000.0;
+                }
+                playroom.setGlobalTimerValue(playroom.getGlobalTimerValue() + timeDiff);
                 if (playroom.getGlobalTimerValue() <= 0.0) {
                     playroomService.update(playroom);
                     endGameRequest(playroom);
                     return;
                 }
             }
-            else if (!playroom.getPlayers().isEmpty()) {
+            else {
                 Map<Integer, Playroom.Player> players = playroom.getPlayers();
                 Playroom.Player player = players.get(playroom.getCurrentPlayer());
-                player.setTimer(player.getTimer() +
-                        (Duration.between(LocalTime.now(), playroom.getLastOperationTime()).toMillis() / 1000.0));
+                Double timeDiff = Duration.between(nowTime, lastOperationTime).toMillis() / 1000.0;
+                if (nowTime.isBefore(lastOperationTime)) {
+                    timeDiff = Duration.between(LocalTime.MAX, lastOperationTime).toMillis() / 1000.0;
+                    timeDiff += Duration.between(nowTime, LocalTime.MIN).toMillis() / 1000.0;
+                }
+                player.setTimer(player.getTimer() + timeDiff);
                 if (player.getTimer() <= 0.0 && !playroom.isEnded()) {
                     player.setSkip(true);
                     players.put(playroom.getCurrentPlayer(), player);
