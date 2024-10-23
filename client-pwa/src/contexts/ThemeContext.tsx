@@ -1,7 +1,7 @@
 import {createContext, ReactElement, ReactNode, useContext, useMemo, useState} from "react";
 import {blue, green, grey, indigo, teal} from "@mui/material/colors";
 import {createTheme, CssBaseline, PaletteMode, responsiveFontSizes, ThemeProvider} from "@mui/material";
-
+import 'typeface-quicksand'; 
 
 const ColorModeContext = createContext({
     toggleColorMode: () => {}
