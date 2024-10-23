@@ -25,13 +25,13 @@ const PlayroomCreate = (): ReactNode => {
                     className={styles.paper}
                     >
                         <Button onClick={() => navigate('/signIn')}
-                                variant="outlined"
+                                variant="contained"
                         >
                             Sign in
                         </Button>
                         <Typography>Don't have an account yet?</Typography>
                         <Button onClick={() => navigate('/signUp')}
-                                variant="outlined"
+                                variant="contained"
                         >
                             Sign up
                         </Button>
