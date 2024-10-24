@@ -4,7 +4,7 @@ import styles from "../../styles/boardGameDetails.module.css"
 import {getGameDetails} from "../../services/boardgames.ts";
 import {BoardGameDetails, BoardGameStub} from "../../types/IBoardgames.ts";
 import {clearCharEntities} from "../../utils/DescriptionParser.ts";
-import {Stack, Typography} from "@mui/material";
+import {Box, Stack, Typography} from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
 import SentimentSatisfiedAltIcon from "@mui/icons-material/SentimentSatisfiedAlt";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
@@ -13,9 +13,13 @@ import StarIcon from '@mui/icons-material/Star';
 import {getRatingColor, renderStar} from "../../utils/RatingUtil.tsx";
 import LoadingProgress from "../../components/LoadingProgress.tsx";
 import {useBoardgamesContext} from "../../contexts/BoardgamesContext.tsx";
+import { useAuth } from "../../contexts/AuthContext.tsx";
+import BoardgameStatisticsView from "../../components/views/boardgame/BoardgameStatisticsView.tsx";
 
 
 const BoardGameDetailsPage = (): ReactNode => {
+
+    const {uuid} = useAuth();
 
     // game id from page routing url parameter
     const { gameId } = useParams<{ gameId: string }>();
@@ -50,7 +54,7 @@ const BoardGameDetailsPage = (): ReactNode => {
         setUserBGGgrade(_game?.stats?.rating?.["@_value"] || "N/A");
     }, [game]);
 
-    let rating = game.statistics?.ratings?.average["@_value"] || "0.0";
+    const rating = game.statistics?.ratings?.average["@_value"] || "0.0";
 
     if (loading) {
         return (
@@ -155,12 +159,14 @@ const BoardGameDetailsPage = (): ReactNode => {
                     <hr/>
                     {clearCharEntities(game.description)}
                     <hr/>
-                    Comment:
-                    <br/>
-                    <i>
-                        {comment}
-                    </i>
+                    <Box>
+                        <Typography variant="h5">Comment:</Typography>
+                        <Typography variant="body1" sx={{mt:0.5}}>{comment ? comment :"Empty"}</Typography>
+                    </Box>
                 </div>
+                {gameId?
+                <BoardgameStatisticsView gameId={gameId} userId={uuid}/>
+                : null}
             </div>
         </div>
     )
