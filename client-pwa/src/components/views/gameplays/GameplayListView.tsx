@@ -62,7 +62,10 @@ const GameplayListView = ({userId} : GameplayListViewProps): ReactNode => {
                         {
                             <>
                             <Typography variant="subtitle2">
-                                Winner: {gameplay.winner} Players:  {gameplay.players.map(p=> ` ${p}`).join(`,`)}
+                                Winner: {gameplay.winner}
+                            </Typography>
+                            <Typography variant="subtitle2">
+                                Players:  {gameplay.players.map(p=> ` ${p}`).join(`,`)}
                             </Typography>
                             </>
                         }/>
