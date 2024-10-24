@@ -8,10 +8,12 @@ import WizardGameSelect from "./WizardGameSelect.tsx";
 import SearchGameSelect from "./SearchGameSelect.tsx";
 import {TextField} from "@mui/material";
 import CustomGameSelect from "./CustomGameSelect.tsx";
+import BggSearchGameSelect from "./BggSearchGameSelect.tsx";
 
 enum SELECTION_MODES {
     WIZARD,
     SEARCH,
+    BGG,
     CUSTOM
 }
 
@@ -69,7 +71,10 @@ const ChoosingGameView = ({name, setName, choice, setChoice}: ChoosingViewProps)
                         <ToggleButton value={SELECTION_MODES.SEARCH} aria-label="search">
                             SEARCH
                         </ToggleButton>
-                        <ToggleButton value={SELECTION_MODES.CUSTOM} aria-label="search">
+                        <ToggleButton value={SELECTION_MODES.BGG} aria-label="bgg_search">
+                            BGG SEARCH
+                        </ToggleButton>
+                        <ToggleButton value={SELECTION_MODES.CUSTOM} aria-label="custom">
                             CUSTOM
                         </ToggleButton>
                     </StyledToggleButtonGroup>
@@ -92,6 +97,8 @@ const ChoosingGameView = ({name, setName, choice, setChoice}: ChoosingViewProps)
                         return <WizardGameSelect setName={setName} choice={choice} setChoice={setChoice}/>
                     case SELECTION_MODES.SEARCH:
                         return  <SearchGameSelect setName={setName} choice={choice} setChoice={setChoice}/>
+                    case SELECTION_MODES.BGG:
+                        return  <BggSearchGameSelect setName={setName} choice={choice} setChoice={setChoice}/>
                     case SELECTION_MODES.CUSTOM:
                         return <CustomGameSelect setName={setName} name={name} setChoice={setChoice}/>
                     default:
