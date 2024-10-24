@@ -114,7 +114,7 @@ const TimerSettingsView = ({isTimerDialogOpen, setIsGlobalTimer, setTimer, setIs
             //seconds to H:M:S format
             const hours : string = Math.floor((suggestedSeconds / 3600)).toString()
             const minutes : string = Math.floor((suggestedSeconds % 3600 / 60)).toString();
-            const seconds : string = (suggestedSeconds % 3600 % 60).toString();
+            const seconds : string = (suggestedSeconds % 60).toString();
 
             // set suggested values
             setFormData({hours:hours, minutes : minutes, seconds: seconds});
