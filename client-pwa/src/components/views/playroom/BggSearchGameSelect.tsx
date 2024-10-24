@@ -1,4 +1,4 @@
-import {alpha, Box, InputBase, List, ListItem, styled, Typography} from "@mui/material";
+import {alpha, Box, Divider, InputBase, List, ListItem, ListItemButton, styled, Typography} from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
 import React, {Dispatch, ReactNode, SetStateAction, useEffect, useState} from "react";
 import bggService, { BggGameFromXML } from "../../../services/bgg"
@@ -68,6 +68,7 @@ const BggSearchGameSelect = ({setName, choice, setChoice}: SearchSelectProps): R
 
     const [bggGamesFromXML, setBggGamesFromXML] = useState<BggGameFromXML[] | null>(null);
 
+    const [selectedIndex, setSelectedIndex] = useState(-1);
 
     useEffect(()=>{
         // elminate race condition
@@ -98,6 +99,16 @@ const BggSearchGameSelect = ({setName, choice, setChoice}: SearchSelectProps): R
         return () => controller.abort();
     }, [input])
 
+    const handleListItemClick = (
+        event: React.MouseEvent<HTMLDivElement, MouseEvent>,
+        index: number,
+    ) => {
+        setSelectedIndex(index);
+        if(bggGamesFromXML !== null){
+            setName(bggGamesFromXML[index].name);
+        }
+    }
+
     return (
         <Box style={{height: "100%"}}>
             <Search>
@@ -120,7 +131,11 @@ const BggSearchGameSelect = ({setName, choice, setChoice}: SearchSelectProps): R
                 overflow: 'auto',
                 maxHeight: 250,
             }}>
-             {bggGamesFromXML.map(game => <ListItem>{game.name}</ListItem>)}
+             {bggGamesFromXML.map((game,index) => 
+                <>
+                    <ListItemButton selected={selectedIndex === index} onClick={(event) => handleListItemClick(event, index)} divider> {game.name}</ListItemButton>
+                </>
+             )}
             </List> : null
             }
         </Box>
