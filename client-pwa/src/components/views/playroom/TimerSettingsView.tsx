@@ -1,9 +1,11 @@
 import {
+    Alert,
     Box,Button,Dialog,DialogActions, DialogContent, DialogTitle,FormControl, FormControlLabel,FormLabel,
     InputLabel,OutlinedInput,Radio,RadioGroup,TextField,
 } from "@mui/material";
 import { ChangeEvent, Dispatch, ReactNode, SetStateAction, useState } from "react";
 import gamesService, { SuggestedTimer } from "../../../services/games";
+import axios from "axios";
 
 interface TimerSettingsViewProps {
     isTimerDialogOpen: boolean
@@ -39,6 +41,7 @@ const TimerSettingsView = ({isTimerDialogOpen, setIsGlobalTimer, setTimer, setIs
         minutes: false,
         seconds: false,
     });
+    const [suggestedTimerAlert, setSuggestedTimerAlert] = useState(false);
 
     const validateInputs = (name : string, value: string) => {
         const hoursRegex = /^[0-9]{1,3}$/;
@@ -104,21 +107,34 @@ const TimerSettingsView = ({isTimerDialogOpen, setIsGlobalTimer, setTimer, setIs
     };
 
     const handleGetSuggestedTimer = async () => {
-        const suggestedTimer : SuggestedTimer  = await gamesService.getSuggestedTimer(gameId);
-        const suggestedSeconds : number = suggestedTimer.time;
+        try {
+            const suggestedTimer : SuggestedTimer  = await gamesService.getSuggestedTimer(gameId);
+            const suggestedSeconds : number = suggestedTimer.time;
 
-        //seconds to H:M:S format
-        const hours : string = Math.floor((suggestedSeconds / 3600)).toString()
-        const minutes : string = Math.floor((suggestedSeconds % 3600 / 60)).toString();
-        const seconds : string = (suggestedSeconds % 3600 % 60).toString();
+            //seconds to H:M:S format
+            const hours : string = Math.floor((suggestedSeconds / 3600)).toString()
+            const minutes : string = Math.floor((suggestedSeconds % 3600 / 60)).toString();
+            const seconds : string = (suggestedSeconds % 3600 % 60).toString();
 
-        // set suggested values
-        setFormData({hours:hours, minutes : minutes, seconds: seconds});
-        //clear errors
-        setFormErrors({hours: false, minutes: false, seconds: false});
+            // set suggested values
+            setFormData({hours:hours, minutes : minutes, seconds: seconds});
+            //clear errors
+            setFormErrors({hours: false, minutes: false, seconds: false});
 
-        // set timer type
-        setIsGlobalTimer(!suggestedTimer.turnBased);
+            // set timer type
+            setIsGlobalTimer(!suggestedTimer.turnBased);
+        } catch(err) {
+            if (axios.isAxiosError(err)) {
+                switch (err.code) {
+                    case "ERR_BAD_REQUEST":
+                        setSuggestedTimerAlert(true);
+                        setTimeout(() => {setSuggestedTimerAlert(false)}, 3000);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
     }
 
     return (
@@ -134,6 +150,10 @@ const TimerSettingsView = ({isTimerDialogOpen, setIsGlobalTimer, setTimer, setIs
                 </DialogTitle>
                 <DialogContent>
                     <Box component="form" onSubmit={handleStartGame}>
+                        {suggestedTimerAlert ?
+                        <Alert severity="info" sx={{visibility:  suggestedTimerAlert? "visible" : "hidden"}}>
+                            The suggested timer for the selected game is not available yet
+                        </Alert> : null}
                         <FormLabel id="timer-type-radio-buttons-group">
                             Timer type
                         </FormLabel>
