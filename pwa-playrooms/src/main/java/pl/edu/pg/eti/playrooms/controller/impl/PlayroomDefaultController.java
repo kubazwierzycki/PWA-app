@@ -446,6 +446,11 @@ public class PlayroomDefaultController implements PlayroomController {
         Playroom playroom = this.getPlayroom(playroomId);
 
         if (playroom != null && !playroom.isEnded() && isPlayerInPlayroomBySession(sessionId, playroom)) {
+            if (playroom.getPlayers().size() <= 1) {
+                endGameRequest(playroom);
+                return;
+            }
+
             UUID operationId = UUID.randomUUID();
             operationsToConfirm.put(operationId,
                     Operation.builder()
@@ -532,17 +537,21 @@ public class PlayroomDefaultController implements PlayroomController {
                 sendMessageJSON(webSocketSessions.get(user.getWebSocketSessionId()),
                         getNotificationMessage("Player: " + player.getUsername() + " has won the game!"));
             }
-            endGameRequest(playroom);
+            endGameRequest(playroom, player.getUsername());
         }
     }
 
     private void endGameRequest(Playroom playroom) {
+        endGameRequest(playroom, null);
+    }
+
+    private void endGameRequest(Playroom playroom, String winner) {
         playroom.setEnded(true);
         playroom.setPaused(true);
         playroomService.update(playroom);
         sendMessagesWithUpdate(playroom.getPlayers(), playroom.getUuid().toString());
 
-        playroomEventRepository.putGameplay(playroom);
+        playroomEventRepository.putGameplay(playroom, winner);
     }
 
     private void deletePlayroom(Playroom playroom) {
