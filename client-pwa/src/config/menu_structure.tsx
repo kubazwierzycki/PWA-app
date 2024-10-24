@@ -76,6 +76,11 @@ export const menu_structure: MenuItem[] = [
         sub: [],
     },
     {
+        name: "Gameplays",
+        link: "/gameplays",
+        sub: [],
+    },
+    {
         name: "Sign In",
         link: "/signIn",
         sub: [],

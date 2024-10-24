@@ -24,7 +24,7 @@ const NestedMenu = ({ closeDrawer }: { closeDrawer: () => void }): ReactNode => 
     const { uuid } = useAuth();
 
     // array of menu items not present in top menu navbar
-    const topNavExcluded: string[] = ["Sign In", "Sign Up", "Profile"];
+    const topNavExcluded: string[] = ["Sign In", "Sign Up", "Profile", "Gameplays"];
 
     /**
      * Function to handle nested menu links

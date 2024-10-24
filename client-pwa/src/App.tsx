@@ -4,6 +4,7 @@ import Layout from "./pages/Layout.tsx";
 import About from "./pages/About.tsx";
 import Home from "./pages/Home.tsx";
 import Profile from "./pages/Profile.tsx";
+import Gameplays from "./pages/Gameplays.tsx"
 import PlayroomCreate from "./pages/playroom/PlayroomCreate.tsx";
 import SignIn from "./pages/SignIn.tsx";
 import SignUp from "./pages/SignUp.tsx";
@@ -76,6 +77,7 @@ function App(): ReactNode {
                 <Route path="/" element={<Home />}></Route>
                 <Route path="/about" element={<About />}></Route>
                 <Route path="/profile" element={<Profile />}></Route>
+                <Route path="/gameplays" element={<Gameplays />}></Route>
                 <Route path="/play/create" element={<PlayroomCreate />}></Route>
                 <Route path="/play/join" element={<PlayroomJoin />}></Route>
                 <Route path="/signIn" element={<SignIn />}></Route>

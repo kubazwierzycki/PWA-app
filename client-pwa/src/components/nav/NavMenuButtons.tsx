@@ -20,7 +20,7 @@ const NavMenuButtons = ({
 }): ReactNode => {
 
     // array of menu items not present in top menu navbar
-    const topNavExcluded: string[] = ["Sign In", "Sign Up", "Profile"];
+    const topNavExcluded: string[] = ["Sign In", "Sign Up", "Profile", "Gameplays"];
 
     return (
         <div className={vertical ? styles.verticalMenu : styles.horizontalMenu}>
