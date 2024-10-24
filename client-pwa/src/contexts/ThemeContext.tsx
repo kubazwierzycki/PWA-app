@@ -9,14 +9,14 @@ const ColorModeContext = createContext({
 
 // If you're using TypeScript, then you need to use module augmentation for custom colors.
 // https://mui.com/material-ui/guides/typescript/#customization-of-theme
-declare module '@mui/material/styles' {
-    interface Palette {
-        player: string;
-    }
-    interface PaletteOptions {
-        player?: string;
-    }
-  }
+// declare module '@mui/material/styles' {
+//     interface Palette {
+//         player: string;
+//     }
+//     interface PaletteOptions {
+//         player?: string;
+//     }
+//   }
 
 
 /**
@@ -42,7 +42,7 @@ export const ThemeModeProvider = ({children}: {children: ReactElement}): ReactNo
                     // palette values for light mode
                     primary: blue,
                     secondary: green,
-                    player: blue[200],
+                    // player: blue[200],
                     divider: blue[100],
                     background: {
                         default: '#fff',
@@ -57,7 +57,7 @@ export const ThemeModeProvider = ({children}: {children: ReactElement}): ReactNo
                     // palette values for dark mode
                     primary: indigo,
                     secondary: teal,
-                    player: indigo[400],
+                    // player: indigo[400],
                     divider: blue[600],
                     background: {
                         default: '#3C3C3C',

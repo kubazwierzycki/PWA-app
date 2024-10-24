@@ -77,7 +77,7 @@ const TimerView = ({timer, paused, timerType, variant}: {timer: number, paused:b
             {hours: number, minutes: number, seconds: number}): JSX.Element =>{
         return(
             <Typography variant={variant}>
-                {(minutes < 10 && hours < 0)? <span>0{minutes + hours*60}</span> : <span>{minutes + hours*60}</span>}
+                {(minutes < 10 && hours < 1)? <span>0{minutes + hours*60}</span> : <span>{minutes + hours*60}</span>}
                 :
                 {seconds < 10 ? <span>0{seconds}</span> : <span>{seconds}</span>}
             </Typography>
