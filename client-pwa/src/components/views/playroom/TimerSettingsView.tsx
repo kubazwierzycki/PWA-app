@@ -3,6 +3,7 @@ import {
     InputLabel,OutlinedInput,Radio,RadioGroup,TextField,
 } from "@mui/material";
 import { ChangeEvent, Dispatch, ReactNode, SetStateAction, useState } from "react";
+import gamesService, { SuggestedTimer } from "../../../services/games";
 
 interface TimerSettingsViewProps {
     isTimerDialogOpen: boolean
@@ -10,6 +11,8 @@ interface TimerSettingsViewProps {
     setTimer: Dispatch<React.SetStateAction<number>>
     setIsTimerDialogOpen: Dispatch<SetStateAction<boolean>>
     setIsTimerSet : Dispatch<React.SetStateAction<boolean>>
+    gameId: string
+    isGlobalTimer: boolean
 }
 
 
@@ -20,22 +23,22 @@ interface TimerSettingsViewProps {
  * @param {Dispatch<SetStateAction<number>>} setTimer - set time for game
  * @param {Dispatch<SetStateAction<boolean>>} setIsTimerDialogOpen - set visibility of timer settings dialog
  * @param {Dispatch<SetStateAction<boolean>>} setIsTimerSet - if set to true, user has prepared a timer
+ * @param {string} gameId - selected game
+ * @param {string} isGlobalTimer - timer type
  * @returns {ReactNode}
  */
-const TimerSettingsView = ({isTimerDialogOpen, setIsGlobalTimer, setTimer, setIsTimerDialogOpen, setIsTimerSet}
+const TimerSettingsView = ({isTimerDialogOpen, setIsGlobalTimer, setTimer, setIsTimerDialogOpen, setIsTimerSet, gameId, isGlobalTimer}
     : TimerSettingsViewProps): ReactNode => {
     const [formData, setFormData] = useState({
         hours: "0",
-        minutes: "",
-        seconds: "",
+        minutes: "0",
+        seconds: "0",
     });
     const [formErrors, setFormErrors] = useState({
         hours: false,
         minutes: false,
         seconds: false,
     });
-
-
 
     const validateInputs = (name : string, value: string) => {
         const hoursRegex = /^[0-9]{1,3}$/;
@@ -100,6 +103,24 @@ const TimerSettingsView = ({isTimerDialogOpen, setIsGlobalTimer, setTimer, setIs
             : setIsGlobalTimer(false);
     };
 
+    const handleGetSuggestedTimer = async () => {
+        const suggestedTimer : SuggestedTimer  = await gamesService.getSuggestedTimer(gameId);
+        const suggestedSeconds : number = suggestedTimer.time;
+
+        //seconds to H:M:S format
+        const hours : string = Math.floor((suggestedSeconds / 3600)).toString()
+        const minutes : string = Math.floor((suggestedSeconds % 3600 / 60)).toString();
+        const seconds : string = (suggestedSeconds % 3600 % 60).toString();
+
+        // set suggested values
+        setFormData({hours:hours, minutes : minutes, seconds: seconds});
+        //clear errors
+        setFormErrors({hours: false, minutes: false, seconds: false});
+
+        // set timer type
+        setIsGlobalTimer(!suggestedTimer.turnBased);
+    }
+
     return (
         <>
             <Dialog
@@ -120,77 +141,81 @@ const TimerSettingsView = ({isTimerDialogOpen, setIsGlobalTimer, setTimer, setIs
                             aria-labelledby="timer-type-radio-buttons-group"
                             defaultValue="true"
                             name="timer-type-buttons-group"
+                            value={isGlobalTimer}
+                            onChange={handleGlobalTimerChange}
                         >
                             <FormControlLabel
                                 value="true"
                                 control={
-                                    <Radio onChange={handleGlobalTimerChange} />
+                                    <Radio  />
                                 }
                                 label="One global timer"
                             />
                             <FormControlLabel
                                 value="false"
                                 control={
-                                    <Radio onChange={handleGlobalTimerChange} />
+                                    <Radio />
                                 }
                                 label="Timer per user"
                             />
                         </RadioGroup>
-
-                        <FormControl
-                            sx={{ m: 1 }}
-                            variant="filled"
-                            color="primary"
-                            required={true}
-                        >
-                            <InputLabel shrink htmlFor="timerHoursSetup">
-                                Time (hours)
-                            </InputLabel>
-                            <OutlinedInput
-                                id="timerHoursSetup"
-                                type={"number"}
-                                name="hours"
-                                value={formData.hours}
-                                onChange={handleInputChange}
-                                error={formErrors.hours}
-                            />
-                        </FormControl>
-                        <FormControl
-                            sx={{ m: 1 }}
-                            variant="filled"
-                            color="primary"
-                            required={true}
-                        >
-                            <InputLabel shrink htmlFor="timerMinutesSetup">
-                                Time (minutes)
-                            </InputLabel>
-                            <TextField
-                                id="timerMinutesSetup"
-                                type={"number"}
-                                name="minutes"
-                                value={formData.minutes}
-                                onChange={handleInputChange}
-                                error={formErrors.minutes}
-                            />
-                        </FormControl>
-                        <FormControl
-                            sx={{ m: 1 }}
-                            variant="filled"
-                            color="primary"
-                            required={true}
-                        >
-                            <InputLabel shrink htmlFor="timerSecondsSetup">
-                                Time (seconds)
-                            </InputLabel>
-                            <OutlinedInput
-                                id="timerSecondsSetup"
-                                type={"number"}
-                                name="seconds"
-                                value={formData.seconds}
-                                onChange={handleInputChange}
-                                error={formErrors.seconds}
-                            />
-                        </FormControl>
+                        <Box display={"flex"}>
+                            <FormControl
+                                sx={{ m: 1 }}
+                                variant="filled"
+                                color="primary"
+                                required={true}
+                            >
+                                <InputLabel  error={formErrors.hours} shrink htmlFor="timerHoursSetup">
+                                    Time (hours)
+                                </InputLabel>
+                                <OutlinedInput
+                                    id="timerHoursSetup"
+                                    type={"number"}
+                                    name="hours"
+                                    value={formData.hours}
+                                    onChange={handleInputChange}
+                                    error={formErrors.hours}
+                                />
+                            </FormControl>
+                            <FormControl
+                                sx={{ m: 1 }}
+                                variant="filled"
+                                color="primary"
+                                required={true}
+                            >
+                                <InputLabel error={formErrors.minutes} shrink htmlFor="timerMinutesSetup">
+                                    Time (minutes)
+                                </InputLabel>
+                                <TextField
+                                    id="timerMinutesSetup"
+                                    type={"number"}
+                                    name="minutes"
+                                    value={formData.minutes}
+                                    onChange={handleInputChange}
+                                    error={formErrors.minutes}
+                                />
+                            </FormControl>
+                            <FormControl
+                                sx={{ m: 1 }}
+                                variant="filled"
+                                color="primary"
+                                required={true}
+                            >
+                                <InputLabel error={formErrors.seconds} shrink htmlFor="timerSecondsSetup">
+                                    Time (seconds)
+                                </InputLabel>
+                                <OutlinedInput
+                                    id="timerSecondsSetup"
+                                    type={"number"}
+                                    name="seconds"
+                                    value={formData.seconds}
+                                    onChange={handleInputChange}
+                                    error={formErrors.seconds}
+                                />
+                            </FormControl>
+                        </Box>
+                        <Button sx={{mb:3}} onClick={handleGetSuggestedTimer}>Get suggested timer</Button>
                         <DialogActions>
                         <Button onClick={handleClose}>Back</Button>
                         <Button type="submit" autoFocus>

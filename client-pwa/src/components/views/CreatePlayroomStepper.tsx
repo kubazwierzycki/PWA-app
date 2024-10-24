@@ -196,7 +196,9 @@ const CreatePlayroomStepper = (): ReactNode => {
                     setIsGlobalTimer={setIsGlobalTimer} 
                     setTimer={setTimer} 
                     setIsTimerDialogOpen={setIsTimerDialogOpen} 
-                    setIsTimerSet={setIsTimerSet}/>
+                    setIsTimerSet={setIsTimerSet}
+                    gameId={choice}
+                    isGlobalTimer={isGlobalTimer}/>
             }
             <Box sx={{ width: "100%" }} className={styles.stepperWrapper}>
                 <Stepper
