@@ -66,7 +66,7 @@ const BoardgameStatisticsView = ({userId, gameId} : BoardgameStatisticsViewProps
                     {/* <Typography>Avg rating {gameStatistics.avgRating}</Typography> */}
                 </>
                 : <Typography variant="body1">
-                    Take part in games to see your statistics"
+                    Take part in games to see your statistics
                 </Typography> }
         </Box>
     </>
