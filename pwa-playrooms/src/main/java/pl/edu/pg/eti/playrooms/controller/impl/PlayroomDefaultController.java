@@ -10,6 +10,7 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import pl.edu.pg.eti.playrooms.controller.api.PlayroomController;
+import pl.edu.pg.eti.playrooms.dto.GetGames;
 import pl.edu.pg.eti.playrooms.dto.GetPlayrooms;
 import pl.edu.pg.eti.playrooms.dto.Operation;
 import pl.edu.pg.eti.playrooms.dto.PlayroomInfo;
@@ -81,6 +82,16 @@ public class PlayroomDefaultController implements PlayroomController {
 
             playroom.setLastOperationTime(LocalTime.now());
             playroomService.update(playroom);
+
+            if ("0".equals(request.getGameId())) {
+                for (GetGames.Game game : playroomEventRepository.getAllGames().getGames()) {
+                    if (game.getName().equals(request.getGame())) {
+                        playroomEventRepository.updateGame(game.getId(), request.getGame(),
+                                !request.getIsGlobalTimer(), request.getTimer().intValue());
+                        return;
+                    }
+                }
+            }
 
             playroomEventRepository.updateGame(request.getGameId(), request.getGame(),
                     !request.getIsGlobalTimer(), request.getTimer().intValue());
@@ -167,7 +178,7 @@ public class PlayroomDefaultController implements PlayroomController {
             }
             Playroom.Player newPlayer = new Playroom.Player(
                     UUID.randomUUID(), uuid, message.getJSONObject("player").getString("username"),
-                    null, false, guest, webSocketSession.getId());
+                    null, false, 0, guest, webSocketSession.getId());
 
             Map<String, Playroom.Player> updatedPlayers = playroom.getPlayersWaitingRoom();
             if (!guest && playroom.getPlayersWaitingRoom().isEmpty()) {
@@ -517,6 +528,61 @@ public class PlayroomDefaultController implements PlayroomController {
         }
     }
 
+    @Override
+    public void skip(String sessionId, JSONObject message) {
+        String playroomId = getStringValue("playroomId", message);
+        Integer turnsToSkip;
+        Playroom playroom = this.getPlayroom(playroomId);
+
+        turnsToSkip = Integer.getInteger(getStringValue("turnsToSkip", message));
+
+        if (playroom != null && !playroom.isEnded() && isPlayerInPlayroomBySession(sessionId, playroom)) {
+            Map<Integer, Playroom.Player> newPlayersMap = playroom.getPlayers();
+            for (int index : newPlayersMap.keySet()) {
+                if (newPlayersMap.get(index).getWebSocketSessionId().equals(sessionId)) {
+                    Playroom.Player updatedPlayer = newPlayersMap.get(index);
+                    updatedPlayer.setSkip(true);
+                    updatedPlayer.setTurnsToSkip(turnsToSkip != null ? turnsToSkip : 1);
+                    newPlayersMap.put(index, updatedPlayer);
+                    playroom.setPlayers(newPlayersMap);
+                    updateLastModDate(playroom);
+                    playroomService.update(playroom);
+                    sendMessagesWithUpdate(playroom.getPlayers(), playroomId);
+                    break;
+                }
+            }
+        }
+        else {
+            sendMessageJSON(webSocketSessions.get(sessionId), errorMessage("operation does not exist"));
+        }
+    }
+
+    @Override
+    public void cancelSkip(String sessionId, JSONObject message) {
+        String playroomId = getStringValue("playroomId", message);
+        Playroom playroom = this.getPlayroom(playroomId);
+
+        if (playroom != null && !playroom.isEnded() && isPlayerInPlayroomBySession(sessionId, playroom)) {
+            Map<Integer, Playroom.Player> newPlayersMap = playroom.getPlayers();
+            for (int index : newPlayersMap.keySet()) {
+                if (newPlayersMap.get(index).getWebSocketSessionId().equals(sessionId)) {
+                    Playroom.Player updatedPlayer = newPlayersMap.get(index);
+                    updatedPlayer.setSkip(false);
+                    updatedPlayer.setTurnsToSkip(0);
+                    newPlayersMap.put(index, updatedPlayer);
+                    playroom.setPlayers(newPlayersMap);
+                    updateLastModDate(playroom);
+                    playroomService.update(playroom);
+                    sendMessagesWithUpdate(playroom.getPlayers(), playroomId);
+                    break;
+                }
+            }
+        }
+        else {
+            sendMessageJSON(webSocketSessions.get(sessionId), errorMessage("operation does not exist"));
+        }
+    }
+
     private Playroom.Player getPlayerBySession(Playroom playroom, String sessionId) {
         if (playroom != null && sessionId != null) {
             for (Playroom.Player player : playroom.getPlayers().values()) {
@@ -569,6 +635,16 @@ public class PlayroomDefaultController implements PlayroomController {
             int k = 0;
             do {
                 playroom.setCurrentPlayer((playroom.getCurrentPlayer() % playroom.getPlayers().size()) + 1);
+                Playroom.Player currentPlayer = playroom.getPlayers().get(playroom.getCurrentPlayer());
+                if (currentPlayer.isSkip() && (currentPlayer.getTimer() == null || currentPlayer.getTimer() > 0)) {
+                    currentPlayer.setTurnsToSkip(currentPlayer.getTurnsToSkip() - 1);
+                    if (currentPlayer.getTurnsToSkip() <= 0) {
+                        currentPlayer.setSkip(false);
+                    }
+                    Map<Integer, Playroom.Player> players = playroom.getPlayers();
+                    players.put(playroom.getCurrentPlayer(), currentPlayer);
+                    playroom.setPlayers(players);
+                }
                 k++;
             } while (k < playroom.getPlayers().size() &&
                     playroom.getPlayers().get(playroom.getCurrentPlayer()).isSkip());
