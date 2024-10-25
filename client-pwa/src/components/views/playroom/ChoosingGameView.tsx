@@ -98,7 +98,7 @@ const ChoosingGameView = ({name, setName, choice, setChoice}: ChoosingViewProps)
                     case SELECTION_MODES.SEARCH:
                         return  <SearchGameSelect setName={setName} choice={choice} setChoice={setChoice}/>
                     case SELECTION_MODES.BGG:
-                        return  <BggSearchGameSelect setName={setName} choice={choice} setChoice={setChoice}/>
+                        return  <BggSearchGameSelect name={name} setName={setName} choice={choice} setChoice={setChoice}/>
                     case SELECTION_MODES.CUSTOM:
                         return <CustomGameSelect setName={setName} name={name} setChoice={setChoice}/>
                     default:

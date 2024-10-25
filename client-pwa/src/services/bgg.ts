@@ -8,7 +8,6 @@ export interface BggGameFromXML{
 }
 
 const getAllGamesFromXML = async (res: string): Promise<BggGameFromXML[]> =>  {
-    console.log(res);
     const xmlDoc = new DOMParser().parseFromString(res, "text/xml");
     const xpathExpr = "/items/item/name/@value";
     const xpathResult = document.evaluate(
@@ -18,15 +17,16 @@ const getAllGamesFromXML = async (res: string): Promise<BggGameFromXML[]> =>  {
         XPathResult.UNORDERED_NODE_ITERATOR_TYPE,
         null
     );
-    console.log(xpathResult);
 
     let node;
     const result : BggGameFromXML[]   = [];
     // eslint-disable-next-line no-cond-assign
     while (node = xpathResult.iterateNext()) {
-        result.push({"name":node.textContent ? node.textContent :"None", "gameId":"0"})
+        result.push({
+                "name": node.textContent ? node.textContent : "None",
+                "gameId": "0"
+        })
     }
-    console.log(result);
     
     return result;
 }

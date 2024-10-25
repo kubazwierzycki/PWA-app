@@ -1,8 +1,10 @@
-import {alpha, Box, Divider, InputBase, List, ListItem, ListItemButton, styled, Typography} from "@mui/material";
+import {alpha, Box,InputBase, List, styled,  } from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
 import React, {Dispatch, ReactNode, SetStateAction, useEffect, useState} from "react";
 import bggService, { BggGameFromXML } from "../../../services/bgg"
 import axios from "axios";
+import BoardGameSearchResult from "../../BoardGameSearchResult";
+
 
 const Search = styled('div')(({theme}) => ({
     position: 'relative',
@@ -44,7 +46,9 @@ const StyledInputBase = styled(InputBase)(({theme}) => ({
     },
 }));
 
+
 interface SearchSelectProps {
+    name:string
     setName: Dispatch<SetStateAction<string>>
     choice: string
     setChoice: Dispatch<SetStateAction<string>>
@@ -58,9 +62,10 @@ interface SearchSelectProps {
  * @param {Dispatch<SetStateAction<string>>} setChoice - id of chosen game change callback
  * @returns {ReactNode}
  */
-const BggSearchGameSelect = ({setName, choice, setChoice}: SearchSelectProps): ReactNode => {
+const BggSearchGameSelect = ({name, setName, setChoice}: SearchSelectProps): ReactNode => {
 
     const [input, setInput] = useState<string>("");
+    const [selectedIndex, setSelectedIndex] = useState(-1);
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setInput(event.currentTarget.value);
@@ -68,7 +73,7 @@ const BggSearchGameSelect = ({setName, choice, setChoice}: SearchSelectProps): R
 
     const [bggGamesFromXML, setBggGamesFromXML] = useState<BggGameFromXML[] | null>(null);
 
-    const [selectedIndex, setSelectedIndex] = useState(-1);
+  
 
     useEffect(()=>{
         // elminate race condition
@@ -78,8 +83,9 @@ const BggSearchGameSelect = ({setName, choice, setChoice}: SearchSelectProps): R
             try{
                 const XML = await bggService.getBggGamesXMLByPatten(input, controller.signal);
        
-                setBggGamesFromXML( await bggService.getAllGamesFromXML(XML));
-                
+                const bggGamesFromXML = await bggService.getAllGamesFromXML(XML);
+                setBggGamesFromXML(bggGamesFromXML);
+                setSelectedIndex(bggGamesFromXML.findIndex(game => game.name == name))
             } catch(err) {
                 if (axios.isAxiosError(err)) {
                     switch (err.code) {
@@ -92,22 +98,11 @@ const BggSearchGameSelect = ({setName, choice, setChoice}: SearchSelectProps): R
         }
 
         if(input.length >= 3){
-            
             fetchBggGamesByPattern();
         }
 
         return () => controller.abort();
     }, [input])
-
-    const handleListItemClick = (
-        event: React.MouseEvent<HTMLDivElement, MouseEvent>,
-        index: number,
-    ) => {
-        setSelectedIndex(index);
-        if(bggGamesFromXML !== null){
-            setName(bggGamesFromXML[index].name);
-        }
-    }
 
     return (
         <Box style={{height: "100%"}}>
@@ -132,9 +127,15 @@ const BggSearchGameSelect = ({setName, choice, setChoice}: SearchSelectProps): R
                 maxHeight: 250,
             }}>
              {bggGamesFromXML.map((game,index) => 
-                <>
-                    <ListItemButton selected={selectedIndex === index} onClick={(event) => handleListItemClick(event, index)} divider> {game.name}</ListItemButton>
-                </>
+                <BoardGameSearchResult
+                    setName={setName}
+                    game={game}
+                    isSelected={selectedIndex===index}
+                    index={index}
+                    setSelectedIndex={setSelectedIndex}
+                    setChoice={setChoice}
+                    input={input}
+                />
              )}
             </List> : null
             }
