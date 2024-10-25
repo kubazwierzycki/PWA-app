@@ -37,7 +37,7 @@ const PlayroomPlayersView = ({players, paused, currentPlayer}:
                             <Grid container
                             className={styles.playerContainer}
                             sx={{backgroundColor: isActivePlayer(player.queueNumber) ?
-                                (theme) => `${theme.palette.background.player}`
+                                (theme) => `${theme.palette.divider}`
                                 : null
                             }}
                               >

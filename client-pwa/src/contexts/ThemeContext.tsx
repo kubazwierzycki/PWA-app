@@ -1,11 +1,23 @@
 import {createContext, ReactElement, ReactNode, useContext, useMemo, useState} from "react";
 import {blue, green, grey, indigo, teal} from "@mui/material/colors";
 import {createTheme, CssBaseline, PaletteMode, responsiveFontSizes, ThemeProvider} from "@mui/material";
-
+import 'typeface-quicksand'; 
 
 const ColorModeContext = createContext({
     toggleColorMode: () => {}
 });
+
+// If you're using TypeScript, then you need to use module augmentation for custom colors.
+// https://mui.com/material-ui/guides/typescript/#customization-of-theme
+// declare module '@mui/material/styles' {
+//     interface Palette {
+//         player: string;
+//     }
+//     interface PaletteOptions {
+//         player?: string;
+//     }
+//   }
+
 
 /**
  * Context for webpage theme and color mode control
@@ -18,6 +30,7 @@ export const ThemeModeProvider = ({children}: {children: ReactElement}): ReactNo
      * Returns color theme palette for light/dark mode
      * @param {PaletteMode} mode - light or dark mode
      */
+
     const getDesignTokens = (mode: PaletteMode) => ({
         typography: {
             fontFamily: 'Quicksand', //Oxanium, Nunito, Quicksand, 
@@ -29,11 +42,11 @@ export const ThemeModeProvider = ({children}: {children: ReactElement}): ReactNo
                     // palette values for light mode
                     primary: blue,
                     secondary: green,
+                    // player: blue[200],
                     divider: blue[100],
                     background: {
                         default: '#fff',
                         paper: 'rgba(239,246,248)',
-                        player: blue[200],
                     },
                     text: {
                         primary: '#000',
@@ -44,11 +57,11 @@ export const ThemeModeProvider = ({children}: {children: ReactElement}): ReactNo
                     // palette values for dark mode
                     primary: indigo,
                     secondary: teal,
+                    // player: indigo[400],
                     divider: blue[600],
                     background: {
                         default: '#3C3C3C',
                         paper: '#383838',
-                        player: indigo[400],
                     },
                     text: {
                         primary: '#fff',
