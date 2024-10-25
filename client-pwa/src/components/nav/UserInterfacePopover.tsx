@@ -46,6 +46,7 @@ const UserInterfacePopover = ({anchorEl, open, handleClose}: UserInterfacePopove
             <UserCard />
             <ButtonGroup orientation="vertical" fullWidth={true} variant="text" onClick={handlePopoverClose}>
                 <MenuButton menu_item={getMenuItemByName("Profile")!}/>
+                <MenuButton menu_item={getMenuItemByName("Gameplays")!}/>
                 <MenuButton menu_item={getMenuItemByName("Collections")!}/>
                 <SignOutButton />
             </ButtonGroup>

@@ -1,0 +1,8 @@
+###  GET  all gameplays
+GET localhost:8080/api/gameplay
+
+### GET request for user's gameplays
+GET localhost:8080/api/gameplay/player/{uuid}
+
+### GET request for specific gameplay
+GET localhost:8080/api/gameplay/{uuid}
