@@ -2,6 +2,7 @@ import axios from "axios";
 import api_address from "../config/api_address";
 const baseUrl = api_address.bgg;
 
+
 export interface BggGameFromXML{
     name: string
     id: string
@@ -20,7 +21,6 @@ export interface BggGameDetailsFromXML{
     image : string
 }
 
-
 const emptyBggGameDetailsFromXML= (): BggGameDetailsFromXML => ({
     description: "",
     yearpublished: "",
@@ -33,6 +33,7 @@ const emptyBggGameDetailsFromXML= (): BggGameDetailsFromXML => ({
     thumbnail: "",
     image: "",
  });
+
 
 const getDescriptionFromItem = async (bggXmlItemNode: Node): Promise<string>  => {
     const xpathExpr = `./description`;
@@ -164,11 +165,31 @@ const getImageFromItem = async (bggXmlItemNode: Node): Promise<string> => {
     return xpathResult.stringValue;
 }
 
-
-    //boardgameexpansion 
-    // <link type="boardgameexpansion" id="176286" value="A.D.A.P.T." inbound="true"/>
-    // boardgame
-const getGameDetailsFromXML =  async (res: string): Promise<BggGameDetailsFromXML | null>=> {
+// boardgameexpansion // boardgame
+const getSharedDetails = async(bggGameDetailsFromXML : BggGameDetailsFromXML, xpathItemResult: Node) =>{
+    //Concurrent Execution
+    [   bggGameDetailsFromXML.description,
+        bggGameDetailsFromXML.yearpublished,
+        bggGameDetailsFromXML.minplayers,
+        bggGameDetailsFromXML.maxplayers,
+        bggGameDetailsFromXML.playingtime,
+        bggGameDetailsFromXML.minplaytime,
+        bggGameDetailsFromXML.maxplaytime,
+        bggGameDetailsFromXML.minage
+    ] = await Promise.all([
+        getDescriptionFromItem(xpathItemResult),
+        getYearpublishedFromItem(xpathItemResult),
+        getMinPlayersFromItem(xpathItemResult),
+        getMaxPlayersFromItem(xpathItemResult),
+        getPlayingTimeFromItem(xpathItemResult),
+        getMinPlayTimeFromItem(xpathItemResult),
+        getMaxPlayTimeFromItem(xpathItemResult),
+        getMinAgeFromItem(xpathItemResult)
+    ]);
+}
+// <link type="boardgameexpansion" id="176286" value="A.D.A.P.T." inbound="true"/>
+// boardgameexpansion // boardgame
+const getGameDetailsFromXML =  async (res: string): Promise<BggGameDetailsFromXML>=> {
     const xmlDoc = new DOMParser().parseFromString(res, "text/xml");
     const xpathItemExpr = `/items/item`;
     const bggGameDetailsFromXML : BggGameDetailsFromXML = emptyBggGameDetailsFromXML();
@@ -191,26 +212,7 @@ const getGameDetailsFromXML =  async (res: string): Promise<BggGameDetailsFromXM
             null
         ).stringValue;
         
-        //Concurrent Execution
-        [   bggGameDetailsFromXML.description,
-            bggGameDetailsFromXML.yearpublished,
-            bggGameDetailsFromXML.minplayers,
-            bggGameDetailsFromXML.maxplayers,
-            bggGameDetailsFromXML.playingtime,
-            bggGameDetailsFromXML.minplaytime,
-            bggGameDetailsFromXML.maxplaytime,
-            bggGameDetailsFromXML.minage
-        ] = await Promise.all([
-            getDescriptionFromItem(xpathItemResult),
-            getYearpublishedFromItem(xpathItemResult),
-            getMinPlayersFromItem(xpathItemResult),
-            getMaxPlayersFromItem(xpathItemResult),
-            getPlayingTimeFromItem(xpathItemResult),
-            getMinPlayTimeFromItem(xpathItemResult),
-            getMaxPlayTimeFromItem(xpathItemResult),
-            getMinAgeFromItem(xpathItemResult)
-        ]);
-
+        await getSharedDetails(bggGameDetailsFromXML, xpathItemResult);
 
         if(xpathTypeResult === "boardgame") {
             [bggGameDetailsFromXML.thumbnail, bggGameDetailsFromXML.image] = await Promise.all([
@@ -218,6 +220,7 @@ const getGameDetailsFromXML =  async (res: string): Promise<BggGameDetailsFromXM
                 getImageFromItem(xpathItemResult)
             ]);
         } else {
+            //get parent element first
             bggGameDetailsFromXML.thumbnail = "";
             bggGameDetailsFromXML.image = "";
             console.log("Not implemented");
@@ -227,7 +230,6 @@ const getGameDetailsFromXML =  async (res: string): Promise<BggGameDetailsFromXM
     return bggGameDetailsFromXML;
 }
 
-
 const getGameDetails =  async (gameId : string) => {
     const request = axios({
         method: "get",
@@ -236,24 +238,6 @@ const getGameDetails =  async (gameId : string) => {
     const response = await request;
     return response.data;
 }
-
-//do not work with Ada&#039;s Dream - Ada's Dram
-// const getGameIdByNameFromXML = async (res: string, boardgameName: string): Promise<string | null> => {
-//     const xmlDoc = new DOMParser().parseFromString(res, "text/xml");
-//     console.log("res", res);
-    
-//     const xpathExpr = `/items/item/name[@value='${boardgameName}']/../@id`;
-//     const xpathResult = document.evaluate(
-//         xpathExpr,
-//         xmlDoc,
-//         null,
-//         XPathResult.STRING_TYPE,
-//         null
-//     );
-
-//     return xpathResult.stringValue;
-
-// } 
 
 const getAllGamesFromXML = async (res: string): Promise<BggGameFromXML[]> =>  {
     const xmlDoc = new DOMParser().parseFromString(res, "text/xml");
@@ -294,9 +278,6 @@ const getAllGamesFromXML = async (res: string): Promise<BggGameFromXML[]> =>  {
         i++;
     }
 
-
-
-    
     return result;
 }
 
@@ -344,7 +325,6 @@ const getBggGameById = (bggGameId : number) => {
     return request.then((response) => response.data);
 };
 
-
 const getGameImageSrcFromResponse = (res: string) : string =>{
     //Extract user id from BGG XML response for request to /user endpoint.
     const xmlDoc = new DOMParser().parseFromString(res, "text/xml");
@@ -359,7 +339,6 @@ const getGameImageSrcFromResponse = (res: string) : string =>{
 
     return xpathResult.stringValue;
 }
-
 
 
 export default {

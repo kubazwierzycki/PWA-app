@@ -22,7 +22,7 @@ interface SearchResultProps {
  * @returns {ReactNode}
  */
 const GameSearchResult = ({game, choice, setChoice, setName}: SearchResultProps): ReactNode => {
-    const {setGameImgSrc} = usePlayroomContext();
+    const {setThumbnailSrc: setGameImgSrc} = usePlayroomContext();
 
     const gameId = game["@_objectid"];
 

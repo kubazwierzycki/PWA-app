@@ -7,7 +7,7 @@ import styles from '../../../styles/waitingRoomSummaryView.module.css'
  * @returns {ReactNode}
  */
 const WaitingRoomSummaryView = ({name, timer, isGlobal} : {name : string, timer : number, isGlobal : boolean}) : ReactNode => {
-    const {gameImgSrc} = usePlayroomContext();
+    const {thumbnailSrc: gameImgSrc} = usePlayroomContext();
 
     const displayHMS = (timer: number): JSX.Element =>{
         const hours : number = Math.floor(timer / 3600);

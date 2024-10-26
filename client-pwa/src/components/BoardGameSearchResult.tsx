@@ -4,6 +4,7 @@ import { alpha, Collapse, Divider, List, ListItem, ListItemButton, ListItemText,
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import bggService from "../services/bgg"
 import BoardGameSearchDetails from "./BoardGameSearchDetails";
+import { usePlayroomContext } from "../contexts/PlayroomContext";
 
 
 
@@ -32,18 +33,11 @@ interface BoardGameSearchResultProps {
 }
 
 
-const BoardGameSearchResult = ({
-        isSelected,
-        index,
-        setSelectedIndex,
-        setName, 
-        game,
-        setChoice,
-        input, 
-    } : BoardGameSearchResultProps) =>{
+const BoardGameSearchResult = ({isSelected,index,setSelectedIndex,setName,game,setChoice,input} 
+    : BoardGameSearchResultProps) =>{
 
     const [open, setOpen]= useState(false);
-
+    
     const handleClick = async () => {
         if(open === false) {
             const gameDetailsXML = await bggService.getGameDetails(game.id)
@@ -53,7 +47,10 @@ const BoardGameSearchResult = ({
         setOpen(!open);
     };
 
+
     const [bggGameDetailsFromXML, setBggGameDetailsFromXML] = useState<BggGameDetailsFromXML | null>();
+    const {setThumbnailSrc} = usePlayroomContext();
+
 
     const handleListItemClick = async () => {
         setName(game.name);
@@ -63,6 +60,7 @@ const BoardGameSearchResult = ({
         const gameDetailsXML = await bggService.getGameDetails(game.id)
         const bggGameDetailsFromXML = await bggService.getGameDetailsFromXML(gameDetailsXML)
         setBggGameDetailsFromXML(bggGameDetailsFromXML);
+        setThumbnailSrc(bggGameDetailsFromXML.thumbnail);
     }
 
     useEffect(()=>{
