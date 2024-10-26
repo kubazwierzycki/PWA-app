@@ -48,22 +48,23 @@ const Playroom = (): ReactNode => {
     const [isUpdateQueueAlertOpen, setIsUpdateQueueAlertOpen] = useState<boolean>(false);
 
 
-    async function fetchImageSrc(gameId : number) {
-        try{
-            const bggResponse = await bgg.getBggGameById(gameId);
-            const imageSrc = bgg.getGameImageSrcFromResponse(bggResponse);
-            setGameImageSrc(imageSrc);
-        } catch(err){
-            if (axios.isAxiosError(err)) {
-                switch (err.code) {
-                    default:
-                        break;
+
+    useEffect(()=>{
+        const fetchImageSrc = async (gameId : number) => {
+            try{
+                const bggResponse = await bgg.getBggGameById(gameId);
+                const imageSrc = bgg.getGameImageSrcFromResponse(bggResponse);
+                setGameImageSrc(imageSrc);
+            } catch(err){
+                if (axios.isAxiosError(err)) {
+                    switch (err.code) {
+                        default:
+                            break;
+                    }
                 }
             }
         }
-    }
 
-    useEffect(()=>{
         fetchImageSrc(gameState.game.gameID);
     }, [gameState.game.gameID])
 
