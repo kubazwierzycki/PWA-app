@@ -25,7 +25,9 @@ interface SearchSelectProps {
 const WizardGameSelect = ({setName, choice, setChoice}: SearchSelectProps): ReactNode => {
 
     const [suggestionsReady, setSuggestionsReady] = useState(false);
+
     const [loading, setLoading] = useState(false);
+    const [progress, setProgress] = useState<number>(0);
 
     const [suggestions, setSuggestions] = useState([] as IGameSuggestion[]);
 
@@ -87,7 +89,8 @@ const WizardGameSelect = ({setName, choice, setChoice}: SearchSelectProps): Reac
     }
 
     const handleWizard = async () => {
-        const data = await getCollectionData(games, ranking);
+        setLoading(true);
+        const data = await getCollectionData(games, ranking, setProgress);
         if (data === null) {
             return;
         }
@@ -148,7 +151,7 @@ const WizardGameSelect = ({setName, choice, setChoice}: SearchSelectProps): Reac
                 {
                     loading ?
                         <div>
-                            <ProgressBar progress={0} />
+                            <ProgressBar progress={progress} />
                         </div>
                         :
                         <Button onClick={handleWizard}>
