@@ -3,7 +3,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import React, {Dispatch, ReactNode, SetStateAction, useEffect, useState} from "react";
 import bggService, { BggGameFromXML } from "../../../services/bgg"
 import axios from "axios";
-import BoardGameSearchResult from "../../BoardGameSearchResult";
+import BoardGameSearchResult from "../../BoardGameSearchResult"
 
 
 const Search = styled('div')(({theme}) => ({
@@ -66,7 +66,6 @@ const BggSearchGameSelect = ({name, setName, setChoice}: SearchSelectProps): Rea
 
     const [input, setInput] = useState<string>("");
     const [selectedIndex, setSelectedIndex] = useState(-1);
-
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setInput(event.currentTarget.value);
     }
@@ -80,11 +79,12 @@ const BggSearchGameSelect = ({name, setName, setChoice}: SearchSelectProps): Rea
         const controller = new AbortController();
 
         const fetchBggGamesByPattern = async() =>{
-            try{
+            try {
                 const XML = await bggService.getBggGamesXMLByPatten(input, controller.signal);
-       
+
                 const bggGamesFromXML = await bggService.getAllGamesFromXML(XML);
                 setBggGamesFromXML(bggGamesFromXML);
+
                 setSelectedIndex(bggGamesFromXML.findIndex(game => game.name == name))
             } catch(err) {
                 if (axios.isAxiosError(err)) {

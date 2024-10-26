@@ -4,29 +4,298 @@ const baseUrl = api_address.bgg;
 
 export interface BggGameFromXML{
     name: string
-    gameId: string
+    id: string
 }
+
+export interface BggGameDetailsFromXML{
+    description: string
+    yearpublished: string
+    minplayers: string
+    maxplayers: string
+    playingtime : string
+    minplaytime: string
+    maxplaytime: string
+    minage: string
+    thumbnail: string
+    image : string
+}
+
+
+const emptyBggGameDetailsFromXML= (): BggGameDetailsFromXML => ({
+    description: "",
+    yearpublished: "",
+    minplayers: "",
+    maxplayers: "",
+    playingtime: "",
+    minplaytime: "",
+    maxplaytime: "",
+    minage: "",
+    thumbnail: "",
+    image: "",
+ });
+
+const getDescriptionFromItem = async (bggXmlItemNode: Node): Promise<string>  => {
+    const xpathExpr = `./description`;
+    const xpathResult = document.evaluate(
+        xpathExpr,
+        bggXmlItemNode,
+        null,
+        XPathResult.STRING_TYPE,
+        null
+    );
+
+    return xpathResult.stringValue;
+}
+
+const getYearpublishedFromItem = async (bggXmlItemNode: Node): Promise<string>  => {
+    const xpathExpr = `./yearpublished/@value`;
+    const xpathResult = document.evaluate(
+        xpathExpr,
+        bggXmlItemNode,
+        null,
+        XPathResult.STRING_TYPE,
+        null
+    );
+
+    return xpathResult.stringValue;
+}
+
+const getMinPlayersFromItem = async (bggXmlItemNode: Node): Promise<string> => {
+    const xpathExpr = `./minplayers/@value`;
+    const xpathResult = document.evaluate(
+        xpathExpr,
+        bggXmlItemNode,
+        null,
+        XPathResult.STRING_TYPE,
+        null
+    );
+
+    return xpathResult.stringValue;
+}
+
+const getMaxPlayersFromItem = async (bggXmlItemNode: Node): Promise<string>  => {
+    const xpathExpr = `./maxplayers/@value`;
+    const xpathResult = document.evaluate(
+        xpathExpr,
+        bggXmlItemNode,
+        null,
+        XPathResult.STRING_TYPE,
+        null
+    );
+
+    return xpathResult.stringValue;
+}
+
+const getPlayingTimeFromItem = async (bggXmlItemNode: Node): Promise<string> => {
+    const xpathExpr = `./playingtime/@value`;
+    const xpathResult = document.evaluate(
+        xpathExpr,
+        bggXmlItemNode,
+        null,
+        XPathResult.STRING_TYPE,
+        null
+    );
+
+    return xpathResult.stringValue;
+}
+
+const getMinPlayTimeFromItem = async (bggXmlItemNode: Node): Promise<string> => {
+    const xpathExpr = `./minplaytime/@value`;
+    const xpathResult = document.evaluate(
+        xpathExpr,
+        bggXmlItemNode,
+        null,
+        XPathResult.STRING_TYPE,
+        null
+    );
+
+    return xpathResult.stringValue;
+}
+
+const getMaxPlayTimeFromItem = async (bggXmlItemNode: Node): Promise<string> => {
+    const xpathExpr = `./maxplaytime/@value`;
+    const xpathResult = document.evaluate(
+        xpathExpr,
+        bggXmlItemNode,
+        null,
+        XPathResult.STRING_TYPE,
+        null
+    );
+
+    return xpathResult.stringValue;
+}
+
+const getMinAgeFromItem = async (bggXmlItemNode: Node): Promise<string> => {
+    const xpathExpr = `./minage/@value`;
+    const xpathResult = document.evaluate(
+        xpathExpr,
+        bggXmlItemNode,
+        null,
+        XPathResult.STRING_TYPE,
+        null
+    );
+
+    return xpathResult.stringValue;
+}
+
+const getThumbnailFromItem = async (bggXmlItemNode: Node): Promise<string> => {
+    const xpathExpr = `./thumbnail`;
+    const xpathResult = document.evaluate(
+        xpathExpr,
+        bggXmlItemNode,
+        null,
+        XPathResult.STRING_TYPE,
+        null
+    );
+
+    return xpathResult.stringValue;
+}
+
+const getImageFromItem = async (bggXmlItemNode: Node): Promise<string> => {
+    const xpathExpr = `./image`;
+    const xpathResult = document.evaluate(
+        xpathExpr,
+        bggXmlItemNode,
+        null,
+        XPathResult.STRING_TYPE,
+        null
+    );
+
+    return xpathResult.stringValue;
+}
+
+
+    //boardgameexpansion 
+    // <link type="boardgameexpansion" id="176286" value="A.D.A.P.T." inbound="true"/>
+    // boardgame
+const getGameDetailsFromXML =  async (res: string): Promise<BggGameDetailsFromXML | null>=> {
+    const xmlDoc = new DOMParser().parseFromString(res, "text/xml");
+    const xpathItemExpr = `/items/item`;
+    const bggGameDetailsFromXML : BggGameDetailsFromXML = emptyBggGameDetailsFromXML();
+
+    const xpathItemResult = document.evaluate(
+        xpathItemExpr,
+        xmlDoc,
+        null,
+        XPathResult.FIRST_ORDERED_NODE_TYPE,
+        null
+    ).singleNodeValue;
+
+    if(xpathItemResult !== null) {
+        const xpathTypeExpr = `./@type`;
+        const xpathTypeResult = document.evaluate(
+            xpathTypeExpr,
+            xpathItemResult,
+            null,
+            XPathResult.STRING_TYPE,
+            null
+        ).stringValue;
+        
+        //Concurrent Execution
+        [   bggGameDetailsFromXML.description,
+            bggGameDetailsFromXML.yearpublished,
+            bggGameDetailsFromXML.minplayers,
+            bggGameDetailsFromXML.maxplayers,
+            bggGameDetailsFromXML.playingtime,
+            bggGameDetailsFromXML.minplaytime,
+            bggGameDetailsFromXML.maxplaytime,
+            bggGameDetailsFromXML.minage
+        ] = await Promise.all([
+            getDescriptionFromItem(xpathItemResult),
+            getYearpublishedFromItem(xpathItemResult),
+            getMinPlayersFromItem(xpathItemResult),
+            getMaxPlayersFromItem(xpathItemResult),
+            getPlayingTimeFromItem(xpathItemResult),
+            getMinPlayTimeFromItem(xpathItemResult),
+            getMaxPlayTimeFromItem(xpathItemResult),
+            getMinAgeFromItem(xpathItemResult)
+        ]);
+
+
+        if(xpathTypeResult === "boardgame") {
+            [bggGameDetailsFromXML.thumbnail, bggGameDetailsFromXML.image] = await Promise.all([
+                getThumbnailFromItem(xpathItemResult),
+                getImageFromItem(xpathItemResult)
+            ]);
+        } else {
+            bggGameDetailsFromXML.thumbnail = "";
+            bggGameDetailsFromXML.image = "";
+            console.log("Not implemented");
+        }
+    }
+
+    return bggGameDetailsFromXML;
+}
+
+
+const getGameDetails =  async (gameId : string) => {
+    const request = axios({
+        method: "get",
+        url: `${baseUrl}/thing?id=${gameId}`,
+    });
+    const response = await request;
+    return response.data;
+}
+
+//do not work with Ada&#039;s Dream - Ada's Dram
+// const getGameIdByNameFromXML = async (res: string, boardgameName: string): Promise<string | null> => {
+//     const xmlDoc = new DOMParser().parseFromString(res, "text/xml");
+//     console.log("res", res);
+    
+//     const xpathExpr = `/items/item/name[@value='${boardgameName}']/../@id`;
+//     const xpathResult = document.evaluate(
+//         xpathExpr,
+//         xmlDoc,
+//         null,
+//         XPathResult.STRING_TYPE,
+//         null
+//     );
+
+//     return xpathResult.stringValue;
+
+// } 
 
 const getAllGamesFromXML = async (res: string): Promise<BggGameFromXML[]> =>  {
     const xmlDoc = new DOMParser().parseFromString(res, "text/xml");
-    const xpathExpr = "/items/item/name/@value";
-    const xpathResult = document.evaluate(
-        xpathExpr,
+    const xpathNameExpr = "/items/item/name/@value";
+    const xpathNameResult = document.evaluate(
+        xpathNameExpr,
         xmlDoc,
         null,
-        XPathResult.UNORDERED_NODE_ITERATOR_TYPE,
+        XPathResult.ORDERED_NODE_ITERATOR_TYPE,
         null
     );
 
     let node;
     const result : BggGameFromXML[]   = [];
-    // eslint-disable-next-line no-cond-assign
-    while (node = xpathResult.iterateNext()) {
-        result.push({
-                "name": node.textContent ? node.textContent : "None",
-                "gameId": "0"
-        })
+
+    node = xpathNameResult.iterateNext()
+    let i = 0;
+    while (node) {
+        result.push({"name" : node.textContent ?  node.textContent : "0" , "id" : "0"})
+        node = xpathNameResult.iterateNext()
+        i++;
     }
+
+    const xpathIdExpr = "/items/item/@id";
+    const xpathIdResult = document.evaluate(
+        xpathIdExpr,
+        xmlDoc,
+        null,
+        XPathResult.ORDERED_NODE_ITERATOR_TYPE,
+        null
+    );
+
+    node = xpathIdResult.iterateNext()
+    i = 0;
+    while (node) {
+        result[i].id = node.textContent ?  node.textContent : "0" ;
+        node = xpathIdResult.iterateNext()
+        i++;
+    }
+
+
+
     
     return result;
 }
@@ -41,8 +310,6 @@ const getBggGamesXMLByPatten = async (pattern : string, signal: AbortSignal) => 
     const response = await request;
     return response.data;
 }
-
-
 
 const getUserByUsername = (bggUsername: string) => {
     const request = axios({
@@ -101,5 +368,7 @@ export default {
     getBggGameById,
     getGameImageSrcFromResponse,
     getBggGamesXMLByPatten,
-    getAllGamesFromXML
+    getAllGamesFromXML,
+    getGameDetails,
+    getGameDetailsFromXML
 };
