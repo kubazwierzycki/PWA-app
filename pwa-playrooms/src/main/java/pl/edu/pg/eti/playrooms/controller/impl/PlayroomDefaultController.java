@@ -84,6 +84,7 @@ public class PlayroomDefaultController implements PlayroomController {
             playroomService.update(playroom);
 
             if ("0".equals(request.getGameId())) {
+                request.setGameId("custom_" + UUID.randomUUID());
                 for (GetGames.Game game : playroomEventRepository.getAllGames().getGames()) {
                     if (game.getName().equals(request.getGame())) {
                         playroomEventRepository.updateGame(game.getId(), request.getGame(),
