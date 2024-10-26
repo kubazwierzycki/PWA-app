@@ -4,9 +4,9 @@ import {CSSProperties, Dispatch, ReactNode, SetStateAction} from "react";
 
 interface WizardSuggestionsProps {
     suggestions: IGameSuggestion[]
-    choice: string
-    setChoice: Dispatch<SetStateAction<string>>
-    setName: Dispatch<SetStateAction<string>>
+    choice: string | null
+    setChoice: Dispatch<SetStateAction<string>> | null
+    setName: Dispatch<SetStateAction<string>> | null
 }
 
 /**
@@ -20,8 +20,12 @@ interface WizardSuggestionsProps {
 const WizardSuggestions = ({suggestions, choice, setChoice, setName}: WizardSuggestionsProps): ReactNode => {
 
     const handleClick = (gameId: string, gameName: string) => {
-        setChoice(gameId);
-        setName(gameName);
+        if (setChoice) {
+            setChoice(gameId);
+        }
+        if (setName) {
+            setName(gameName);
+        }
     }
 
     const containerStyle: CSSProperties = {

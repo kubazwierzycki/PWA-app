@@ -36,12 +36,3 @@
     width: 100%;
     z-index: 100;
 }
-
-@media screen and (max-height: 700px) {
-
-    .pageContent {
-        padding: 10% 0;
-    }
-
-}
-
