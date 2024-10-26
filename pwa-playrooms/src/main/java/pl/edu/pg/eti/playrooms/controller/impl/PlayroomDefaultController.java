@@ -645,6 +645,7 @@ public class PlayroomDefaultController implements PlayroomController {
                     Map<Integer, Playroom.Player> players = playroom.getPlayers();
                     players.put(playroom.getCurrentPlayer(), currentPlayer);
                     playroom.setPlayers(players);
+                    playroom.setCurrentPlayer((playroom.getCurrentPlayer() % playroom.getPlayers().size()) + 1);
                 }
                 k++;
             } while (k < playroom.getPlayers().size() &&
@@ -988,14 +989,16 @@ public class PlayroomDefaultController implements PlayroomController {
      *             "playerId": --playerId--,
      *             "name": --playerName--,
      *             "timer": --playerTimer-- (null if timer is global),
-     *             "skipped": --true/false--
+     *             "skipped": --true/false--,
+     *             "turnsToSkip": --numberOfTurnsToSkip--
      *         },
      *         {
      *             "queueNumber": 2,
      *             "playerId": --playerId--,
      *             "name": --playerName--,
      *             "timer": --playerTimer-- (null if timer is global),
-     *             "skipped": --true/false--
+     *             "skipped": --true/false--,
+     *             "turnsToSkip": --numberOfTurnsToSkip--
      *         },
      *         ...
      *     ]
@@ -1045,6 +1048,7 @@ public class PlayroomDefaultController implements PlayroomController {
                     player.put("timer", JSONObject.NULL);
                 }
                 player.put("skipped", playroom.getPlayers().get(playerNumber).isSkip());
+                player.put("turnsToSkip", playroom.getPlayers().get(playerNumber).getTurnsToSkip());
                 players.put(player);
             }
             gameStatus.put("players", players);

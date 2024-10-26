@@ -355,3 +355,64 @@ or (<i>if time is up</i>
    ...
 }
 ```
+
+### Skip next move/moves
+
+1. Send websocket message (e.g.):
+   ```
+   {
+      "operation": "skip",
+      "playroomId": "1fbfc490-5fd8-4104-83db-bc275bc913dd",
+      "turnsToSkip": 2 // optional - default is 1
+   }
+   ```
+
+2. Receive message (e.g.):
+  ```
+  {
+    ...
+    "players": [
+      {
+         ...
+         "skipped": true,
+         "turnsToSkip: 2
+      },
+      {
+         ...
+         "skipped": false,
+         "turnsToSkip": 0
+      }
+    ],
+    ...
+  }
+  ```
+
+### Cancel skip
+
+1. Send websocket message (e.g.):
+   ```
+   {
+      "operation": "cancelSkip",
+      "playroomId": "1fbfc490-5fd8-4104-83db-bc275bc913dd"
+   }
+   ```
+
+2. Receive message (e.g.):
+  ```
+  {
+    ...
+    "players": [
+      {
+         ...
+         "skipped": false,
+         "turnsToSkip: 0
+      },
+      {
+         ...
+         "skipped": false,
+         "turnsToSkip": 0
+      }
+    ],
+    ...
+  }
+  ```
