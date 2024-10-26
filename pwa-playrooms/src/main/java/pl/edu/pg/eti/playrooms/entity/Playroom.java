@@ -127,6 +127,11 @@ public class Playroom implements Serializable {
         private boolean skip;
 
         /**
+         * Number of turns to skip
+         */
+        private int turnsToSkip;
+
+        /**
          * If user is not registered
          */
         private boolean guest;

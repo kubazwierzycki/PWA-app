@@ -27,6 +27,9 @@ public class WebSocketConnectionHandler extends TextWebSocketHandler {
     public static final String FINISH_WAITING_ROOM = "finishWaitingRoom";
     public static final String CLOSE_WAITING_ROOM = "closeWaitingRoom";
     public static final String CONFIRM = "confirm";
+    public static final String REJECT = "reject";
+    public static final String SKIP = "skip";
+    public static final String CANCEL_SKIP = "cancelSkip";
 
     private final PlayroomController playroomController;
 
@@ -106,6 +109,15 @@ public class WebSocketConnectionHandler extends TextWebSocketHandler {
                 break;
             case CONFIRM:
                 playroomController.confirm(session.getId(), messageJSON);
+                break;
+            case REJECT:
+                playroomController.reject(session.getId(), messageJSON);
+                break;
+            case SKIP:
+                playroomController.skip(session.getId(), messageJSON);
+                break;
+            case CANCEL_SKIP:
+                playroomController.cancelSkip(session.getId(), messageJSON);
                 break;
             default:
                 System.err.println("Unhandled type of message: \n" + message.getPayload());

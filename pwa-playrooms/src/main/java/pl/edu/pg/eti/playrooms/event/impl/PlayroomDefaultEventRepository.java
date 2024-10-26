@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
+import pl.edu.pg.eti.playrooms.dto.GetGames;
 import pl.edu.pg.eti.playrooms.dto.PutGame;
 import pl.edu.pg.eti.playrooms.dto.PutGameplay;
 import pl.edu.pg.eti.playrooms.entity.Playroom;
@@ -62,6 +63,11 @@ public class PlayroomDefaultEventRepository implements PlayroomEventRepository {
     }
 
     @Override
+    public GetGames getAllGames() {
+        return gamesRestTemplate.getForObject("/api/games", GetGames.class);
+    }
+
+    @Override
     public void updateGame(String gameId, String gameName, boolean isTurnBased, int time) {
         gamesRestTemplate.put("/api/games/{id}", new PutGame(gameName, isTurnBased, time), gameId);
     }
@@ -79,7 +85,7 @@ public class PlayroomDefaultEventRepository implements PlayroomEventRepository {
             return;
         }
 
-        for (Playroom.Player player : playroom.getPlayers().values()) {
+        for (Playroom.Player player : playroom.getPlayersWaitingRoom().values()) {
             players.add(
                     PutGameplay.Player.builder()
                             .uuid(player.getUuid())

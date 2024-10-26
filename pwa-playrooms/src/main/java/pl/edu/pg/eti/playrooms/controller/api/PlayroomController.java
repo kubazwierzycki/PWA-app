@@ -216,5 +216,26 @@ public interface PlayroomController {
      */
     void reject(String sessionId, JSONObject message);
 
+    /**
+     * Skip own move
+     * @param sessionId - websocket session ID
+     * @param message - message with all details
+     *                {
+     *                  "operation": "skip",
+     *                  "playroomId": --playroomUUID--,
+     *                  "turnsToSkip": --numberOfTurnsToSkip--
+     *                }
+     */
+    void skip(String sessionId, JSONObject message);
 
+    /**
+     * Cancel skip own move
+     * @param sessionId - websocket session ID
+     * @param message - message with all details
+     *                {
+     *                  "operation": "cancelSkip",
+     *                  "playroomId": --playroomUUID--
+     *                }
+     */
+    void cancelSkip(String sessionId, JSONObject message);
 }

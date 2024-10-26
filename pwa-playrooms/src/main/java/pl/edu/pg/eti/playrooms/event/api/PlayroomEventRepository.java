@@ -1,5 +1,6 @@
 package pl.edu.pg.eti.playrooms.event.api;
 
+import pl.edu.pg.eti.playrooms.dto.GetGames;
 import pl.edu.pg.eti.playrooms.entity.Playroom;
 
 /**
@@ -30,6 +31,11 @@ public interface PlayroomEventRepository {
      * @param rating - user opinion about played game
      */
     void putExperience(String userId, String gameId, boolean win, int rating);
+
+    /**
+     * Get all played games
+     */
+    GetGames getAllGames();
 
     /**
      * Create or update game details in games service
