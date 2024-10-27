@@ -150,9 +150,18 @@ const parseGame = (game: BoardGameDetails, ranking: BoardGameRank[]): IWizardGam
 
 }
 
-export const getCollectionData = async (games: BoardGameStub[], ranking: BoardGameRank[]) => {
-    //const idsList = games.map(game => game["@_objectid"]).join(",");
-    //console.log(idsList);
+/**
+ * Function parsing boardgames context data to wizard input
+ * @param games - collection from context
+ * @param ranking - ranking data for collection from context
+ * @param progressCallback - optional callback for showing data fetching progress
+ */
+export const getCollectionData = async (
+    games: BoardGameStub[],
+    ranking: BoardGameRank[],
+    progressCallback?: (progress: number) => void
+) => {
+
     let details = [] as BoardGameDetails[];
     const len = games.length;
     // BGG API allows only 20 items in one details fetch
@@ -163,8 +172,13 @@ export const getCollectionData = async (games: BoardGameStub[], ranking: BoardGa
         let gamesList = games.slice(i * maxItemsPerFetch, (i + 1) * maxItemsPerFetch);
         let idsList = gamesList.map(game => game["@_objectid"]).join(",");
         let detailsFetch = await getGameDetails(idsList);
-        // TODO: testing only (due to long waits) - to be removed
-        console.log(`Fetched game details: ${i+1}/${neededFetches}`);
+
+        // update progress based on the current fetch step
+        if (progressCallback) {
+            const progress = Math.round(((i + 1) / neededFetches) * 100);
+            progressCallback(progress);
+        }
+
         details.push(...detailsFetch);
     }
 

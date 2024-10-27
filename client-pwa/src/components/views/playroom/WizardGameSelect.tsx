@@ -5,6 +5,7 @@ import {useBoardgamesContext} from "../../../contexts/BoardgamesContext.tsx";
 import getBestGames from "../../../utils/wizard/WizardLogic.ts";
 import {IGameSuggestion, IWizardParams} from "../../../utils/wizard/WizardInterfaces.ts";
 import WizardSuggestions from "./WizardSuggestions.tsx";
+import ProgressBar from "../../ProgressBar.tsx";
 
 
 interface SearchSelectProps {
@@ -24,6 +25,10 @@ interface SearchSelectProps {
 const WizardGameSelect = ({setName, choice, setChoice}: SearchSelectProps): ReactNode => {
 
     const [suggestionsReady, setSuggestionsReady] = useState(false);
+
+    const [loading, setLoading] = useState(false);
+    const [progress, setProgress] = useState<number>(0);
+
     const [suggestions, setSuggestions] = useState([] as IGameSuggestion[]);
 
     const [minPlayTime, setMinPlayTime] = useState("0");
@@ -84,7 +89,8 @@ const WizardGameSelect = ({setName, choice, setChoice}: SearchSelectProps): Reac
     }
 
     const handleWizard = async () => {
-        const data = await getCollectionData(games, ranking);
+        setLoading(true);
+        const data = await getCollectionData(games, ranking, setProgress);
         if (data === null) {
             return;
         }
@@ -142,9 +148,16 @@ const WizardGameSelect = ({setName, choice, setChoice}: SearchSelectProps): Reac
                         />
                     </Stack>
                 </div>
-                <Button onClick={handleWizard}>
-                    Get suggestions
-                </Button>
+                {
+                    loading ?
+                        <div>
+                            <ProgressBar progress={progress} />
+                        </div>
+                        :
+                        <Button onClick={handleWizard}>
+                            Get suggestions
+                        </Button>
+                }
             </div>
             :
             <div style={{

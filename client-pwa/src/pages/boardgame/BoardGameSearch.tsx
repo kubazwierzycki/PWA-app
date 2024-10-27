@@ -7,6 +7,7 @@ import {getCollectionData} from "../../utils/wizard/BGGWizardDataParser.ts";
 import {useBoardgamesContext} from "../../contexts/BoardgamesContext.tsx";
 import {IGameSuggestion, IWizardParams} from "../../utils/wizard/WizardInterfaces.ts";
 import WizardSuggestions from "../../components/views/playroom/WizardSuggestions.tsx";
+import ProgressBar from "../../components/ProgressBar.tsx";
 
 interface Player {
     age: number;
@@ -19,6 +20,9 @@ interface Player {
 const BoardGameSearch = (): ReactNode => {
 
     const [resultsReady, setResultsReady] = useState<boolean>(false);
+
+    const [loading, setLoading] = useState(false);
+    const [progress, setProgress] = useState<number>(0);
 
     const [suggestions, setSuggestions] = useState([] as IGameSuggestion[]);
 
@@ -55,11 +59,17 @@ const BoardGameSearch = (): ReactNode => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        const input = await getCollectionData(games, ranking);
+        setLoading(true);
+        const input = await getCollectionData(games, ranking, setProgress);
         const results = getBestGames(input, parseParams());
         setSuggestions(results.suggestions);
         setResultsReady(true);
     };
+
+    const handleTryAgain = () => {
+        setResultsReady(false);
+        setLoading(false);
+    }
 
     return (
         resultsReady ?
@@ -83,7 +93,7 @@ const BoardGameSearch = (): ReactNode => {
                     setChoice={null}
                     setName={null}
                 />
-                <Button onClick={() => setResultsReady(false)} variant="contained" style={{width: "200px", marginTop: "20px"}}>
+                <Button onClick={handleTryAgain} variant="contained" style={{width: "200px", marginTop: "20px"}}>
                     <Typography>
                         Try again
                     </Typography>
@@ -146,9 +156,16 @@ const BoardGameSearch = (): ReactNode => {
                     sx={{ mb: 3 }}
                 />
 
-                <Button type="submit" variant="contained" color="primary" fullWidth>
-                    Submit
-                </Button>
+                {
+                    loading ?
+                        <div>
+                            <ProgressBar progress={progress} />
+                        </div>
+                        :
+                        <Button type="submit" variant="contained" color="primary" fullWidth>
+                            Submit
+                        </Button>
+                }
             </Box>
     );
 }
