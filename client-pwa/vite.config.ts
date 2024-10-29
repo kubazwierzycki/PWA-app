@@ -12,6 +12,9 @@ export default defineConfig({
     plugins: [
         react(),
         VitePWA({
+            srcDir: 'src',
+            filename: 'service-worker.js',
+            strategies: 'injectManifest',
             registerType: 'autoUpdate',
             manifest: {
                 name: "CoGame",
