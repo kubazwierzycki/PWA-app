@@ -24,7 +24,6 @@ const Playroom = (): ReactNode => {
 
     const { sendJsonMessage, lastJsonMessage, setSocketUrl} = useWebSocketContext();
     const {playerId, code, setCode, timer, clearPlayroomContex} = usePlayroomContext();
-
     const [isCurrentPlayer, setIsCurrentPlayer] = useState<boolean>(false);
     const [open, setOpen] = useState(false);
     const [confirmOperationAlert, setConfirmOperationAlert] = useState<ConfirmOperationAlert>({
@@ -120,7 +119,7 @@ const Playroom = (): ReactNode => {
                     break;
                 }
                 default: {
-                    console.log("Unknown message type");
+                    console.log("Unknown message type", lastJsonMessage);
                     break;
                 }
             }
@@ -264,6 +263,8 @@ const Playroom = (): ReactNode => {
                                 paused={gameState.paused} 
                                 players={gameState.players} 
                                 currentPlayer={gameState.currentPlayer}
+                                code={code}
+                                playerId={playerId}
                             />
                         }
                         </Box>
