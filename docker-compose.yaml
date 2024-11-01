@@ -1,0 +1,122 @@
+services:
+  pwa-gateway:
+    build:
+      context: ./pwa-gateway
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      USERS_URL: "http://pwa-users:8081"
+      GAMEPLAYS_URL: "http://pwa-gameplays:8082"
+      GAMES_URL: "http://pwa-games:8083"
+      PLAYROOMS_URL: "http://pwa-playrooms:8084"
+      WS_PLAYROOMS: "ws://pwa-playrooms:8084"
+      EXPERIENCE_URL: "http://pwa-experience:8085"
+    ports:
+      - "8080:8080"
+    
+  pwa-users:
+    build:
+      context: ./pwa-users
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://users-db:5432/users_db"
+      SPRING_DATASOURCE_DRIVERCLASSNAME: "org.postgresql.Driver"
+      SPRING_DATASOURCE_USERNAME: "users_user"
+      SPRING_DATASOURCE_PASSWORD: "users_password"
+      SPRING_JPA_DATABASE_PLATFORM: "org.hibernate.dialect.PostgreSQLDialect"
+      EXPERIENCE_URL: "http://pwa-experience:8085"
+      GAMEPLAYS_URL: "http://pwa-gameplays:8082"
+
+  users-db:
+    image: postgres:16.3
+    restart: always
+    environment:
+      POSTGRES_DB: "users_db"
+      POSTGRES_USER: "users_user"
+      POSTGRES_PASSWORD: "users_password"
+
+  pwa-games:
+    build:
+      context: ./pwa-games
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://games-db:5432/games_db"
+      SPRING_DATASOURCE_DRIVERCLASSNAME: "org.postgresql.Driver"
+      SPRING_DATASOURCE_USERNAME: "games_user"
+      SPRING_DATASOURCE_PASSWORD: "games_password"
+      SPRING_JPA_DATABASE_PLATFORM: "org.hibernate.dialect.PostgreSQLDialect"
+      EXPERIENCE_URL: "http://pwa-experience:8085"
+      GAMEPLAYS_URL: "http://pwa-gameplays:8082"
+
+  games-db:
+    image: postgres:16.3
+    restart: always
+    environment:
+      POSTGRES_DB: "games_db"
+      POSTGRES_USER: "games_user"
+      POSTGRES_PASSWORD: "games_password"
+  
+  pwa-experience:
+    build:
+      context: ./pwa-experience
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://experience-db:5432/experience_db"
+      SPRING_DATASOURCE_DRIVERCLASSNAME: "org.postgresql.Driver"
+      SPRING_DATASOURCE_USERNAME: "experience_user"
+      SPRING_DATASOURCE_PASSWORD: "experience_password"
+      SPRING_JPA_DATABASE_PLATFORM: "org.hibernate.dialect.PostgreSQLDialect"
+
+  experience-db:
+    image: postgres:16.3
+    restart: always
+    environment:
+      POSTGRES_DB: "experience_db"
+      POSTGRES_USER: "experience_user"
+      POSTGRES_PASSWORD: "experience_password"
+
+  pwa-gameplays:
+    build:
+      context: ./pwa-gameplays
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://gameplays-db:5432/gameplays_db"
+      SPRING_DATASOURCE_DRIVERCLASSNAME: "org.postgresql.Driver"
+      SPRING_DATASOURCE_USERNAME: "gameplays_user"
+      SPRING_DATASOURCE_PASSWORD: "gameplays_password"
+      SPRING_JPA_DATABASE_PLATFORM: "org.hibernate.dialect.PostgreSQLDialect"
+
+  gameplays-db:
+    image: postgres:16.3
+    restart: always
+    environment:
+      POSTGRES_DB: "gameplays_db"
+      POSTGRES_USER: "gameplays_user"
+      POSTGRES_PASSWORD: "gameplays_password"
+
+  pwa-playrooms:
+    build:
+      context: ./pwa-playrooms
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://playrooms-db:5432/playrooms_db"
+      SPRING_DATASOURCE_DRIVERCLASSNAME: "org.postgresql.Driver"
+      SPRING_DATASOURCE_USERNAME: "playrooms_user"
+      SPRING_DATASOURCE_PASSWORD: "playrooms_password"
+      SPRING_JPA_DATABASE_PLATFORM: "org.hibernate.dialect.PostgreSQLDialect"
+      GAMES_URL: "http://pwa-games:8083"
+      EXPERIENCE_URL: "http://pwa-experience:8085"
+      GAMEPLAYS_URL: "http://pwa-gameplays:8082"
+
+  playrooms-db:
+    image: postgres:16.3
+    restart: always
+    environment:
+      POSTGRES_DB: "playrooms_db"
+      POSTGRES_USER: "playrooms_user"
+      POSTGRES_PASSWORD: "playrooms_password"
