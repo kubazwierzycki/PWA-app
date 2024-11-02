@@ -1,6 +1,6 @@
 import { ReactNode, useEffect, useState } from "react";
 import gameplaysService, { Gameplay } from "../../../services/gameplays"
-import {Box, Divider, Grid, List, ListItem, ListItemText, Typography } from "@mui/material";
+import { Divider, Grid, List, ListItem, ListItemText, Typography } from "@mui/material";
 
 interface GameplayListViewProps{
     userId: string
@@ -26,29 +26,29 @@ const GameplayListView = ({userId} : GameplayListViewProps): ReactNode => {
 
     return(
         <>
-        { gameplays ? 
-            <List sx={{ 
-                width: '100%', 
-                maxWidth: 600, 
+        { gameplays ?
+            <List sx={{
+                width: '100%',
+                maxWidth: 600,
                 bgcolor: 'background.paper',
                 position: 'relative',
                 overflow: 'auto',
                 maxHeight: '40vh',
                 '& ul': { padding: 0 },
             }}>
-            {gameplays.map((gameplay,index) => (
+            {gameplays.map((gameplay) => (
                 <>
                     <ListItem
                     key={gameplay.uuid}
                     disableGutters
                     sx={{px: 2}}
                     >
-                    <ListItemText 
+                    <ListItemText
                         primary={
                             <Grid container columnSpacing={{ xs: 1}} sx={{justifyContent:"space-between"}} >
                                 <Grid item xs={8}>
                                     <Typography variant="subtitle1">
-                                        {gameplay.game} 
+                                        {gameplay.game}
                                     </Typography>
                                 </Grid>
                                 <Grid item xs={4}>
@@ -57,7 +57,7 @@ const GameplayListView = ({userId} : GameplayListViewProps): ReactNode => {
                                     </Typography>
                                 </Grid>
                             </Grid>
-                        } 
+                        }
                         secondary=
                         {
                             <>

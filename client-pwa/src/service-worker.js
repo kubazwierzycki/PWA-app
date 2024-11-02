@@ -30,11 +30,43 @@ registerRoute(
     })
 );
 
+// BGG API: StaleWhileRevalidate specifically for /thing and /collection endpoints
+registerRoute(
+    ({ url }) =>
+        url.hostname.includes('bgg') && url.pathname.match(/\/(thing|collection)/),
+    new StaleWhileRevalidate({
+        cacheName: 'bgg-api-cache',
+        plugins: [
+            new ExpirationPlugin({
+                maxEntries: 30,
+                maxAgeSeconds: 24 * 60 * 60, // Cache BGG responses for 24 hours
+            }),
+        ],
+    })
+);
+
+// Default: NetworkFirst for general API calls, including other BGG endpoints
+registerRoute(
+    ({ url }) =>
+        url.pathname.match(/\/api/) || // General API calls
+        (url.hostname.includes('boardgamegeek') && !url.pathname.match(/\/(thing|collection)/)), // All other BGG endpoints
+    new NetworkFirst({
+        cacheName: 'api-cache',
+        plugins: [
+            new ExpirationPlugin({
+                maxEntries: 50,
+                maxAgeSeconds: 5 * 60, // Cache general API calls for 5 minutes
+            }),
+        ],
+    })
+);
+
+
 // StaleWhileRevalidate for CSS and JS assets
 registerRoute(
     ({ request }) =>
         request.destination === 'style' || request.destination === 'script',
-    new StaleWhileRevalidate({
+    new CacheFirst({
         cacheName: 'assets-cache',
     })
 );
