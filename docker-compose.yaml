@@ -13,7 +13,9 @@ services:
       EXPERIENCE_URL: "http://pwa-experience:8085"
     ports:
       - "8080:8080"
-    
+    networks:
+      - app-network
+
   pwa-users:
     build:
       context: ./pwa-users
@@ -27,6 +29,8 @@ services:
       SPRING_JPA_DATABASE_PLATFORM: "org.hibernate.dialect.PostgreSQLDialect"
       EXPERIENCE_URL: "http://pwa-experience:8085"
       GAMEPLAYS_URL: "http://pwa-gameplays:8082"
+    networks:
+      - app-network
 
   users-db:
     image: postgres:16.3
@@ -35,6 +39,8 @@ services:
       POSTGRES_DB: "users_db"
       POSTGRES_USER: "users_user"
       POSTGRES_PASSWORD: "users_password"
+    networks:
+      - app-network
 
   pwa-games:
     build:
@@ -49,6 +55,8 @@ services:
       SPRING_JPA_DATABASE_PLATFORM: "org.hibernate.dialect.PostgreSQLDialect"
       EXPERIENCE_URL: "http://pwa-experience:8085"
       GAMEPLAYS_URL: "http://pwa-gameplays:8082"
+    networks:
+      - app-network
 
   games-db:
     image: postgres:16.3
@@ -57,7 +65,9 @@ services:
       POSTGRES_DB: "games_db"
       POSTGRES_USER: "games_user"
       POSTGRES_PASSWORD: "games_password"
-  
+    networks:
+      - app-network
+
   pwa-experience:
     build:
       context: ./pwa-experience
@@ -69,6 +79,8 @@ services:
       SPRING_DATASOURCE_USERNAME: "experience_user"
       SPRING_DATASOURCE_PASSWORD: "experience_password"
       SPRING_JPA_DATABASE_PLATFORM: "org.hibernate.dialect.PostgreSQLDialect"
+    networks:
+      - app-network
 
   experience-db:
     image: postgres:16.3
@@ -77,6 +89,8 @@ services:
       POSTGRES_DB: "experience_db"
       POSTGRES_USER: "experience_user"
       POSTGRES_PASSWORD: "experience_password"
+    networks:
+      - app-network
 
   pwa-gameplays:
     build:
@@ -89,6 +103,8 @@ services:
       SPRING_DATASOURCE_USERNAME: "gameplays_user"
       SPRING_DATASOURCE_PASSWORD: "gameplays_password"
       SPRING_JPA_DATABASE_PLATFORM: "org.hibernate.dialect.PostgreSQLDialect"
+    networks:
+      - app-network
 
   gameplays-db:
     image: postgres:16.3
@@ -97,6 +113,8 @@ services:
       POSTGRES_DB: "gameplays_db"
       POSTGRES_USER: "gameplays_user"
       POSTGRES_PASSWORD: "gameplays_password"
+    networks:
+      - app-network
 
   pwa-playrooms:
     build:
@@ -112,6 +130,8 @@ services:
       GAMES_URL: "http://pwa-games:8083"
       EXPERIENCE_URL: "http://pwa-experience:8085"
       GAMEPLAYS_URL: "http://pwa-gameplays:8082"
+    networks:
+      - app-network
 
   playrooms-db:
     image: postgres:16.3
@@ -120,3 +140,22 @@ services:
       POSTGRES_DB: "playrooms_db"
       POSTGRES_USER: "playrooms_user"
       POSTGRES_PASSWORD: "playrooms_password"
+    networks:
+      - app-network
+
+  pwa-client:
+    build:
+      context: ./client-pwa
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      VITE_API_BASE_URL: "http://pwa-gateway:8080/api"
+      VITE_API_WS_URL: "ws://pwa-gateway:8080/ws-playrooms"
+    ports:
+    - "3000:3000"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
