@@ -19,9 +19,9 @@ export default defineConfig(({ mode }) => {
             watch: {
                 usePolling: true,
             },
-            host: "pwa-client", // needed for the Docker Container port mapping to work
+            host: env.VITE_HOST, // needed for the Docker Container port mapping to work
             strictPort: true, 
-            port: 3000, // you can replace this port with any port
+            port: 5137, // you can replace this port with any port
         },
         plugins: [
             react(),
