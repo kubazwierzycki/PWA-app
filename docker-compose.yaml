@@ -11,7 +11,7 @@ services:
       PLAYROOMS_URL: "http://pwa-playrooms:8084"
       WS_PLAYROOMS_URL: "ws://pwa-playrooms:8084"
       EXPERIENCE_URL: "http://pwa-experience:8085"
-      SPRING_CLOUD_GATEWAY_CORS_ALLOWED_ORIGINS: "http://pwa-client:3000"
+      SPRING_CLOUD_GATEWAY_GLOBALCORS_CORS_CONFIGURATIONS_[/**]_ALLOWED_ORIGINS: "http://pwa-client:3000"
     ports:
       - "8080:8080"
     
