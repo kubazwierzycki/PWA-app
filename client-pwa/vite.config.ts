@@ -12,7 +12,14 @@ export default defineConfig({
     plugins: [
         react(),
         VitePWA({
+            srcDir: 'src',
+            filename: 'service-worker.js',
+            strategies: 'injectManifest',
             registerType: 'autoUpdate',
+            injectManifest: {
+                swSrc: 'src/service-worker.js',  // Source file for Workbox to process
+                swDest: 'dist/service-worker.js', // Output file with injected manifest
+            },
             manifest: {
                 name: "CoGame",
                 short_name: "CoGame",
@@ -70,9 +77,6 @@ export default defineConfig({
                         ]
                     }
                 ]
-            },
-            workbox: {
-                // workbox settings
             },
         }),
     ],
