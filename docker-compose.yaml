@@ -139,4 +139,4 @@ services:
       VITE_API_BASE_URL: "http://pwa-gateway:8080/api"
       VITE_API_WS_URL: "ws://pwa-gateway:8080/ws-playrooms"
     ports:
-    - "3000:3000"
+    - "5137:5137"
