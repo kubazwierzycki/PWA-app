@@ -11,6 +11,7 @@ services:
       PLAYROOMS_URL: "http://pwa-playrooms:8084"
       WS_PLAYROOMS_URL: "ws://pwa-playrooms:8084"
       EXPERIENCE_URL: "http://pwa-experience:8085"
+      SPRING_CLOUD_GATEWAY_GLOBALCORS_CORS_CONFIGURATIONS_[/**]_ALLOWED_ORIGINS: "http://pwa-client:5137"
     ports:
       - "8080:8080"
     
@@ -28,6 +29,7 @@ services:
       EXPERIENCE_URL: "http://pwa-experience:8085"
       GAMEPLAYS_URL: "http://pwa-gameplays:8082"
 
+
   users-db:
     image: postgres:16.3
     restart: always
@@ -35,6 +37,7 @@ services:
       POSTGRES_DB: "users_db"
       POSTGRES_USER: "users_user"
       POSTGRES_PASSWORD: "users_password"
+
 
   pwa-games:
     build:
@@ -49,6 +52,7 @@ services:
       SPRING_JPA_DATABASE_PLATFORM: "org.hibernate.dialect.PostgreSQLDialect"
       EXPERIENCE_URL: "http://pwa-experience:8085"
       GAMEPLAYS_URL: "http://pwa-gameplays:8082"
+
 
   games-db:
     image: postgres:16.3
@@ -69,6 +73,7 @@ services:
       SPRING_DATASOURCE_USERNAME: "experience_user"
       SPRING_DATASOURCE_PASSWORD: "experience_password"
       SPRING_JPA_DATABASE_PLATFORM: "org.hibernate.dialect.PostgreSQLDialect"
+ 
 
   experience-db:
     image: postgres:16.3
@@ -77,6 +82,7 @@ services:
       POSTGRES_DB: "experience_db"
       POSTGRES_USER: "experience_user"
       POSTGRES_PASSWORD: "experience_password"
+
 
   pwa-gameplays:
     build:
@@ -90,6 +96,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: "gameplays_password"
       SPRING_JPA_DATABASE_PLATFORM: "org.hibernate.dialect.PostgreSQLDialect"
 
+
   gameplays-db:
     image: postgres:16.3
     restart: always
@@ -97,6 +104,7 @@ services:
       POSTGRES_DB: "gameplays_db"
       POSTGRES_USER: "gameplays_user"
       POSTGRES_PASSWORD: "gameplays_password"
+
 
   pwa-playrooms:
     build:
@@ -113,6 +121,7 @@ services:
       EXPERIENCE_URL: "http://pwa-experience:8085"
       GAMEPLAYS_URL: "http://pwa-gameplays:8082"
 
+
   playrooms-db:
     image: postgres:16.3
     restart: always
@@ -120,3 +129,15 @@ services:
       POSTGRES_DB: "playrooms_db"
       POSTGRES_USER: "playrooms_user"
       POSTGRES_PASSWORD: "playrooms_password"
+
+  pwa-client:
+    build:
+      context: ./client-pwa
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      VITE_API_BASE_URL: "http://pwa-gateway:8080/api"
+      VITE_API_WS_URL: "ws://pwa-gateway:8080/ws-playrooms"
+      VITE_HOST: "pwa-client"
+    ports:
+    - "5137:5137"
