@@ -7,6 +7,18 @@ The product's purpose is to make board game enjoyment more accessible for all us
 The application will also be integrated with the BGG API to collect various data such as users' 
 gameplay history and available board games. <p>
 
+## How to run the application?
+
+The easiest way to run the application is using a dockerized version. <b>Required: <i>Docker Engine</i></b>
+
+1. In the project root path, run: `docker-compose up -d`
+2. All images will be created automaticlly
+   - <b>Note:</b> building source files by <i>Dockerfiles</i> and setting up containers may take a while!
+3. The application is started:
+   - GUI is available at `localhost:5137`
+   - API is available at `localhost:8080`
+4. To shut down the application, run: `docker-compose down`
+
 ## Project structure
 
 The application consists of the fronted app and the backend services. <p>
