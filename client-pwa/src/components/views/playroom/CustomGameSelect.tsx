@@ -1,6 +1,7 @@
 
 import { Stack, TextField, Typography } from "@mui/material";
 import { Dispatch, ReactNode, SetStateAction } from "react";
+import { usePlayroomContext } from "../../../contexts/PlayroomContext";
 
 interface SearchSelectProps {
     setName: Dispatch<SetStateAction<string>>
@@ -18,7 +19,10 @@ interface SearchSelectProps {
  */
 const CustomGameSelect = ({setName, name, setChoice}: SearchSelectProps): ReactNode => {
 
+    const {setThumbnailSrc} = usePlayroomContext();
+
     const handleSetName = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setThumbnailSrc("");
         setName(event.currentTarget.value);
         setChoice("0");
     }

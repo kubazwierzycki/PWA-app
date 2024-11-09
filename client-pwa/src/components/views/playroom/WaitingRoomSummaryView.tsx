@@ -2,6 +2,7 @@ import { Typography } from "@mui/material";
 import {ReactNode} from "react";
 import { usePlayroomContext } from "../../../contexts/PlayroomContext";
 import styles from '../../../styles/waitingRoomSummaryView.module.css'
+import LogoHourglass from "../../logo/LogoHourglass";
 /**
  * View component showing players who have joined the room
  * @returns {ReactNode}
@@ -33,7 +34,11 @@ const WaitingRoomSummaryView = ({name, timer, isGlobal} : {name : string, timer 
             <Typography variant="h4" sx={{ mb: 1 }}>{name}</Typography>
             {displayHMS(timer)}
             <Typography variant="subtitle2" sx={{ mb: 1 }}>Type: {isGlobal ? "Global" : "Per user"}</Typography>
-            <img src={gameImgSrc} className={styles.gameImage}/>
+            {gameImgSrc  
+                ? <img src={gameImgSrc} className={styles.gameImage}/>
+                : <LogoHourglass/>
+            }
+           
         </>
     )
 }
