@@ -21,7 +21,7 @@ export default defineConfig(({ mode }) => {
             },
             host: env.VITE_HOST, // needed for the Docker Container port mapping to work
             strictPort: true, 
-            port: 5137, // you can replace this port with any port
+            port: 5173, // you can replace this port with any port
         },
         plugins: [
             react(),

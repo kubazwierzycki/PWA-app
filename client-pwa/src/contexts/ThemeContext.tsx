@@ -1,5 +1,5 @@
 import {createContext, ReactElement, ReactNode, useContext, useMemo, useState} from "react";
-import {blue, green, grey, indigo, teal} from "@mui/material/colors";
+import {blue, green, grey, indigo, lightBlue, teal} from "@mui/material/colors";
 import {createTheme, CssBaseline, PaletteMode, responsiveFontSizes, ThemeProvider} from "@mui/material";
 import 'typeface-quicksand'; 
 
@@ -49,22 +49,21 @@ export const ThemeModeProvider = ({children}: {children: ReactElement}): ReactNo
                         paper: 'rgba(239,246,248)',
                     },
                     text: {
-                        primary: '#000',
-                        secondary: blue[800],
+                        primary: '#313131',
+                        secondary: lightBlue[800],
                     },
                 }
                 : {
                     // palette values for dark mode
                     primary: indigo,
                     secondary: teal,
-                    // player: indigo[400],
-                    divider: blue[600],
+                    divider: indigo[500],
                     background: {
                         default: '#3C3C3C',
                         paper: '#383838',
                     },
                     text: {
-                        primary: '#fff',
+                        primary: '#efefef',
                         secondary: grey[500],
                     },
                 }),

@@ -62,13 +62,11 @@ const CreatePlayroomStepper = (): ReactNode => {
                 case "waitingRoom": {
                     const waitingRoomMessage : WaitingRoomMessage = (lastJsonMessage as WaitingRoomMessage);
                     setWaitingRoomPlayers(waitingRoomMessage.players);
-                    console.log("waitingRoomUpdate");
                     break;
                 }
                 case "playroom": {
                     setUsername(user.username);
                     navigate("/playroom");
-                    console.log("playroom");
                     break;
                 }
                 default: {
