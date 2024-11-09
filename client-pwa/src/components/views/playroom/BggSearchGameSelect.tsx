@@ -1,9 +1,10 @@
-import {alpha, Box,InputBase, List, styled,  } from "@mui/material";
+import {alpha, Box,FormControlLabel,Grid,InputBase, List, styled, Switch, Tooltip } from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
 import React, {Dispatch, ReactNode, SetStateAction, useEffect, useState} from "react";
 import bggService, { BggGameFromXML } from "../../../services/bgg"
 import axios from "axios";
 import BoardGameSearchResult from "../../BoardGameSearchResult"
+import { useAuth } from "../../../contexts/AuthContext";
 
 
 const Search = styled('div')(({theme}) => ({
@@ -65,14 +66,24 @@ interface SearchSelectProps {
 const BggSearchGameSelect = ({name, setName, setChoice}: SearchSelectProps): ReactNode => {
 
     const [input, setInput] = useState<string>("");
+
+    const {user} = useAuth();
     const [selectedIndex, setSelectedIndex] = useState(-1);
+
+    const [bggGamesFromXML, setBggGamesFromXML] = useState<BggGameFromXML[] | null>(null);
+    const [playerCollection, setPlayerCollection] =  useState<BggGameFromXML[] | null>(null);
+    const [usePlayerCollection, setUsePlayerCollection] = useState<boolean>(false);
+
+        
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setInput(event.currentTarget.value);
     }
 
-    const [bggGamesFromXML, setBggGamesFromXML] = useState<BggGameFromXML[] | null>(null);
+    const handleUsePlayerCollection = (event : React.ChangeEvent<HTMLInputElement>) => {
+        setUsePlayerCollection(event.target.checked);
 
-  
+    }
+
 
     useEffect(()=>{
         // elminate race condition
@@ -80,11 +91,25 @@ const BggSearchGameSelect = ({name, setName, setChoice}: SearchSelectProps): Rea
 
         const fetchBggGamesByPattern = async() =>{
             try {
-                const XML = await bggService.getBggGamesXMLByPatten(input, controller.signal);
+                let XML = "";
+                let bggGamesFromXML : BggGameFromXML[] = [];
+                if(usePlayerCollection) {
+                    if(playerCollection == null) {
+                        XML = await bggService.getPlayeCollectionXML(user.bggUsername, controller.signal);
+                        bggGamesFromXML = await  bggService.getAllGamesFromCollectionXML(XML);
+                        setPlayerCollection(bggGamesFromXML);
+                    } else {
+                        bggGamesFromXML = playerCollection;
+                    }
+                    
+                    const regexp = new RegExp(`.*${input}.*`, "ig");
+                    bggGamesFromXML = bggGamesFromXML.filter(g => regexp.test(g.name));
+                } else {
+                    XML = await bggService.getBggGamesXMLByPatten(input, controller.signal);
+                    bggGamesFromXML = await bggService.getAllGamesFromXML(XML);
+                }
 
-                const bggGamesFromXML = await bggService.getAllGamesFromXML(XML);
                 setBggGamesFromXML(bggGamesFromXML);
-
                 setSelectedIndex(bggGamesFromXML.findIndex(game => game.name == name))
             } catch(err) {
                 if (axios.isAxiosError(err)) {
@@ -102,21 +127,41 @@ const BggSearchGameSelect = ({name, setName, setChoice}: SearchSelectProps): Rea
         }
 
         return () => controller.abort();
-    }, [input])
+    }, [input, usePlayerCollection])
 
     return (
         <Box style={{height: "100%"}}>
-            <Search>
-                <SearchIconWrapper>
-                    <SearchIcon />
-                </SearchIconWrapper>
-                <StyledInputBase
-                    placeholder="Search…"
-                    inputProps={{ 'aria-label': 'search' }}
-                    value={input}
-                    onChange={handleInputChange}
-                />
-            </Search>
+            <Grid container sx={{
+                    justifyContent: "flex-start",
+                    alignItems: "flex-start",
+                }}>
+                <Grid item xs={7}>
+                    <Search>
+                        <SearchIconWrapper>
+                            <SearchIcon />
+                        </SearchIconWrapper>
+                      
+                        <Tooltip
+                            placement="top-start"
+                            enterDelay={500} leaveDelay={200}
+                            title={input.length < 3 ?"Type at least 3 characters" : ""}
+                        >
+                       
+                        <StyledInputBase
+                            placeholder="Search…"
+                            inputProps={{ 'aria-label': 'search' }}
+                            value={input}
+                            onChange={handleInputChange}
+                        />
+                         </Tooltip>
+                    </Search>
+                </Grid>
+                <Grid item xs={5} sx={{textAlign:"right"}}> 
+                    <FormControlLabel control={
+                        <Switch checked={usePlayerCollection} onChange={handleUsePlayerCollection} />
+                    } label="My collection" />
+                </Grid>
+            </Grid>
             {
             bggGamesFromXML ? 
             <List sx={{

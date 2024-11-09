@@ -281,6 +281,50 @@ const getAllGamesFromXML = async (res: string): Promise<BggGameFromXML[]> =>  {
     return result;
 }
 
+
+const getAllGamesFromCollectionXML = async (res: string): Promise<BggGameFromXML[]> =>  {
+    const xmlDoc = new DOMParser().parseFromString(res, "text/xml");
+    const xpathNameExpr = "/items/item/name";
+    const xpathNameResult = document.evaluate(
+        xpathNameExpr,
+        xmlDoc,
+        null,
+        XPathResult.ORDERED_NODE_ITERATOR_TYPE,
+        null
+    );
+
+    let node;
+    const result : BggGameFromXML[]   = [];
+
+    
+    node = xpathNameResult.iterateNext()
+    let i = 0;
+    while (node) {
+        result.push({"name" : node.textContent ?  node.textContent : "0" , "id" : "0"})
+        node = xpathNameResult.iterateNext()
+        i++;
+    }
+
+    const xpathIdExpr = "/items/item/@objectid";
+    const xpathIdResult = document.evaluate(
+        xpathIdExpr,
+        xmlDoc,
+        null,
+        XPathResult.ORDERED_NODE_ITERATOR_TYPE,
+        null
+    );
+
+    node = xpathIdResult.iterateNext()
+    i = 0;
+    while (node) {
+        result[i].id = node.textContent ?  node.textContent : "0" ;
+        node = xpathIdResult.iterateNext()
+        i++;
+    }
+    
+    return result;
+}
+
 const getBggGamesXMLByPatten = async (pattern : string, signal: AbortSignal) => {
     const request = axios({
         method: "get",
@@ -288,6 +332,18 @@ const getBggGamesXMLByPatten = async (pattern : string, signal: AbortSignal) => 
         url: `${baseUrl}/search?query=${pattern}&type=boardgame`,
     });
 
+    const response = await request;
+    return response.data;
+}
+
+const getPlayeCollectionXML = async (username : string, signal: AbortSignal) => {
+    const request = axios({
+        method: "get",
+        signal: signal, //signal from controller
+        url: `${baseUrl}/collection?username=${username}&subtype=boardgame`,
+    });
+
+    
     const response = await request;
     return response.data;
 }
@@ -344,10 +400,12 @@ const getGameImageSrcFromResponse = (res: string) : string =>{
 export default {
     getUserByUsername,
     getUserIdFromResponse,
+    getPlayeCollectionXML,
     getBggGameById,
     getGameImageSrcFromResponse,
     getBggGamesXMLByPatten,
     getAllGamesFromXML,
+    getAllGamesFromCollectionXML,
     getGameDetails,
     getGameDetailsFromXML
 };
