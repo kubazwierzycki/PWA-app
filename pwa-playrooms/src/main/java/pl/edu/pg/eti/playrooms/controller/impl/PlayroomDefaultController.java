@@ -76,23 +76,22 @@ public class PlayroomDefaultController implements PlayroomController {
         Playroom playroom = this.getPlayroom(playroomId);
 
         if (playroom != null && playroom.getPlayers().isEmpty()) {
+            if ("0".equals(request.getGameId())) {
+                request.setGameId("custom_" + UUID.randomUUID());
+                for (GetGames.Game game : playroomEventRepository.getAllGames().getGames()) {
+                    if (game.getName().equals(request.getGame())) {
+                        request.setGameId(game.getId());
+                        break;
+                    }
+                }
+            }
+
             playroom.setGlobalTimer(request.getIsGlobalTimer());
             playroom.setGame(new Playroom.Game(request.getGameId(), request.getGame()));
             playroom.setGlobalTimerValue(request.getTimer());
 
             playroom.setLastOperationTime(LocalTime.now());
             playroomService.update(playroom);
-
-            if ("0".equals(request.getGameId())) {
-                request.setGameId("custom_" + UUID.randomUUID());
-                for (GetGames.Game game : playroomEventRepository.getAllGames().getGames()) {
-                    if (game.getName().equals(request.getGame())) {
-                        playroomEventRepository.updateGame(game.getId(), request.getGame(),
-                                !request.getIsGlobalTimer(), request.getTimer().intValue());
-                        return;
-                    }
-                }
-            }
 
             playroomEventRepository.updateGame(request.getGameId(), request.getGame(),
                     !request.getIsGlobalTimer(), request.getTimer().intValue());
