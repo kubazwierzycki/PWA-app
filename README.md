@@ -15,7 +15,7 @@ The easiest way to run the application is using a dockerized version. <b>Require
 2. All images will be created automaticlly
    - <b>Note:</b> building source files by <i>Dockerfiles</i> and setting up containers may take a while!
 3. The application is started:
-   - GUI is available at `localhost:5137`
+   - GUI is available at `localhost:5173`
    - API is available at `localhost:8080`
 4. To shut down the application, run: `docker-compose down`
 
