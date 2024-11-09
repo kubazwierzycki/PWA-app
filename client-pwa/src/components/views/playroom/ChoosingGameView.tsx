@@ -69,7 +69,7 @@ const ChoosingGameView = ({name, setName, choice, setChoice}: ChoosingViewProps)
                             WIZARD
                         </ToggleButton>
                         <ToggleButton value={SELECTION_MODES.SEARCH} aria-label="search">
-                            SEARCHs
+                            SEARCH
                         </ToggleButton>
                         <ToggleButton value={SELECTION_MODES.BGG} aria-label="bgg_search">
                             BGG SEARCH
