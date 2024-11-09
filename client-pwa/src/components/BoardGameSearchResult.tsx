@@ -30,10 +30,11 @@ interface BoardGameSearchResultProps {
     game: BggGameFromXML
     setChoice: Dispatch<SetStateAction<string>>
     input: string
+    usePlayerCollection : boolean
 }
 
 
-const BoardGameSearchResult = ({isSelected,index,setSelectedIndex,setName,game,setChoice,input} 
+const BoardGameSearchResult = ({isSelected,index,setSelectedIndex,setName,game,setChoice,input, usePlayerCollection} 
     : BoardGameSearchResultProps) =>{
 
     const [open, setOpen]= useState(false);
@@ -65,7 +66,7 @@ const BoardGameSearchResult = ({isSelected,index,setSelectedIndex,setName,game,s
 
     useEffect(()=>{
         setOpen(false)
-    }, [input])
+    }, [input, usePlayerCollection])
 
     return(
         <>

@@ -180,6 +180,7 @@ const BggSearchGameSelect = ({name, setName, setChoice}: SearchSelectProps): Rea
                     setSelectedIndex={setSelectedIndex}
                     setChoice={setChoice}
                     input={input}
+                    usePlayerCollection={usePlayerCollection}
                 />
              )}
             </List> : null
