@@ -153,7 +153,7 @@ services:
       VITE_API_WS_URL: "ws://pwa-gateway:8080/ws-playrooms"
       VITE_HOST: "pwa-client"
     ports:
-    - "5137:5137"
+    - "5173:5173"
     
 volumes: 
   users_data: 
