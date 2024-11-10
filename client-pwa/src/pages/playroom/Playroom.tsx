@@ -288,14 +288,15 @@ const Playroom = (): ReactNode => {
                             <img
                                 alt="Image of the selected game"
                                 className={gameImageSrc ? styles.gameImage : styles.gameImageNotLoaded} 
-                                src={gameImageSrc}/>
+                                src={gameImageSrc}
+                            />
                         </Box>
                     </Grid>
                     <Grid item xs={12} md={3}>
                         <Box className={styles.actionsButtonsContainer}>
                             {gameState.paused 
-                                ? <Button variant="contained" onClick={handleStartGame}>Start</Button>
-                                : <Button variant="contained" onClick={handlePauseGame}>Pause</Button> 
+                                ? <Button variant="contained" onClick={handleStartGame}><Typography variant="body1">Start</Typography></Button>
+                                : <Button variant="contained" onClick={handlePauseGame}><Typography variant="body1">Pause</Typography></Button> 
                             }
                             {(gameState.players.length > 1) ?
                                 <>
@@ -304,9 +305,10 @@ const Playroom = (): ReactNode => {
                                         disableFocusListener
                                         disableTouchListener
                                         title="End game as a winner and save game"
-                                        placement="bottom">
+                                        placement="bottom"
+                                    >
                                         <Button variant="contained" onClick={handleWinGame}>
-                                            Win game
+                                            <Typography variant="body1">Win game</Typography>
                                         </Button>
                                     </Tooltip>
                                 </> : null
@@ -315,24 +317,28 @@ const Playroom = (): ReactNode => {
                                 disableFocusListener
                                 disableTouchListener
                                 title="End game without saving winner"
-                                placement="bottom">
+                                placement="bottom"
+                            >
                                 <Button variant="contained" onClick={handleEndGame}>
-                                    End game
+                                    <Typography  variant="body1">End game</Typography>
                                 </Button>
                             </Tooltip>
                             {player?.skipped ? <Button
                                 variant="contained"
-                                onClick={handleCancleSkip}>
-                                Cancel skip
+                                onClick={handleCancleSkip}
+                            >
+                                <Typography variant="body1">Cancel skip</Typography>
                             </Button> : <Button
                                 variant="contained"
-                                onClick={()=>setOpenSkip(true)}>
-                                Skip turns
+                                onClick={()=>setOpenSkip(true)}
+                            >
+                                <Typography>Skip turns</Typography>
                             </Button> }
                             <Button
                                 variant="contained"
-                                onClick={handleQuitPlayroom}>
-                                Quit playroom
+                                onClick={handleQuitPlayroom}
+                            >
+                                <Typography variant="body1"> Quit play&shy;room</Typography>
                             </Button>
                         </Box>
                     </Grid>
@@ -344,8 +350,9 @@ const Playroom = (): ReactNode => {
                             <Button 
                                 disabled={isEndTurnButtonDisabled()}
                                 variant="contained"
-                                onClick={handleEndTurn}>
-                                End Turn
+                                onClick={handleEndTurn}
+                            >
+                                <Typography variant="body1">End Turn</Typography>
                             </Button>
                         </Box>
                     </Grid>
