@@ -299,15 +299,7 @@ const Playroom = (): ReactNode => {
                             }
                             {(gameState.players.length > 1) ?
                                 <>
-                                    <Tooltip
-                                        disableFocusListener
-                                        disableTouchListener
-                                        title="End game without saving"
-                                        placement="bottom">
-                                        <Button variant="contained" onClick={handleEndGame}>
-                                            End game
-                                        </Button>
-                                    </Tooltip>
+
                                     <Tooltip
                                         disableFocusListener
                                         disableTouchListener
@@ -317,8 +309,17 @@ const Playroom = (): ReactNode => {
                                             Win game
                                         </Button>
                                     </Tooltip>
-                                </>: null
+                                </> : null
                             }
+                            <Tooltip
+                                disableFocusListener
+                                disableTouchListener
+                                title="End game without saving winner"
+                                placement="bottom">
+                                <Button variant="contained" onClick={handleEndGame}>
+                                    End game
+                                </Button>
+                            </Tooltip>
                             {player?.skipped ? <Button
                                 variant="contained"
                                 onClick={handleCancleSkip}>
