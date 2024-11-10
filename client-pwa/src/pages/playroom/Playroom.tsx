@@ -47,8 +47,15 @@ const Playroom = (): ReactNode => {
     });
     const [isUpdateQueueAlertOpen, setIsUpdateQueueAlertOpen] = useState<boolean>(false);
 
+    // playroom start notification()
+    useEffect(()=>{
+        if (Notification.permission === "granted") {
+            const n = new Notification("The game has started");
+            n.close();
+          }
+    }, [])
 
-
+    // fetching game image
     useEffect(()=>{
         const fetchImageSrc = async (gameId : number) => {
             try{
