@@ -1,10 +1,9 @@
 import {ReactNode} from "react";
-import {alpha, Avatar, Box, Card, Grid, IconButton, Typography} from "@mui/material";
-import { buildSkipOwnMoveMessage, PlayroomPlayer, TimerType } from "../../../services/playroom";
+import {alpha, Avatar, Badge, Box, Card, Grid, IconButton, styled, Typography} from "@mui/material";
+import {PlayroomPlayer, TimerType } from "../../../services/playroom";
 import TimerView from "./TimerView";
 import styles from '../../../styles/playroomPlayersView.module.css'
 import AcUnitIcon from '@mui/icons-material/AcUnit';
-import { useWebSocketContext } from "../../../contexts/WebSocketContext";
 
 
 /**
@@ -12,16 +11,20 @@ import { useWebSocketContext } from "../../../contexts/WebSocketContext";
  * @param {PlayroomPlayer[]} players - list of players in playroom
  * @returns {ReactNode}
  */
-const PlayroomPlayersView = ({players, paused, currentPlayer, code, playerId}: 
+const PlayroomPlayersView = ({players, paused, currentPlayer}: 
         {players : PlayroomPlayer[],
          paused : boolean,
          currentPlayer: number,
-         code: string,
-         playerId: string,
         })
         : ReactNode => {
     
-    const {sendJsonMessage} = useWebSocketContext();
+
+    const StyledBadge = styled(Badge)(({theme}) => ({
+        "& .MuiBadge-badge": {
+            color: theme.palette.text.primary,
+        }
+    }));
+
 
     const isTimerPaused = (queueNumber : number): boolean =>{
         if(paused){
@@ -33,10 +36,6 @@ const PlayroomPlayersView = ({players, paused, currentPlayer, code, playerId}:
 
     const isActivePlayer = (queueNumber : number): boolean =>{
         return (currentPlayer === queueNumber) ? true :  false
-    }
-
-    const handleSkip = () =>{
-        sendJsonMessage(buildSkipOwnMoveMessage(code, 1))
     }
 
     return (
@@ -57,13 +56,19 @@ const PlayroomPlayersView = ({players, paused, currentPlayer, code, playerId}:
                                     <Typography variant="subtitle2" sx={{ml: "10px"}}>
                                          {player.name}&nbsp;
                                     </Typography>
-                                    {player.playerId === playerId ?
+                                    {player.skipped?
+                                    <>
+                                    <StyledBadge
+                                        badgeContent={player.turnsToSkip} 
+                                        max={999}
+                                    >
                                     <IconButton 
+                                            sx={{m:0,p:0}} 
                                             aria-label="skipTurn" 
-                                            onClick={handleSkip}
+                                            disabled={true}
                                             >
-                                            <AcUnitIcon></AcUnitIcon>
-                                        </IconButton> : null}
+                                            <AcUnitIcon sx={{color: (theme) => `${alpha(theme.palette.text.primary,0.2)}`}}></AcUnitIcon>
+                                        </IconButton></StyledBadge></>: null}
                                </Grid>
                                 <Grid item xs={6} sx={{alignItems:"center", display:"flex", justifyContent:"flex-end"}}>
                                     {(player.timer !== null) ? 

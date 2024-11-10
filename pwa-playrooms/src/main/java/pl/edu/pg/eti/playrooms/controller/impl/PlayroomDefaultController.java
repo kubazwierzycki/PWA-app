@@ -535,7 +535,7 @@ public class PlayroomDefaultController implements PlayroomController {
         Integer turnsToSkip;
         Playroom playroom = this.getPlayroom(playroomId);
 
-        turnsToSkip = Integer.getInteger(getStringValue("turnsToSkip", message));
+        turnsToSkip = Integer.valueOf(getStringValue("turnsToSkip", message));
 
         if (playroom != null && !playroom.isEnded() && isPlayerInPlayroomBySession(sessionId, playroom)) {
             Map<Integer, Playroom.Player> newPlayersMap = playroom.getPlayers();
