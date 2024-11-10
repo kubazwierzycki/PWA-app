@@ -1,7 +1,7 @@
 import { Alert, AlertTitle, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControlLabel, Switch, Tooltip, Typography } from "@mui/material";
 import {ReactNode, useEffect, useState} from "react";
 import { useWebSocketContext } from "../../contexts/WebSocketContext";
-import { buildConfirmOperation, PlayroomPlayer, buildEndGameMessage, buildEndTurnMessage, buildPauseGameMessage, buildStartGameMessage, SimpleMessage, ConfirmOperationMessage, PlayroomMessage, ConfirmOperationAlert, buildQuitPlayroomMessage, TimerType, buildWinGameMessage, updatePlayroomQueue, PutPlayroomQueue, playerIdObj } from "../../services/playroom";
+import { buildConfirmOperation, PlayroomPlayer, buildEndGameMessage, buildEndTurnMessage, buildPauseGameMessage, buildStartGameMessage, SimpleMessage, ConfirmOperationMessage, PlayroomMessage, ConfirmOperationAlert, buildQuitPlayroomMessage, TimerType, buildWinGameMessage, updatePlayroomQueue, PutPlayroomQueue, playerIdObj, buildCancelSkipOwnMoveMessage } from "../../services/playroom";
 import Grid from '@mui/material/Grid';
 import { usePlayroomContext } from "../../contexts/PlayroomContext";
 import TimerView from "../../components/views/playroom/TimerView";
@@ -12,6 +12,7 @@ import bgg from "../../services/bgg";
 import axios from "axios";
 import TimerTypeButtons from "../../components/controls/buttons/TimerTypeButtons";
 import PlayroomPlayersEditView from "../../components/views/playroom/PlayroomPlayersEditView";
+import SkipTurnsView from "../../components/views/playroom/SkipTurnsView";
 
 
 /**
@@ -22,10 +23,12 @@ const Playroom = (): ReactNode => {
 
     const navigate = useNavigate();
 
-    const { sendJsonMessage, lastJsonMessage, setSocketUrl} = useWebSocketContext();
+    const {sendJsonMessage, lastJsonMessage, setSocketUrl} = useWebSocketContext();
     const {playerId, code, setCode, timer, clearPlayroomContex} = usePlayroomContext();
     const [isCurrentPlayer, setIsCurrentPlayer] = useState<boolean>(false);
+    const [player, setPlayer] = useState<PlayroomPlayer | null>(null)
     const [open, setOpen] = useState(false);
+    const [openSkip, setOpenSkip] = useState(false);
     const [confirmOperationAlert, setConfirmOperationAlert] = useState<ConfirmOperationAlert>({
         operationId : "",
         question : "",
@@ -71,6 +74,8 @@ const Playroom = (): ReactNode => {
     // actions performed for a given message type
     useEffect(() => {
         if (lastJsonMessage) {
+            console.log(lastJsonMessage);
+            
             const messageType : string = (lastJsonMessage as SimpleMessage).type;
             switch(messageType){
                 case "playroom": {
@@ -89,6 +94,7 @@ const Playroom = (): ReactNode => {
                         player.queueNumber === playroomMessage.currentPlayer 
                             ? setIsCurrentPlayer(true)
                             : setIsCurrentPlayer(false)
+                        setPlayer(player)
                     }
 
                     // block players editing view
@@ -138,6 +144,7 @@ const Playroom = (): ReactNode => {
     const handleClose = () => {
         setOpen(false);
     };
+
     // operation agreed by user
     const handleAgreeOperation = () => {
         handleClose();
@@ -187,6 +194,9 @@ const Playroom = (): ReactNode => {
         return !(isCurrentPlayer && !gameState.paused)
     }
 
+    const handleCancleSkip = () =>{
+        sendJsonMessage(buildCancelSkipOwnMoveMessage(code))
+    }
 
     return (
         <div>
@@ -211,6 +221,12 @@ const Playroom = (): ReactNode => {
                 </Button>
                 </DialogActions>
             </Dialog>
+
+            <SkipTurnsView
+                open={openSkip}
+                setOpen={setOpenSkip}
+                code={code}
+            />
 
             {gameState.ended ?
                 <Alert severity="info">
@@ -263,8 +279,6 @@ const Playroom = (): ReactNode => {
                                 paused={gameState.paused} 
                                 players={gameState.players} 
                                 currentPlayer={gameState.currentPlayer}
-                                code={code}
-                                playerId={playerId}
                             />
                         }
                         </Box>
@@ -305,6 +319,15 @@ const Playroom = (): ReactNode => {
                                     </Tooltip>
                                 </>: null
                             }
+                            {player?.skipped ? <Button
+                                variant="contained"
+                                onClick={handleCancleSkip}>
+                                Cancel skip
+                            </Button> : <Button
+                                variant="contained"
+                                onClick={()=>setOpenSkip(true)}>
+                                Skip turns
+                            </Button> }
                             <Button
                                 variant="contained"
                                 onClick={handleQuitPlayroom}>
