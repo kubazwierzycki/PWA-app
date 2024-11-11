@@ -1,9 +1,18 @@
 import axios from "axios";
 import {BoardGameRank} from "../types/IBoardgames.ts";
 import api_address from "../config/api_address.ts";
+import axiosRetry from "axios-retry";
 
 
 const baseUrl = api_address.backend + "/users";
+
+const axiosInstance = axios.create();
+
+axiosRetry(axiosInstance, {
+    retries: 20,
+    retryCondition: (error) => error.response?.status === 404,
+    retryDelay: (retryCount) => retryCount * 1000,
+});
 
 /**
  * GET boardgames ranking
@@ -11,7 +20,7 @@ const baseUrl = api_address.backend + "/users";
  * @returns {Promise<BoardGameRank[]>} games ranking list
  */
 export const getRanking = async (userId: string): Promise<BoardGameRank[]> => {
-    const request = axios({
+    const request = axiosInstance({
         method: "get",
         url: `${baseUrl}/${userId}/ranking`,
         headers: {
