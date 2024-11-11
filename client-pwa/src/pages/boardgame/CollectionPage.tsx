@@ -148,6 +148,9 @@ const CollectionPage = (): ReactNode => {
 
             if (gamesData === undefined) {
                 setShownGames([]);
+                setGames([]);
+                setLoading(false);
+                setNumberGames(0);
                 return;
             }
 
@@ -158,6 +161,7 @@ const CollectionPage = (): ReactNode => {
             if (totalItems == 0) {
                 setGames([]);
                 setShownGames([]);
+                setLoading(false);
                 return;
             }
 
@@ -208,9 +212,12 @@ const CollectionPage = (): ReactNode => {
     // sorting games when games ready
     useEffect(() => {
         if (games === undefined || games.length === 0) {
+            setLoading(false);
             return;
         }
-        sortGames();
+        else {
+            sortGames();
+        }
     }, [games]);
 
 
