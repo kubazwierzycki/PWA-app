@@ -204,6 +204,32 @@ export const buildConfirmOperation = (playroomId: string, operationId: string ) 
     }
 }
 
+
+/**
+ * @param {string} playroomId - uuid of the playroom assigned by server
+ * @param {number} turnsToSkip - number of turns to skip
+ * @returns {Promise<boolean>} websocket message
+ */
+export const buildSkipOwnMoveMessage = (playroomId: string, turnsToSkip: number) : object => {
+    return {
+        "operation": "skip",
+        "playroomId": playroomId,
+        "turnsToSkip": turnsToSkip
+    }
+}
+
+/**
+ * @param {string} playroomId - uuid of the playroom assigned by server
+ * @returns {Promise<boolean>} websocket message
+ */
+export const buildCancelSkipOwnMoveMessage = (playroomId: string) : object => {
+    return {
+        "operation": "cancelSkip",
+        "playroomId": playroomId,
+    }
+}
+
+
 /**
  * @param {string} playroomId - uuid of the playroom assigned by server
  * @returns {Promise<boolean>} websocket message
@@ -242,6 +268,7 @@ export interface PlayroomPlayer{
     queueNumber: number
     playerId: string
     skipped: boolean
+    turnsToSkip: number
 }
 
 export interface Game{
