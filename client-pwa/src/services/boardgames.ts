@@ -2,18 +2,46 @@ import axios from "axios";
 import {parseXml} from "../utils/XMLToJSON.ts";
 import {BoardGameDetails, BoardGameStub, TopBoardGame} from "../types/IBoardgames.ts";
 import {clearCharEntities, getShortDescription} from "../utils/DescriptionParser.ts";
-import axiosRetry from "axios-retry";
 import api_address from "../config/api_address.ts";
 
 const baseApiAddress: string = api_address.bgg;
 
+const axiosInstance = axios.create();
 
-// Configure axios to retry up to 3 times with a 2-second delay between retries
-axiosRetry(axios, {
-    retries: 5,
-    retryDelay: (retryCount: number) => retryCount * 1000, // 1 second delay
-    retryCondition: (error) => error.response?.status === 202, // retry only for 202 status
+axiosInstance.interceptors.response.use(response => {
+    // 2xx response
+    if (response.status === 202) {
+        console.log('202')
+        throw new axios.Cancel('Data not ready');
+    }
+    else return response;
+}, (error) => {
+    return Promise.reject(error);
 });
+
+const MAX_RETRY = 20;
+let currentRetry = 0;
+
+const axiosSuccessHandler = (res: any) => {
+    currentRetry = 0;
+    return res;
+}
+
+const axiosErrorHandler = async (url: string) => {
+    if (currentRetry < MAX_RETRY) {
+        currentRetry++;
+        return getWithRetry(url);
+    }
+    else {
+        console.log('Error: Failed to load data');
+    }
+}
+
+const getWithRetry = async (url: string): Promise<any> => {
+    return axiosInstance.get(url)
+        .then((res) => axiosSuccessHandler(res))
+        .catch(() => axiosErrorHandler(url));
+}
 
 
 /**
@@ -30,7 +58,7 @@ export const getGameDetails = async (gameId: string | undefined): Promise<BoardG
 
     const url = `${baseApiAddress}/thing?id=${gameId}&stats=1`;
 
-    const detailsResponse = await axios.get(url);
+    const detailsResponse = await getWithRetry(url);
     let gameDetails = parseXml(detailsResponse.data).items.item;
 
     // special case when only one item present
@@ -64,7 +92,7 @@ export const getGameDetails = async (gameId: string | undefined): Promise<BoardG
 export const getGames = async (bggUsername: string, urlParams: string): Promise<BoardGameStub[]> => {
 
     const url = `${baseApiAddress}/collection?username=${bggUsername}&stats=1${urlParams}`;
-    const collectionResponse = await axios.get(url);
+    const collectionResponse = await getWithRetry(url);
 
     if (collectionResponse.status === 200) {
         const parsedData = parseXml(collectionResponse.data);
@@ -92,7 +120,7 @@ export const getTopGames = async (): Promise<TopBoardGame[]> => {
 
     const url = `${baseApiAddress}/hot/type=boardgame`;
 
-    const response = await axios.get(url);
+    const response = await getWithRetry(url);
     return parseXml(response.data).items.item;
 }
 
