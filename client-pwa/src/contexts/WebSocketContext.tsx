@@ -22,6 +22,7 @@ export const WebSocketProvider = ({children}: {children: ReactElement}) => {
   const [socketUrl, setSocketUrl] = useState<string | null>(null);
   const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocket(socketUrl, {
         share: true,
+        shouldReconnect: () => true,
         onOpen: () => {
             console.log("WebSocket connection established.");
         },

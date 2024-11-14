@@ -1,6 +1,6 @@
 import {ChangeEvent, ReactNode, useEffect, useState} from "react";
 import styles from "../../styles/createPlayroom.module.css";
-import {Button, Card, Checkbox, FormControlLabel, FormGroup, Input, Typography} from "@mui/material";
+import {Alert, Button, Card, Checkbox, FormControlLabel, FormGroup, Input, Typography} from "@mui/material";
 import {Link, useNavigate} from "react-router-dom";
 import { ReadyState }  from "react-use-websocket";
 import { buildJoinWaitingRoomMessage, WaitingPlayer, SimpleMessage, WaitingRoomMessage, PlayroomMessage, WelcomeInfoMessage } from "../../services/playroom";
@@ -35,6 +35,10 @@ const PlayroomJoin = (): ReactNode => {
 
     // waiting room player list
     const [waitingRoomPlayers, setWaitingRoomPlayers] = useState<WaitingPlayer[]>([]);
+
+    const [wsError, setWsError] = useState<boolean>(false);
+
+    const [buttonDisabledAfterError, setButtonDisabledAfterError] = useState<boolean>(false);
 
     // web socket messages processing
     useEffect(() => {
@@ -89,21 +93,34 @@ const PlayroomJoin = (): ReactNode => {
                     if(useUsername && uuid !== ""){
                         setUsername(user.username);
                         sendJsonMessage(buildJoinWaitingRoomMessage(code, user.username, uuid));
+                        
                     } else{
                         setUsername(nick);
                         sendJsonMessage(buildJoinWaitingRoomMessage(code, nick));
                     }
+                    setButtonDisabledAfterError(true);
+                    setTimeout(() => {setWsError(true); setButtonDisabledAfterError(false);}, 3000);
                 }
+            } else {
+                setButtonDisabledAfterError(true);
+                setTimeout(() => {setWsError(true); setButtonDisabledAfterError(false);}, 3000);
+                console.log("WebScoket is not in open state");
             }
     } 
 
     const isJoinPlayroomButtonDisabled = () => {
-        return !((code !== "" && useUsername) || (code !== "" && nick !== ""))
+        return !(code !== "" && (useUsername && uuid !== "") || nick !== "") || buttonDisabledAfterError
     }
 
-    return ( joinSuccessfully ? <div className={styles.container}>
-         <AwaitingPlayersView  code={code} players={waitingRoomPlayers}/></div> :
+    return ( joinSuccessfully ? 
         <div className={styles.container}>
+            <AwaitingPlayersView  code={code} players={waitingRoomPlayers}/></div> :
+        <div className={styles.container}>
+            {wsError ?
+                <Alert severity="error" sx={{width:"60%",mb:"1rem"}}>
+                    There was an connection error, please check the code and try again.
+                </Alert> : null
+            }
             <Card className={styles.generateBox} sx={{borderRadius: "20px"}}>
                 <Typography>
                     Please fill in the playroom code
@@ -143,7 +160,8 @@ const PlayroomJoin = (): ReactNode => {
                         </FormGroup>
                     </div>
                 </div>
-                <Button variant="contained" sx={{marginTop: "10px"}} onClick={handleJoinPlayroom} disabled={isJoinPlayroomButtonDisabled()}>
+                <Button variant="contained" sx={{marginTop: "10px"}} onClick={handleJoinPlayroom} 
+                disabled={isJoinPlayroomButtonDisabled()}>
                     Join playroom
                 </Button>
                 <br/>
