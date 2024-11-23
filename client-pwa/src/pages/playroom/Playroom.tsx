@@ -1,7 +1,7 @@
 import { Alert, AlertTitle, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControlLabel, Switch, Tooltip, Typography } from "@mui/material";
 import {ReactNode, useEffect, useState} from "react";
 import { useWebSocketContext } from "../../contexts/WebSocketContext";
-import { buildConfirmOperation, PlayroomPlayer, buildEndGameMessage, buildEndTurnMessage, buildPauseGameMessage, buildStartGameMessage, SimpleMessage, ConfirmOperationMessage, PlayroomMessage, ConfirmOperationAlert, buildQuitPlayroomMessage, TimerType, buildWinGameMessage, updatePlayroomQueue, PutPlayroomQueue, playerIdObj, buildCancelSkipOwnMoveMessage } from "../../services/playroom";
+import { buildConfirmOperation, PlayroomPlayer, buildEndGameMessage, buildEndTurnMessage, buildPauseGameMessage, buildStartGameMessage, SimpleMessage, ConfirmOperationMessage, PlayroomMessage, ConfirmOperationAlert, buildQuitPlayroomMessage, TimerType, buildWinGameMessage, updatePlayroomQueue, PutPlayroomQueue, playerIdObj, buildCancelSkipOwnMoveMessage, NotificationMessage } from "../../services/playroom";
 import Grid from '@mui/material/Grid';
 import { usePlayroomContext } from "../../contexts/PlayroomContext";
 import TimerView from "../../components/views/playroom/TimerView";
@@ -35,7 +35,7 @@ const Playroom = (): ReactNode => {
     });
     const [playersCopy, setPlayersCopy] = useState<PlayroomPlayer[]>([]);
     const [isInEditState, setIsInEditState] = useState(false);
-    const [gameImageSrc, setGameImageSrc] = useState("");
+    const [gameImageSrc, setGameImageSrc] = useState<string | null>(null);
     const [timerType, setTimerType] = useState<TimerType>(TimerType.MS);
     const [gameState, setGameState] = useState<PlayroomMessage>({
         type: "init",
@@ -122,6 +122,11 @@ const Playroom = (): ReactNode => {
                     setTimeout(() => {
                         setOpen(false);
                       }, 5000);
+                    break;
+                }
+                case "notification": {
+                    const notificationMessage : NotificationMessage = (lastJsonMessage as NotificationMessage);
+                    console.log(notificationMessage);
                     break;
                 }
                 default: {
@@ -285,11 +290,15 @@ const Playroom = (): ReactNode => {
                     </Grid>
                     <Grid item xs={0} md={6}>
                         <Box className={styles.imgContainer}>
+                            {gameImageSrc ? 
                             <img
                                 alt="Image of the selected game"
-                                className={gameImageSrc ? styles.gameImage : styles.gameImageNotLoaded} 
+                                className={styles.gameImage} 
                                 src={gameImageSrc}
-                            />
+                            /> 
+                            : <div className={styles.emptyImage} >
+                            </div>
+                            }
                         </Box>
                     </Grid>
                     <Grid item xs={12} md={3}>
@@ -365,3 +374,4 @@ const Playroom = (): ReactNode => {
 }
 
 export default Playroom;
+

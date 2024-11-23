@@ -3,7 +3,7 @@ import styles from "../../styles/createPlayroom.module.css";
 import {Alert, Button, Card, Checkbox, FormControlLabel, FormGroup, Input, Typography} from "@mui/material";
 import {Link, useNavigate} from "react-router-dom";
 import { ReadyState }  from "react-use-websocket";
-import { buildJoinWaitingRoomMessage, WaitingPlayer, SimpleMessage, WaitingRoomMessage, PlayroomMessage, WelcomeInfoMessage } from "../../services/playroom";
+import { buildJoinWaitingRoomMessage, WaitingPlayer, SimpleMessage, WaitingRoomMessage, PlayroomMessage, WelcomeInfoMessage, NotificationMessage } from "../../services/playroom";
 import { useAuth } from "../../contexts/AuthContext";
 import AwaitingPlayersView from "../../components/views/playroom/AwaitingPlayersView";
 import { useWebSocketContext } from "../../contexts/WebSocketContext";
@@ -40,6 +40,8 @@ const PlayroomJoin = (): ReactNode => {
 
     const [buttonDisabledAfterError, setButtonDisabledAfterError] = useState<boolean>(false);
 
+    const [notification, setNotification] = useState<string | null>(null);
+
     // web socket messages processing
     useEffect(() => {
         console.log(lastJsonMessage);
@@ -62,6 +64,18 @@ const PlayroomJoin = (): ReactNode => {
                     const playroomMessage : PlayroomMessage = (lastJsonMessage as PlayroomMessage);
                     setTimer(playroomMessage.timer);
                     navigate("/playroom");
+                    break;
+                }
+                case "notification": {
+                    const notificationMessage : NotificationMessage = (lastJsonMessage as NotificationMessage);
+                    setNotification(notificationMessage.notification);
+                    if(notificationMessage.notification === "The game is ended. The host left the game."){
+                        setTimeout( () => {
+                            navigate("/");
+                            setSocketUrl("");
+                        }
+                    , 5000)
+                    }
                     break;
                 }
                 default: {
@@ -114,11 +128,20 @@ const PlayroomJoin = (): ReactNode => {
 
     return ( joinSuccessfully ? 
         <div className={styles.container}>
+            {notification ?
+                <Alert severity="info" sx={{width:"60%",mb:"1rem"}}>
+                    <Typography>
+                        {notification}
+                    </Typography>
+                </Alert> : null
+            }
             <AwaitingPlayersView  code={code} players={waitingRoomPlayers}/></div> :
         <div className={styles.container}>
             {wsError ?
                 <Alert severity="error" sx={{width:"60%",mb:"1rem"}}>
-                    There was an connection error, please check the code and try again.
+                    <Typography>
+                        There was an connection error, please check the code and try again.
+                    </Typography>
                 </Alert> : null
             }
             <Card className={styles.generateBox} sx={{borderRadius: "20px"}}>

@@ -21,7 +21,7 @@ const GameOfTheDay = () => {
 
     useEffect(() => {
 
-        let dayNumber = new Date().getDate();
+        const dayNumber = new Date().getDate();
 
         getTopGames().then((value) => {
             setGameOfTheDay(value[dayNumber - 1]);

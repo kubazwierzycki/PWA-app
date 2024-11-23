@@ -44,7 +44,7 @@ const PlayroomPlayersView = ({players, paused, currentPlayer}:
                 {
                     players.map(player => {
                         return (
-                            <Grid container
+                            <Grid container key={player.playerId}
                             className={styles.playerContainer}
                             sx={{backgroundColor: isActivePlayer(player.queueNumber) ?
                                 (theme) => `${theme.palette.divider}`

@@ -299,12 +299,8 @@ public class PlayroomDefaultController implements PlayroomController {
                 } else {
                     Map<Integer, Playroom.Player> players = playroom.getPlayers();
                     for (int i : players.keySet()) {
-                        if (players.get(i).getWebSocketSessionId().equals(playroom.getHostId().toString())) {
-                            players.remove(i);
-                        } else {
-                            sendMessageJSON(webSocketSessions.get(players.get(i).getWebSocketSessionId()),
-                                    getNotificationMessage("The game is ended. The host left the game."));
-                        }
+                        sendMessageJSON(webSocketSessions.get(players.get(i).getWebSocketSessionId()),
+                                getNotificationMessage("The game is ended. The host left the game."));
                     }
                     playroom.setPlayers(players);
                 }

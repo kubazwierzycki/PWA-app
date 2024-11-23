@@ -38,7 +38,7 @@ const AwaitingPlayersView = ({code, players}: {code: string, players : WaitingPl
                 <Typography className={styles.infoElement}>
                     Your playroom code:
                 </Typography>
-                <Tooltip disableFocusListener title="Click to copy" >
+                <Tooltip title="Click to copy" >
                     <Chip label={code} className={styles.infoElement} onClick={copyToClipboard}/>
                 </Tooltip>
                 <Typography className={styles.infoElement}>
