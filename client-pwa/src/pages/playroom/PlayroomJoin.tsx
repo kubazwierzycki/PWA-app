@@ -40,6 +40,7 @@ const PlayroomJoin = (): ReactNode => {
 
     const [buttonDisabledAfterError, setButtonDisabledAfterError] = useState<boolean>(false);
 
+    // notification from backend
     const [notification, setNotification] = useState<string | null>(null);
 
     // web socket messages processing
@@ -130,9 +131,7 @@ const PlayroomJoin = (): ReactNode => {
         <div className={styles.container}>
             {notification ?
                 <Alert severity="info" sx={{width:"60%",mb:"1rem"}}>
-                    <Typography>
-                        {notification}
-                    </Typography>
+                    {notification}
                 </Alert> : null
             }
             <AwaitingPlayersView  code={code} players={waitingRoomPlayers}/></div> :

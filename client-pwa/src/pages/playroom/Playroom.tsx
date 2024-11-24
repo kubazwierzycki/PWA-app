@@ -49,7 +49,8 @@ const Playroom = (): ReactNode => {
     });
     const [isUpdateQueueAlertOpen, setIsUpdateQueueAlertOpen] = useState<boolean>(false);
 
-
+    // notification from backend
+    const [notification, setNotification] = useState<string | null>(null);
 
     useEffect(()=>{
         const fetchImageSrc = async (gameId : number) => {
@@ -105,7 +106,7 @@ const Playroom = (): ReactNode => {
                     // handle game ending
                     if(playroomMessage.ended){
                         clearPlayroomContex();
-                        setTimeout(()=> {setSocketUrl(null);}, 4000);
+                        setTimeout(()=> {setSocketUrl(null);}, 6000);
                         setCode("");
                     }
 
@@ -126,7 +127,14 @@ const Playroom = (): ReactNode => {
                 }
                 case "notification": {
                     const notificationMessage : NotificationMessage = (lastJsonMessage as NotificationMessage);
-                    console.log(notificationMessage);
+                    setNotification(notificationMessage.notification);
+                    if(notificationMessage.notification === "The game is ended. The host left the game."){
+                        setTimeout( () => {
+                            navigate("/");
+                            setSocketUrl("");
+                        }
+                    , 5000)
+                    }
                     break;
                 }
                 default: {
@@ -236,7 +244,13 @@ const Playroom = (): ReactNode => {
             {gameState.ended ?
                 <Alert severity="info">
                 <AlertTitle>The game has ended</AlertTitle>
-                You will be redirected to the homepage.
+                    You will be redirected to the homepage.
+                </Alert> : null
+            }
+
+            {notification ?
+                <Alert severity="info">
+                    {notification}
                 </Alert> : null
             }
 
