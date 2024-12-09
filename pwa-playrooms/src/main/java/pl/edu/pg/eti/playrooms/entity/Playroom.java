@@ -117,6 +117,11 @@ public class Playroom implements Serializable {
         private String username;
 
         /**
+         * Player's age
+         */
+        private Integer age;
+
+        /**
          * Timer (in seconds) for specific player
          */
         private Double timer;
