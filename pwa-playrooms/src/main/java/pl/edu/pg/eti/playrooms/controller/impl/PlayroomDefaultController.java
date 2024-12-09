@@ -177,7 +177,9 @@ public class PlayroomDefaultController implements PlayroomController {
                 guest = false;
             }
             Playroom.Player newPlayer = new Playroom.Player(
-                    UUID.randomUUID(), uuid, message.getJSONObject("player").getString("username"),
+                    UUID.randomUUID(), uuid,
+                    message.getJSONObject("player").getString("username"),
+                    message.getJSONObject("player").getInt("age"),
                     null, false, 0, guest, webSocketSession.getId());
 
             Map<String, Playroom.Player> updatedPlayers = playroom.getPlayersWaitingRoom();
@@ -889,11 +891,13 @@ public class PlayroomDefaultController implements PlayroomController {
      *          {
      *              "playerId": --playerId--,
      *              "username": --username--,
+     *              "age": --age--,
      *              "userId": --userID-- (null if guests)
      *          },
      *          {
      *              "playerId": --playerId--,
      *              "username": --username--,
+     *              "age": --age--,
      *              "userId": --userID-- (null if guests)
      *          },
      *          ...
@@ -916,6 +920,7 @@ public class PlayroomDefaultController implements PlayroomController {
             JSONObject player1 = new JSONObject();
             player1.put("playerId", player.getPlayerId());
             player1.put("username", player.getUsername());
+            player1.put("age", player.getAge());
             player1.put("userId", player.getUuid());
             players.put(player1);
         }
