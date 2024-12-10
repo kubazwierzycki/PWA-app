@@ -71,6 +71,19 @@ function App(): ReactNode {
         }
     }, []);
 
+
+    useEffect(()=>{
+
+            if (!("Notification" in window)) {
+              console.log("This browser does not support notifications.");
+            }
+            Notification.requestPermission().then((permission) => {
+                console.log(permission);
+            });
+          
+    }, [])
+
+
     return (
         <Routes>
             <Route path="/" element={<Layout />}>
