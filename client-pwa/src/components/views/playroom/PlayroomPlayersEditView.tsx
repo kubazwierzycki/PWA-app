@@ -36,7 +36,7 @@ const PlayroomPlayersEditView = ({playersToEdit, setPlayersToEdit}:
         <Card sx={{borderRadius: "20px"}}>
             <Box>
                 {playersToEdit.map((player, index) => 
-                        <Grid container className={styles.playerContainer}>
+                        <Grid container className={styles.playerContainer} key={player.playerId}>
                             <Grid item xs={6} sx={{alignItems:"center", display:"flex", justifyContent:"flex-start"}}>
                                 <Avatar/>
                                 <Typography variant="subtitle2" sx={{ml: "10px"}}>

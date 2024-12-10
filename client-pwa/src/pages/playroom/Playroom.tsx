@@ -1,7 +1,7 @@
 import { Alert, AlertTitle, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControlLabel, Switch, Tooltip, Typography } from "@mui/material";
 import {ReactNode, useEffect, useState} from "react";
 import { useWebSocketContext } from "../../contexts/WebSocketContext";
-import { buildConfirmOperation, PlayroomPlayer, buildEndGameMessage, buildEndTurnMessage, buildPauseGameMessage, buildStartGameMessage, SimpleMessage, ConfirmOperationMessage, PlayroomMessage, ConfirmOperationAlert, buildQuitPlayroomMessage, TimerType, buildWinGameMessage, updatePlayroomQueue, PutPlayroomQueue, playerIdObj } from "../../services/playroom";
+import { buildConfirmOperation, PlayroomPlayer, buildEndGameMessage, buildEndTurnMessage, buildPauseGameMessage, buildStartGameMessage, SimpleMessage, ConfirmOperationMessage, PlayroomMessage, ConfirmOperationAlert, buildQuitPlayroomMessage, TimerType, buildWinGameMessage, updatePlayroomQueue, PutPlayroomQueue, playerIdObj, buildCancelSkipOwnMoveMessage, NotificationMessage } from "../../services/playroom";
 import Grid from '@mui/material/Grid';
 import { usePlayroomContext } from "../../contexts/PlayroomContext";
 import TimerView from "../../components/views/playroom/TimerView";
@@ -12,6 +12,7 @@ import bgg from "../../services/bgg";
 import axios from "axios";
 import TimerTypeButtons from "../../components/controls/buttons/TimerTypeButtons";
 import PlayroomPlayersEditView from "../../components/views/playroom/PlayroomPlayersEditView";
+import SkipTurnsView from "../../components/views/playroom/SkipTurnsView";
 
 
 /**
@@ -22,18 +23,19 @@ const Playroom = (): ReactNode => {
 
     const navigate = useNavigate();
 
-    const { sendJsonMessage, lastJsonMessage, setSocketUrl} = useWebSocketContext();
+    const {sendJsonMessage, lastJsonMessage, setSocketUrl} = useWebSocketContext();
     const {playerId, code, setCode, timer, clearPlayroomContex} = usePlayroomContext();
-
     const [isCurrentPlayer, setIsCurrentPlayer] = useState<boolean>(false);
+    const [player, setPlayer] = useState<PlayroomPlayer | null>(null)
     const [open, setOpen] = useState(false);
+    const [openSkip, setOpenSkip] = useState(false);
     const [confirmOperationAlert, setConfirmOperationAlert] = useState<ConfirmOperationAlert>({
         operationId : "",
         question : "",
     });
     const [playersCopy, setPlayersCopy] = useState<PlayroomPlayer[]>([]);
     const [isInEditState, setIsInEditState] = useState(false);
-    const [gameImageSrc, setGameImageSrc] = useState("");
+    const [gameImageSrc, setGameImageSrc] = useState<string | null>(null);
     const [timerType, setTimerType] = useState<TimerType>(TimerType.MS);
     const [gameState, setGameState] = useState<PlayroomMessage>({
         type: "init",
@@ -47,6 +49,7 @@ const Playroom = (): ReactNode => {
     });
     const [isUpdateQueueAlertOpen, setIsUpdateQueueAlertOpen] = useState<boolean>(false);
 
+
     // playroom start notification()
     useEffect(()=>{
         if (Notification.permission === "granted") {
@@ -54,6 +57,9 @@ const Playroom = (): ReactNode => {
             n.close();
           }
     }, [])
+
+    // notification from backend
+    const [notification, setNotification] = useState<string | null>(null);
 
     // fetching game image
     useEffect(()=>{
@@ -79,6 +85,8 @@ const Playroom = (): ReactNode => {
     // actions performed for a given message type
     useEffect(() => {
         if (lastJsonMessage) {
+            console.log(lastJsonMessage);
+            
             const messageType : string = (lastJsonMessage as SimpleMessage).type;
             switch(messageType){
                 case "playroom": {
@@ -97,6 +105,7 @@ const Playroom = (): ReactNode => {
                         player.queueNumber === playroomMessage.currentPlayer 
                             ? setIsCurrentPlayer(true)
                             : setIsCurrentPlayer(false)
+                        setPlayer(player)
                     }
 
                     // block players editing view
@@ -107,7 +116,7 @@ const Playroom = (): ReactNode => {
                     // handle game ending
                     if(playroomMessage.ended){
                         clearPlayroomContex();
-                        setTimeout(()=> {setSocketUrl(null);}, 4000);
+                        setTimeout(()=> {setSocketUrl(null);}, 6000);
                         setCode("");
                     }
 
@@ -126,8 +135,20 @@ const Playroom = (): ReactNode => {
                       }, 5000);
                     break;
                 }
+                case "notification": {
+                    const notificationMessage : NotificationMessage = (lastJsonMessage as NotificationMessage);
+                    setNotification(notificationMessage.notification);
+                    if(notificationMessage.notification === "The game is ended. The host left the game."){
+                        setTimeout( () => {
+                            navigate("/");
+                            setSocketUrl("");
+                        }
+                    , 5000)
+                    }
+                    break;
+                }
                 default: {
-                    console.log("Unknown message type");
+                    console.log("Unknown message type", lastJsonMessage);
                     break;
                 }
             }
@@ -146,6 +167,7 @@ const Playroom = (): ReactNode => {
     const handleClose = () => {
         setOpen(false);
     };
+
     // operation agreed by user
     const handleAgreeOperation = () => {
         handleClose();
@@ -195,6 +217,9 @@ const Playroom = (): ReactNode => {
         return !(isCurrentPlayer && !gameState.paused)
     }
 
+    const handleCancleSkip = () =>{
+        sendJsonMessage(buildCancelSkipOwnMoveMessage(code))
+    }
 
     return (
         <div>
@@ -220,10 +245,22 @@ const Playroom = (): ReactNode => {
                 </DialogActions>
             </Dialog>
 
+            <SkipTurnsView
+                open={openSkip}
+                setOpen={setOpenSkip}
+                code={code}
+            />
+
             {gameState.ended ?
                 <Alert severity="info">
                 <AlertTitle>The game has ended</AlertTitle>
-                You will be redirected to the homepage.
+                    You will be redirected to the homepage.
+                </Alert> : null
+            }
+
+            {notification ?
+                <Alert severity="info">
+                    {notification}
                 </Alert> : null
             }
 
@@ -277,44 +314,64 @@ const Playroom = (): ReactNode => {
                     </Grid>
                     <Grid item xs={0} md={6}>
                         <Box className={styles.imgContainer}>
+                            {gameImageSrc ? 
                             <img
                                 alt="Image of the selected game"
-                                className={gameImageSrc ? styles.gameImage : styles.gameImageNotLoaded} 
-                                src={gameImageSrc}/>
+                                className={styles.gameImage} 
+                                src={gameImageSrc}
+                            /> 
+                            : <div className={styles.emptyImage} >
+                            </div>
+                            }
                         </Box>
                     </Grid>
                     <Grid item xs={12} md={3}>
                         <Box className={styles.actionsButtonsContainer}>
                             {gameState.paused 
-                                ? <Button variant="contained" onClick={handleStartGame}>Start</Button>
-                                : <Button variant="contained" onClick={handlePauseGame}>Pause</Button> 
+                                ? <Button variant="contained" onClick={handleStartGame}><Typography variant="body1">Start</Typography></Button>
+                                : <Button variant="contained" onClick={handlePauseGame}><Typography variant="body1">Pause</Typography></Button> 
                             }
                             {(gameState.players.length > 1) ?
                                 <>
-                                    <Tooltip
-                                        disableFocusListener
-                                        disableTouchListener
-                                        title="End game without saving"
-                                        placement="bottom">
-                                        <Button variant="contained" onClick={handleEndGame}>
-                                            End game
-                                        </Button>
-                                    </Tooltip>
+
                                     <Tooltip
                                         disableFocusListener
                                         disableTouchListener
                                         title="End game as a winner and save game"
-                                        placement="bottom">
+                                        placement="bottom"
+                                    >
                                         <Button variant="contained" onClick={handleWinGame}>
-                                            Win game
+                                            <Typography variant="body1">Win game</Typography>
                                         </Button>
                                     </Tooltip>
-                                </>: null
+                                </> : null
                             }
+                            <Tooltip
+                                disableFocusListener
+                                disableTouchListener
+                                title="End game without saving winner"
+                                placement="bottom"
+                            >
+                                <Button variant="contained" onClick={handleEndGame}>
+                                    <Typography  variant="body1">End game</Typography>
+                                </Button>
+                            </Tooltip>
+                            {player?.skipped ? <Button
+                                variant="contained"
+                                onClick={handleCancleSkip}
+                            >
+                                <Typography variant="body1">Cancel skip</Typography>
+                            </Button> : <Button
+                                variant="contained"
+                                onClick={()=>setOpenSkip(true)}
+                            >
+                                <Typography>Skip turns</Typography>
+                            </Button> }
                             <Button
                                 variant="contained"
-                                onClick={handleQuitPlayroom}>
-                                Quit playroom
+                                onClick={handleQuitPlayroom}
+                            >
+                                <Typography variant="body1"> Quit play&shy;room</Typography>
                             </Button>
                         </Box>
                     </Grid>
@@ -326,8 +383,9 @@ const Playroom = (): ReactNode => {
                             <Button 
                                 disabled={isEndTurnButtonDisabled()}
                                 variant="contained"
-                                onClick={handleEndTurn}>
-                                End Turn
+                                onClick={handleEndTurn}
+                            >
+                                <Typography variant="body1">End Turn</Typography>
                             </Button>
                         </Box>
                     </Grid>
@@ -340,3 +398,4 @@ const Playroom = (): ReactNode => {
 }
 
 export default Playroom;
+

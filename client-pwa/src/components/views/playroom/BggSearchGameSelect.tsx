@@ -142,8 +142,9 @@ const BggSearchGameSelect = ({name, setName, setChoice}: SearchSelectProps): Rea
                         </SearchIconWrapper>
                       
                         <Tooltip
+                            arrow
                             placement="top-start"
-                            enterDelay={500} leaveDelay={200}
+                            enterDelay={450} leaveDelay={250}
                             title={input.length < 3 ?"Type at least 3 characters" : ""}
                         >
                        
@@ -173,6 +174,7 @@ const BggSearchGameSelect = ({name, setName, setChoice}: SearchSelectProps): Rea
             }}>
              {bggGamesFromXML.map((game,index) => 
                 <BoardGameSearchResult
+                    key={game.id}
                     setName={setName}
                     game={game}
                     isSelected={selectedIndex===index}
