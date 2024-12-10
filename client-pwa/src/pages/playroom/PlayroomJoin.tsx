@@ -9,7 +9,6 @@ import AwaitingPlayersView from "../../components/views/playroom/AwaitingPlayers
 import { useWebSocketContext } from "../../contexts/WebSocketContext";
 import { usePlayroomContext } from "../../contexts/PlayroomContext";
 import api_address from "../../config/api_address";
-import { aG } from "vitest/dist/reporters-yx5ZTtEV.js";
 
 /**
  * Live board game playing room joining page
