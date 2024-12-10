@@ -20,6 +20,7 @@ import { usePlayroomContext } from "../../contexts/PlayroomContext.tsx";
 import TimerSettingsView from "./playroom/TimerSettingsView.tsx";
 import WaitingRoomSummaryView from "./playroom/WaitingRoomSummaryView.tsx";
 import api_address from "../../config/api_address.ts";
+import AgeSettingsView from "./playroom/AgeSettingsView.tsx";
 
 
 
@@ -28,6 +29,12 @@ const steps = [
     "Create a playroom",
     "Wait for others to join",
     "Choose the game",
+];
+
+const actionsNames = [
+    "Set age",
+    "Next",
+    "Set timer",
 ];
 
 /**
@@ -39,9 +46,11 @@ const CreatePlayroomStepper = (): ReactNode => {
     const [joinSuccessfully, setJoinSuccessfully] = useState<boolean>(false);
     const [waitingRoomPlayers, setWaitingRoomPlayers] = useState<WaitingPlayer[]>([]);
     const [isTimerSet, setIsTimerSet] = useState(false);
+    const [isAgeSet, setIsAgeSet] = useState(false);
     const navigate = useNavigate();
     const {uuid, user} = useAuth();
-
+    const [age, setAge] = useState<number>(18)
+    const [playersAge, setPlayersAge] = useState<number[]>([]);
     // code generated for the new playroom
     const {code, timer, setUsername, setCode, setTimer, setPlayerId} = usePlayroomContext();
 
@@ -52,6 +61,7 @@ const CreatePlayroomStepper = (): ReactNode => {
     useEffect(() => {
         if (lastJsonMessage) {
             const messageType : string = (lastJsonMessage as SimpleMessage).type;
+            
             switch(messageType){
                 case "welcomeInfo": {
                     const welcomeInfoMessage : WelcomeInfoMessage = (lastJsonMessage as WelcomeInfoMessage);                
@@ -62,6 +72,9 @@ const CreatePlayroomStepper = (): ReactNode => {
                 case "waitingRoom": {
                     const waitingRoomMessage : WaitingRoomMessage = (lastJsonMessage as WaitingRoomMessage);
                     setWaitingRoomPlayers(waitingRoomMessage.players);
+                    setPlayersAge(waitingRoomMessage.players.reduce(  (array, player) => array.concat(player.age), new Array<number>));
+                    console.log(playersAge);
+                    
                     break;
                 }
                 case "playroom": {
@@ -84,6 +97,12 @@ const CreatePlayroomStepper = (): ReactNode => {
             handleNext();
         }
     }, [isTimerSet])
+    
+    useEffect(()=>{
+        if(isAgeSet === true){
+            handleNext();
+        }
+    }, [isAgeSet])
 
     // current chosen game name
     const [name, setName] = useState<string>("");
@@ -96,6 +115,9 @@ const CreatePlayroomStepper = (): ReactNode => {
 
     // visibility of timer dialog
     const [isTimerDialogOpen, setIsTimerDialogOpen] = useState(false);
+
+    // visibility of age dialog
+    const [isAgeDialogOpen, setIsAgeDialogOpen] = useState(false);
 
     // current setp in stepper
     const [activeStep, setActiveStep] = useState(0);
@@ -116,11 +138,11 @@ const CreatePlayroomStepper = (): ReactNode => {
             //webSocket
             if (readyState === ReadyState.OPEN) {
                 if(!joinSuccessfully){
-                    sendJsonMessage(buildJoinWaitingRoomMessage(code, user.username, uuid));
+                    sendJsonMessage(buildJoinWaitingRoomMessage(code, user.username, age, uuid));
                 }
             }
         } else {
-            alert("Can't go next yet");
+            alert("Generate code first");
         }
     };
 
@@ -152,6 +174,10 @@ const CreatePlayroomStepper = (): ReactNode => {
         setIsTimerDialogOpen(true);
     }
 
+    const handleSetAge = () => {
+        setIsAgeDialogOpen(true);
+    }
+
     const handleBack = () => {
         setActiveStep((prevActiveStep) => prevActiveStep - 1);
     };
@@ -179,6 +205,8 @@ const CreatePlayroomStepper = (): ReactNode => {
                         setName={setName}
                         choice={choice}
                         setChoice={setChoice}
+                        numPlayers={playersAge.length}
+                        playersAge={playersAge}
                     />
                 );
             default:
@@ -188,15 +216,22 @@ const CreatePlayroomStepper = (): ReactNode => {
 
     return (
         <Box>
-            {isTimerDialogOpen 
-                && <TimerSettingsView
+            {isTimerDialogOpen ?
+                <TimerSettingsView
                     isTimerDialogOpen={isTimerDialogOpen}
                     setIsGlobalTimer={setIsGlobalTimer} 
                     setTimer={setTimer} 
                     setIsTimerDialogOpen={setIsTimerDialogOpen} 
                     setIsTimerSet={setIsTimerSet}
                     gameId={choice}
-                    isGlobalTimer={isGlobalTimer}/>
+                    isGlobalTimer={isGlobalTimer}/> : null
+            }
+            {isAgeDialogOpen ?
+                <AgeSettingsView
+                    isAgeDialogOpen={isAgeDialogOpen}
+                    setIsAgeSet={setIsAgeSet}
+                    setIsAgeDialogOpen={setIsAgeDialogOpen}
+                    setAge={setAge}/> : null
             }
             <Box sx={{ width: "100%" }} className={styles.stepperWrapper}>
                 <Stepper
@@ -261,18 +296,14 @@ const CreatePlayroomStepper = (): ReactNode => {
                                 }
                                 onClick={
                                     activeStep === steps.length - 1
-                                        ? handleSetTimer
+                                        ? handleSetTimer :
+                                    activeStep === 0
+                                        ? handleSetAge
                                         : handleNext
                                 }
-                                variant={
-                                    activeStep === steps.length - 1
-                                        ? "contained"
-                                        : "outlined"
-                                }
+                                variant="contained"
                             >
-                                {activeStep === steps.length - 1 
-                                    ? "Set timer"
-                                    : "Next"}
+                               {actionsNames[activeStep]}
                             </Button>
                         </Box>
                     </React.Fragment>
