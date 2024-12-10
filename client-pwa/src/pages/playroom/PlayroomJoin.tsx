@@ -9,6 +9,7 @@ import AwaitingPlayersView from "../../components/views/playroom/AwaitingPlayers
 import { useWebSocketContext } from "../../contexts/WebSocketContext";
 import { usePlayroomContext } from "../../contexts/PlayroomContext";
 import api_address from "../../config/api_address";
+import { aG } from "vitest/dist/reporters-yx5ZTtEV.js";
 
 /**
  * Live board game playing room joining page
@@ -19,6 +20,8 @@ const PlayroomJoin = (): ReactNode => {
     const navigate = useNavigate();
 
     const {uuid, user } = useAuth();
+
+    const [age, setAge] = useState<number>(18);
     
     const {code, setCode, setUsername, setTimer, setPlayerId} = usePlayroomContext();
 
@@ -101,17 +104,21 @@ const PlayroomJoin = (): ReactNode => {
         event: ChangeEvent<HTMLInputElement>
     ) => setUseUsername(event.target.checked);
 
+    const handleAgeChange = (
+        event: ChangeEvent<HTMLInputElement>
+    ) => setAge(Number.parseInt(event.target.value));
+
     const handleJoinPlayroom = () =>{
         //webSocket
             if (readyState === ReadyState.OPEN) {
                 if(!joinSuccessfully){
                     if(useUsername && uuid !== ""){
                         setUsername(user.username);
-                        sendJsonMessage(buildJoinWaitingRoomMessage(code, user.username, uuid));
+                        sendJsonMessage(buildJoinWaitingRoomMessage(code, user.username,age, uuid));
                         
                     } else{
                         setUsername(nick);
-                        sendJsonMessage(buildJoinWaitingRoomMessage(code, nick));
+                        sendJsonMessage(buildJoinWaitingRoomMessage(code, nick, age ));
                     }
                     setButtonDisabledAfterError(true);
                     setTimeout(() => {setWsError(true); setButtonDisabledAfterError(false);}, 3000);
@@ -156,6 +163,16 @@ const PlayroomJoin = (): ReactNode => {
                     placeholder="Playroom code"
                 />
                 <div style={{width: "80%", textAlign: "center"}}>
+                    <Typography>
+                        Enter your age:
+                    </Typography>
+                    <Input
+                        value={age}
+                        size="medium"
+                        style={{width: "100%", marginBottom: "10px"}}
+                        onChange={handleAgeChange}
+                        type="number"
+                    />
                     <Typography>
                         Enter your desired playroom nick:
                     </Typography>
