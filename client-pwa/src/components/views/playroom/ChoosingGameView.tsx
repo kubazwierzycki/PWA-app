@@ -22,6 +22,8 @@ interface ChoosingViewProps {
     setName: Dispatch<SetStateAction<string>>
     choice: string
     setChoice: Dispatch<SetStateAction<string>>
+    numPlayers :number
+    playersAge : number[]
 }
 
 /**
@@ -30,9 +32,11 @@ interface ChoosingViewProps {
  * @param {Dispatch<SetStateAction<string>>} setName - chosen game change callback
  * @param {string} choice - chosen game id
  * @param {Dispatch<SetStateAction<string>>} setChoice - chosen game id change callback
+ * @param {number} numPlayers - number of players
+ * @param {number[]} playersAge - players age
  * @returns {ReactNode}
  */
-const ChoosingGameView = ({name, setName, choice, setChoice}: ChoosingViewProps): ReactNode => {
+const ChoosingGameView = ({name, setName, choice, setChoice, numPlayers, playersAge}: ChoosingViewProps): ReactNode => {
 
     // chosen method of selecting game to play
     const [selectionMode, setSelectionMode] =
@@ -94,7 +98,7 @@ const ChoosingGameView = ({name, setName, choice, setChoice}: ChoosingViewProps)
                 {(() => {
                     switch (selectionMode) {
                     case SELECTION_MODES.WIZARD:
-                        return <WizardGameSelect setName={setName} choice={choice} setChoice={setChoice}/>
+                        return <WizardGameSelect setName={setName} choice={choice} setChoice={setChoice} numPlayers={numPlayers} playersAge={playersAge}/>
                     case SELECTION_MODES.SEARCH:
                         return  <SearchGameSelect setName={setName} choice={choice} setChoice={setChoice}/>
                     case SELECTION_MODES.BGG:

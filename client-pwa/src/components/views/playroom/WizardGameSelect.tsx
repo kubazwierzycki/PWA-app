@@ -12,6 +12,8 @@ interface SearchSelectProps {
     setName: Dispatch<SetStateAction<string>>
     choice: string
     setChoice: Dispatch<SetStateAction<string>>
+    numPlayers :number
+    playersAge : number[]
 }
 
 /**
@@ -20,9 +22,11 @@ interface SearchSelectProps {
  * @param {Dispatch<SetStateAction<string>>} setName - callback for game choice info
  * @param {string} choice - id of chosen game
  * @param {Dispatch<SetStateAction<string>>} setChoice - id of chosen game change callback
+ * @param {number} numPlayers - number of players
+ * @param {number[]} playersAge - players age
  * @returns {ReactNode}
  */
-const WizardGameSelect = ({setName, choice, setChoice}: SearchSelectProps): ReactNode => {
+const WizardGameSelect = ({setName, choice, setChoice, numPlayers, playersAge}: SearchSelectProps): ReactNode => {
 
     const [suggestionsReady, setSuggestionsReady] = useState(false);
 
@@ -35,14 +39,6 @@ const WizardGameSelect = ({setName, choice, setChoice}: SearchSelectProps): Reac
     const [maxPlayTime, setMaxPlayTime] = useState("60");
 
     const [error, setError] = useState({ minPlayTime: false, maxPlayTime: false });
-
-    // TODO: update with playroom number of players logic
-    // @ts-ignore
-    const [numPlayers, setNumPlayers] = useState(4);
-
-    // TODO: update with playroom players age list logic (needs to be added to form)
-    // @ts-ignore
-    const [playersAge, setPlayersAge] = useState([19, 22, 23, 16]);
 
     const {games, ranking} = useBoardgamesContext();
 
