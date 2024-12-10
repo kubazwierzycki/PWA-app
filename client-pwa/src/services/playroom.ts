@@ -86,10 +86,11 @@ export const updatePlayroomQueue = async (id: string, body: PutPlayroomQueue):Pr
 /**
  * @param {string} playroomId - uuid of the playroom assigned by server
  * @param {string} username - player's username
+ * @param {number} id - player's age
  * @param {string} id - player's uuid
  * @returns {Promise<boolean>} websocket message
  */
-export const buildJoinWaitingRoomMessage = (playroomId: string, username: string, id?: string) : object => {    
+export const buildJoinWaitingRoomMessage = (playroomId: string, username: string,age: number, id?: string) : object => {    
     if(id !== ""){
         return {
             operation: "joinWaitingRoom",
@@ -97,6 +98,7 @@ export const buildJoinWaitingRoomMessage = (playroomId: string, username: string
             player: {
                 id: id,
                 username: username,
+                age: age,
             }
         }
     } else{
@@ -106,6 +108,7 @@ export const buildJoinWaitingRoomMessage = (playroomId: string, username: string
             player: {
                 id: null,
                 username: username,
+                age: age,
             }
         }
     }
@@ -260,6 +263,7 @@ export interface WaitingPlayer{
     userId : string
     playerId : string
     username : string
+    age: number
 }
 
 export interface PlayroomPlayer{
