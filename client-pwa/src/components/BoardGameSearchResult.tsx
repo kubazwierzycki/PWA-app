@@ -8,12 +8,11 @@ import { usePlayroomContext } from "../contexts/PlayroomContext";
 
 
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const MyListItemButton= styled(ListItemButton)(({theme}) => ({
+const MyListItemButton = styled(ListItemButton)({
     '&:hover': {
-        backgroundColor: "transparent"
+      backgroundColor: 'transparent',
     },
-}));
+});
 
 
 const MyListItem= styled(ListItem)(({theme}) => ({

@@ -292,6 +292,10 @@ export interface WelcomeInfoMessage extends SimpleMessage {
     playerId : string
 }
 
+export interface NotificationMessage extends SimpleMessage {
+    notification : string
+}
+
 export interface PlayroomMessage extends SimpleMessage {
     timer : number
     paused : boolean
