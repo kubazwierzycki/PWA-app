@@ -1,23 +1,21 @@
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, InputLabel, TextField } from "@mui/material";
 import { ChangeEvent, Dispatch, ReactNode, useState } from "react";
 
-interface AgeSettingsViewProps {
+interface AgeSettingViewProps {
     isAgeDialogOpen: boolean
-    setIsAgeSet: Dispatch<React.SetStateAction<boolean>>
     setIsAgeDialogOpen: Dispatch<React.SetStateAction<boolean>>
-    setAge: Dispatch<React.SetStateAction<number>>
+    setAge: Dispatch<React.SetStateAction<number | null>>
 }
 
 /**
  * View component for setting age
- * @param {boolean} isAgeDialogOpen - visibility of timer settings dialog
- * @param {Dispatch<SetStateAction<boolean>>} setIsAgeDialogOpen - set visibility of timer settings dialog
- *  * @param {Dispatch<SetStateAction<boolean>>} setIsAgeDialogOpen - set step status
+ * @param {boolean} isAgeDialogOpen - visibility of age setting dialog
+ * @param {Dispatch<SetStateAction<boolean>>} setIsAgeDialogOpen - set visibility of age setting dialog
  * @param {Dispatch<SetStateAction<number>>} setAge - set player age
  * @returns {ReactNode}
  */
 
-const AgeSettingsView = ({isAgeDialogOpen, setIsAgeSet, setIsAgeDialogOpen, setAge}: AgeSettingsViewProps): ReactNode => {
+const AgeSettingsView = ({isAgeDialogOpen, setIsAgeDialogOpen, setAge}: AgeSettingViewProps): ReactNode => {
 
     const [formData, setFormData] = useState({
         age: "18",
@@ -35,7 +33,7 @@ const AgeSettingsView = ({isAgeDialogOpen, setIsAgeSet, setIsAgeDialogOpen, setA
                 setFormErrors({...formErrors, age: !ageRegex.test(value)});
                 break;
             }
-    };
+    }
 
     const isValidForm = () : boolean =>{
         return !formErrors.age
@@ -43,25 +41,26 @@ const AgeSettingsView = ({isAgeDialogOpen, setIsAgeSet, setIsAgeDialogOpen, setA
 
     const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
+
         setFormData((prevData) => ({
             ...prevData,
             [name]: value,
         }));
-        validateInputs(name, value)
-    };
+
+        validateInputs(name, value);
+    }
 
     const handleClose = () => {
         setIsAgeDialogOpen(false);
-    };
+    }
 
     const handleNext = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         if(isValidForm()){
             setAge(Number.parseInt(formData.age));
-            setIsAgeSet(true);
             handleClose();
         }
-    };
+    }
 
     return (
         <>
@@ -107,6 +106,6 @@ const AgeSettingsView = ({isAgeDialogOpen, setIsAgeSet, setIsAgeDialogOpen, setA
             </Dialog>
         </>
     );
-};
+}
 
 export default AgeSettingsView;
