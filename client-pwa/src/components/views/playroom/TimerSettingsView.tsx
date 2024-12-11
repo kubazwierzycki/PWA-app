@@ -50,16 +50,13 @@ const TimerSettingsView = ({isTimerDialogOpen, setIsGlobalTimer, setTimer, setIs
 
         switch (name) {
             case "hours":
-                !hoursRegex.test(value) ?
-                    setFormErrors({...formErrors, hours: true}) : setFormErrors({...formErrors, hours: false})
+                setFormErrors({...formErrors, hours: !hoursRegex.test(value)});
                 break;
             case "minutes":
-                !minutesRegex.test(value) ?
-                    setFormErrors({...formErrors, minutes: true}) : setFormErrors({...formErrors, minutes: false})
+                setFormErrors({...formErrors, minutes: !minutesRegex.test(value)});
                 break;
             case "seconds":
-                !secondsRegex.test(value) ?
-                    setFormErrors({...formErrors, seconds: true}) : setFormErrors({...formErrors, seconds: false})
+                setFormErrors({...formErrors, seconds: !secondsRegex.test(value)});
                 break;
             }
     };

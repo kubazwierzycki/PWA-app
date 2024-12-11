@@ -23,6 +23,7 @@ import pl.edu.pg.eti.playrooms.service.api.PlayroomService;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -59,7 +60,7 @@ public class PlayroomDefaultController implements PlayroomController {
                 .currentPlayer(1)
                 .hostId(null)
                 .isWaitingRoomClosed(false)
-                .lastOperationTime(LocalTime.now())
+                .lastOperationTime(LocalTime.now().truncatedTo(ChronoUnit.SECONDS))
                 .globalTimerValue(null)
                 .game(null)
                 .players(new HashMap<>())
@@ -90,7 +91,7 @@ public class PlayroomDefaultController implements PlayroomController {
             playroom.setGame(new Playroom.Game(request.getGameId(), request.getGame()));
             playroom.setGlobalTimerValue(request.getTimer());
 
-            playroom.setLastOperationTime(LocalTime.now());
+            playroom.setLastOperationTime(LocalTime.now().truncatedTo(ChronoUnit.SECONDS));
             playroomService.update(playroom);
 
             playroomEventRepository.updateGame(request.getGameId(), request.getGame(),
@@ -177,7 +178,9 @@ public class PlayroomDefaultController implements PlayroomController {
                 guest = false;
             }
             Playroom.Player newPlayer = new Playroom.Player(
-                    UUID.randomUUID(), uuid, message.getJSONObject("player").getString("username"),
+                    UUID.randomUUID(), uuid,
+                    message.getJSONObject("player").getString("username"),
+                    message.getJSONObject("player").getInt("age"),
                     null, false, 0, guest, webSocketSession.getId());
 
             Map<String, Playroom.Player> updatedPlayers = playroom.getPlayersWaitingRoom();
@@ -737,7 +740,7 @@ public class PlayroomDefaultController implements PlayroomController {
     private void updateLastModDate(Playroom playroom) {
         if (!playroom.isPaused() && !playroom.getPlayers().isEmpty()) {
             LocalTime lastOperationTime = playroom.getLastOperationTime();
-            LocalTime nowTime = LocalTime.now();
+            LocalTime nowTime = LocalTime.now().truncatedTo(ChronoUnit.SECONDS);
 
             if (playroom.isGlobalTimer()) {
                 Double timeDiff = Duration.between(nowTime, lastOperationTime).toMillis() / 1000.0;
@@ -776,7 +779,7 @@ public class PlayroomDefaultController implements PlayroomController {
                 }
             }
         }
-        playroom.setLastOperationTime(LocalTime.now());
+        playroom.setLastOperationTime(LocalTime.now().truncatedTo(ChronoUnit.SECONDS));
         playroomService.update(playroom);
     }
 
@@ -885,11 +888,13 @@ public class PlayroomDefaultController implements PlayroomController {
      *          {
      *              "playerId": --playerId--,
      *              "username": --username--,
+     *              "age": --age--,
      *              "userId": --userID-- (null if guests)
      *          },
      *          {
      *              "playerId": --playerId--,
      *              "username": --username--,
+     *              "age": --age--,
      *              "userId": --userID-- (null if guests)
      *          },
      *          ...
@@ -912,6 +917,7 @@ public class PlayroomDefaultController implements PlayroomController {
             JSONObject player1 = new JSONObject();
             player1.put("playerId", player.getPlayerId());
             player1.put("username", player.getUsername());
+            player1.put("age", player.getAge());
             player1.put("userId", player.getUuid());
             players.put(player1);
         }

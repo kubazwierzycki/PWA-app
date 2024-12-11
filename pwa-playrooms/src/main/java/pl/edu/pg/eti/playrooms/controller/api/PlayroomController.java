@@ -77,6 +77,7 @@ public interface PlayroomController {
      *                  "player": {
      *                      "id": --userUID-- (null if not registered),
      *                      "username": --username--
+     *                      "age": --age--
      *                  }
      *                }
      */

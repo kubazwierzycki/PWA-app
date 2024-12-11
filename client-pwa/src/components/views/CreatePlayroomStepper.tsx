@@ -20,7 +20,7 @@ import { usePlayroomContext } from "../../contexts/PlayroomContext.tsx";
 import TimerSettingsView from "./playroom/TimerSettingsView.tsx";
 import WaitingRoomSummaryView from "./playroom/WaitingRoomSummaryView.tsx";
 import api_address from "../../config/api_address.ts";
-
+import AgeSettingsView from "./playroom/AgeSettingsView.tsx";
 
 
 // creating playroom steps' labels
@@ -30,31 +30,49 @@ const steps = [
     "Choose the game",
 ];
 
+// creating playroom buttons' labels
+const actionsNames = [
+    "Set age",
+    "Next",
+    "Set timer",
+];
+
 /**
  * Layout component for the process of creating a new playroom
  * Defines the steps necessary and controls owner's view
  * @returns {ReactNode}
  */
 const CreatePlayroomStepper = (): ReactNode => {
+
     const [joinSuccessfully, setJoinSuccessfully] = useState<boolean>(false);
+
+    // list of players in waiting room
     const [waitingRoomPlayers, setWaitingRoomPlayers] = useState<WaitingPlayer[]>([]);
-    const [isTimerSet, setIsTimerSet] = useState(false);
+
+    // list of players ages
+    const [playersAge, setPlayersAge] = useState<number[]>([]);
+
+    // programmatic navigation
     const navigate = useNavigate();
+
+    // authorisation context
     const {uuid, user} = useAuth();
 
-    // code generated for the new playroom
+    // playroom context
     const {code, timer, setUsername, setCode, setTimer, setPlayerId} = usePlayroomContext();
 
-    // webSocket
+    // webSocket context
     const { sendJsonMessage, lastJsonMessage, readyState, setSocketUrl } = useWebSocketContext();
 
-    // API message
+    // handle message from backend
     useEffect(() => {
         if (lastJsonMessage) {
             const messageType : string = (lastJsonMessage as SimpleMessage).type;
+            
             switch(messageType){
                 case "welcomeInfo": {
-                    const welcomeInfoMessage : WelcomeInfoMessage = (lastJsonMessage as WelcomeInfoMessage);                
+                    const welcomeInfoMessage : WelcomeInfoMessage = (lastJsonMessage as WelcomeInfoMessage);
+                    setActiveStep((prevActiveStep) => prevActiveStep + 1);              
                     setPlayerId(welcomeInfoMessage.playerId);
                     setJoinSuccessfully(true);
                     break;
@@ -62,6 +80,7 @@ const CreatePlayroomStepper = (): ReactNode => {
                 case "waitingRoom": {
                     const waitingRoomMessage : WaitingRoomMessage = (lastJsonMessage as WaitingRoomMessage);
                     setWaitingRoomPlayers(waitingRoomMessage.players);
+                    setPlayersAge(waitingRoomMessage.players.reduce(  (array, player) => array.concat(player.age), new Array<number>));
                     break;
                 }
                 case "playroom": {
@@ -79,6 +98,24 @@ const CreatePlayroomStepper = (): ReactNode => {
         }
     }, [lastJsonMessage]);
 
+
+
+    // visibility of age dialog
+    const [isAgeDialogOpen, setIsAgeDialogOpen] = useState(false);
+    const [age, setAge] = useState<number | null>(null)
+
+    // age dialog step
+    useEffect(()=>{
+        if(age !== null){
+            handleNext();
+        }
+    }, [age])
+
+    // visibility of timer dialog
+    const [isTimerDialogOpen, setIsTimerDialogOpen] = useState(false);
+
+    // timer dialog step
+    const [isTimerSet, setIsTimerSet] = useState(false);
     useEffect(()=>{
         if(isTimerSet === true){
             handleNext();
@@ -94,9 +131,6 @@ const CreatePlayroomStepper = (): ReactNode => {
     // current chosen timer mode
     const [isGlobalTimer, setIsGlobalTimer] = useState(true);
 
-    // visibility of timer dialog
-    const [isTimerDialogOpen, setIsTimerDialogOpen] = useState(false);
-
     // current setp in stepper
     const [activeStep, setActiveStep] = useState(0);
 
@@ -108,22 +142,42 @@ const CreatePlayroomStepper = (): ReactNode => {
             default:
                 return true;
         }
-    };
+    }
 
     const handleNext = () => {
         if (isNextValid(activeStep)) {
-            setActiveStep((prevActiveStep) => prevActiveStep + 1);
-            //webSocket
-            if (readyState === ReadyState.OPEN) {
-                if(!joinSuccessfully){
-                    sendJsonMessage(buildJoinWaitingRoomMessage(code, user.username, uuid));
-                }
+            if(activeStep == 0 && readyState === ReadyState.OPEN && !joinSuccessfully){
+                sendJsonMessage(buildJoinWaitingRoomMessage(code, user.username, age!, uuid));
+            } else {
+                setActiveStep((prevActiveStep) => prevActiveStep + 1);
             }
         } else {
-            alert("Can't go next yet");
+            alert("Cannot go next yet");
         }
-    };
+    }
 
+    const handleBack = () => {
+        setActiveStep((prevActiveStep) => prevActiveStep - 1);
+    }
+
+    const handleReset = () => {
+        setJoinSuccessfully(false);
+        setIsTimerSet(false);
+        setSocketUrl("");
+        setName("");
+        setChoice("");
+        setCode("");
+        setActiveStep(0);
+    }
+
+    const handleStartPlayroom = async () => {
+        // send update request about the playroom
+        await handleUpdate().then();
+        //sendJsonMessage(buildCloseWaitingRoomMessage(code));
+        sendJsonMessage(buildFinishWaitingRoomMessage(code));
+    }
+
+    // send playroom setting to the backend
     const handleUpdate = async () => {
         if (code === "") return;
         const body: PutPlayroom = {
@@ -139,32 +193,7 @@ const CreatePlayroomStepper = (): ReactNode => {
         } else {
             alert("Error: Updating playroom failed. Please try again");
         }
-    };
-
-    const handleStartPlayroom = async () => {
-        // send update request about the playroom
-        await handleUpdate().then();
-        //sendJsonMessage(buildCloseWaitingRoomMessage(code));
-        sendJsonMessage(buildFinishWaitingRoomMessage(code));
-    };
-
-    const handleSetTimer = () => {
-        setIsTimerDialogOpen(true);
     }
-
-    const handleBack = () => {
-        setActiveStep((prevActiveStep) => prevActiveStep - 1);
-    };
-
-    const handleReset = () => {
-        setJoinSuccessfully(false);
-        setIsTimerSet(false);
-        setSocketUrl("");
-        setName("");
-        setChoice("");
-        setCode("");
-        setActiveStep(0);
-    };
 
     const renderStepperContent = () => {
         switch (activeStep) {
@@ -179,25 +208,29 @@ const CreatePlayroomStepper = (): ReactNode => {
                         setName={setName}
                         choice={choice}
                         setChoice={setChoice}
+                        numPlayers={playersAge.length}
+                        playersAge={playersAge}
                     />
                 );
             default:
                 return <></>;
         }
-    };
+    }
 
     return (
         <Box>
-            {isTimerDialogOpen 
-                && <TimerSettingsView
-                    isTimerDialogOpen={isTimerDialogOpen}
-                    setIsGlobalTimer={setIsGlobalTimer} 
-                    setTimer={setTimer} 
-                    setIsTimerDialogOpen={setIsTimerDialogOpen} 
-                    setIsTimerSet={setIsTimerSet}
-                    gameId={choice}
-                    isGlobalTimer={isGlobalTimer}/>
-            }
+            <TimerSettingsView
+                isTimerDialogOpen={isTimerDialogOpen}
+                setIsGlobalTimer={setIsGlobalTimer} 
+                setTimer={setTimer} 
+                setIsTimerDialogOpen={setIsTimerDialogOpen} 
+                setIsTimerSet={setIsTimerSet}
+                gameId={choice}
+                isGlobalTimer={isGlobalTimer}/>
+            <AgeSettingsView
+                isAgeDialogOpen={isAgeDialogOpen}
+                setIsAgeDialogOpen={setIsAgeDialogOpen}
+                setAge={setAge}/>
             <Box sx={{ width: "100%" }} className={styles.stepperWrapper}>
                 <Stepper
                     activeStep={activeStep}
@@ -234,9 +267,9 @@ const CreatePlayroomStepper = (): ReactNode => {
                     <React.Fragment>
                         <Box style={{ width: "100%" }}>
                             {
-                                <div className={styles.container}>
+                                <Box className={styles.container}>
                                     {renderStepperContent()}
-                                </div>
+                                </Box>
                             }
                         </Box>
                         <Box
@@ -248,31 +281,29 @@ const CreatePlayroomStepper = (): ReactNode => {
                                 disabled={activeStep === 0 || activeStep === 1}
                                 onClick={handleBack}
                                 sx={{ mr: 1 }}
-                                variant="outlined"
+                                variant="contained"
                             >
                                 Back
                             </Button>
                             <Box sx={{ flex: "1 1 auto" }} />
                             <Button
                                 disabled={
+                                    activeStep === 0
+                                    ? code === "" :
                                     activeStep === steps.length - 1
                                     ? name === ""
                                     : false
                                 }
                                 onClick={
+                                    activeStep === 0
+                                        ? () => setIsAgeDialogOpen(true) :
                                     activeStep === steps.length - 1
-                                        ? handleSetTimer
+                                        ? () => setIsTimerDialogOpen(true)
                                         : handleNext
                                 }
-                                variant={
-                                    activeStep === steps.length - 1
-                                        ? "contained"
-                                        : "outlined"
-                                }
+                                variant="contained"
                             >
-                                {activeStep === steps.length - 1 
-                                    ? "Set timer"
-                                    : "Next"}
+                               {actionsNames[activeStep]}
                             </Button>
                         </Box>
                     </React.Fragment>
@@ -280,7 +311,7 @@ const CreatePlayroomStepper = (): ReactNode => {
             </Box>
         </Box>
     );
-};
+}
 
 export default CreatePlayroomStepper;
 

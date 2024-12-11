@@ -19,6 +19,8 @@ const PlayroomJoin = (): ReactNode => {
     const navigate = useNavigate();
 
     const {uuid, user } = useAuth();
+
+    const [age, setAge] = useState<number>(18);
     
     const {code, setCode, setUsername, setTimer, setPlayerId} = usePlayroomContext();
 
@@ -37,6 +39,8 @@ const PlayroomJoin = (): ReactNode => {
     const [waitingRoomPlayers, setWaitingRoomPlayers] = useState<WaitingPlayer[]>([]);
 
     const [wsError, setWsError] = useState<boolean>(false);
+
+    const [ageError, setAgeError] = useState<boolean>(false);
 
     const [buttonDisabledAfterError, setButtonDisabledAfterError] = useState<boolean>(false);
 
@@ -101,17 +105,27 @@ const PlayroomJoin = (): ReactNode => {
         event: ChangeEvent<HTMLInputElement>
     ) => setUseUsername(event.target.checked);
 
+    const handleAgeChange = (
+        event: ChangeEvent<HTMLInputElement>
+    ) => {
+        const ageInput = event.target.value;
+        const ageRegex = /^([1-9]{1,1}[0-9]{0,2})$/;
+        setAgeError(!ageRegex.test(ageInput))
+        setAge(Number.parseInt(ageInput));
+
+    }
+
     const handleJoinPlayroom = () =>{
         //webSocket
             if (readyState === ReadyState.OPEN) {
                 if(!joinSuccessfully){
                     if(useUsername && uuid !== ""){
                         setUsername(user.username);
-                        sendJsonMessage(buildJoinWaitingRoomMessage(code, user.username, uuid));
+                        sendJsonMessage(buildJoinWaitingRoomMessage(code, user.username,age, uuid));
                         
                     } else{
                         setUsername(nick);
-                        sendJsonMessage(buildJoinWaitingRoomMessage(code, nick));
+                        sendJsonMessage(buildJoinWaitingRoomMessage(code, nick, age ));
                     }
                     setButtonDisabledAfterError(true);
                     setTimeout(() => {setWsError(true); setButtonDisabledAfterError(false);}, 3000);
@@ -124,7 +138,7 @@ const PlayroomJoin = (): ReactNode => {
     } 
 
     const isJoinPlayroomButtonDisabled = () => {
-        return !(code !== "" && (useUsername && uuid !== "") || nick !== "") || buttonDisabledAfterError
+        return !(code !== "" && (useUsername && uuid !== "") || nick !== "") || buttonDisabledAfterError || ageError
     }
 
     return ( joinSuccessfully ? 
@@ -156,6 +170,17 @@ const PlayroomJoin = (): ReactNode => {
                     placeholder="Playroom code"
                 />
                 <div style={{width: "80%", textAlign: "center"}}>
+                    <Typography>
+                        Enter your age:
+                    </Typography>
+                    <Input
+                        value={age}
+                        size="medium"
+                        style={{width: "100%", marginBottom: "10px"}}
+                        onChange={handleAgeChange}
+                        error={ageError}
+                        type="number"
+                    />
                     <Typography>
                         Enter your desired playroom nick:
                     </Typography>
