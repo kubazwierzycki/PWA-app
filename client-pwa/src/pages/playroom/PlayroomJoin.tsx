@@ -40,6 +40,8 @@ const PlayroomJoin = (): ReactNode => {
 
     const [wsError, setWsError] = useState<boolean>(false);
 
+    const [ageError, setAgeError] = useState<boolean>(false);
+
     const [buttonDisabledAfterError, setButtonDisabledAfterError] = useState<boolean>(false);
 
     // notification from backend
@@ -105,7 +107,13 @@ const PlayroomJoin = (): ReactNode => {
 
     const handleAgeChange = (
         event: ChangeEvent<HTMLInputElement>
-    ) => setAge(Number.parseInt(event.target.value));
+    ) => {
+        const ageInput = event.target.value;
+        const ageRegex = /^([1-9]{1,1}[0-9]{0,2})$/;
+        setAgeError(!ageRegex.test(ageInput))
+        setAge(Number.parseInt(ageInput));
+
+    }
 
     const handleJoinPlayroom = () =>{
         //webSocket
@@ -130,7 +138,7 @@ const PlayroomJoin = (): ReactNode => {
     } 
 
     const isJoinPlayroomButtonDisabled = () => {
-        return !(code !== "" && (useUsername && uuid !== "") || nick !== "") || buttonDisabledAfterError
+        return !(code !== "" && (useUsername && uuid !== "") || nick !== "") || buttonDisabledAfterError || ageError
     }
 
     return ( joinSuccessfully ? 
@@ -170,6 +178,7 @@ const PlayroomJoin = (): ReactNode => {
                         size="medium"
                         style={{width: "100%", marginBottom: "10px"}}
                         onChange={handleAgeChange}
+                        error={ageError}
                         type="number"
                     />
                     <Typography>
