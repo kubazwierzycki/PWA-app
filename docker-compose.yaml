@@ -13,7 +13,7 @@ services:
       EXPERIENCE_URL: "http://pwa-experience:8085"
       SPRING_CLOUD_GATEWAY_GLOBALCORS_CORS_CONFIGURATIONS_[/**]_ALLOWED_ORIGINS: "http://pwa-client:5173"
     ports:
-      - "8080:8080"
+      - "60003:8080"
     
     
   pwa-users:
@@ -149,11 +149,11 @@ services:
       dockerfile: Dockerfile
     restart: always
     environment:
-      VITE_API_BASE_URL: "http://pwa-gateway:8080/api"
-      VITE_API_WS_URL: "ws://pwa-gateway:8080/ws-playrooms"
+      VITE_API_BASE_URL: "http://153.19.51.139:60003/api"
+      VITE_API_WS_URL: "ws://153.19.51.139:60003/ws-playrooms"
       VITE_HOST: "pwa-client"
     ports:
-    - "5173:5173"
+    - "60002:5173"
     
 volumes: 
   users_data: 
