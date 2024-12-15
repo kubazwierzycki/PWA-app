@@ -10,6 +10,7 @@ export interface IWizardParams {
     minPlayingTime: number
     maxPlayingTime: number
     ranking: IWizardUserGameRank[]
+    gameWeight: number
 }
 
 export interface IWizardGameInputStats {
@@ -32,6 +33,7 @@ export interface IWizardGameInput {
     suggestedNumPlayers: IAbstractPoll
     suggestedPlayerAge: IAbstractPoll
     statistics: {ratings: IWizardGameInputStats}
+    averageWeight: number
 }
 
 export interface IAbstractPoll {

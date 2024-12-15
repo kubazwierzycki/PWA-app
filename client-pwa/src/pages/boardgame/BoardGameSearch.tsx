@@ -8,6 +8,7 @@ import {useBoardgamesContext} from "../../contexts/BoardgamesContext.tsx";
 import {IGameSuggestion, IWizardParams} from "../../utils/wizard/WizardInterfaces.ts";
 import WizardSuggestions from "../../components/views/playroom/WizardSuggestions.tsx";
 import ProgressBar from "../../components/ProgressBar.tsx";
+import WizardGameWeightSlider from "../../components/forms/WizardGameWeightSlider.tsx";
 
 interface Player {
     age: number;
@@ -29,6 +30,7 @@ const BoardGameSearch = (): ReactNode => {
     const [players, setPlayers] = useState<Player[]>([{ age: 0 }]);
     const [minPlayTime, setMinPlayTime] = useState<number>(0);
     const [maxPlayTime, setMaxPlayTime] = useState<number>(0);
+    const [gameWeight, setGameWeight] = useState<number>(2.5);
 
     const {games, ranking} = useBoardgamesContext();
 
@@ -53,7 +55,8 @@ const BoardGameSearch = (): ReactNode => {
             minPlayingTime: minPlayTime,
             numPlayers: players.length,
             playersAge: players.map(player => player.age),
-            ranking: ranking
+            ranking: ranking,
+            gameWeight: gameWeight
         }
     }
 
@@ -155,6 +158,7 @@ const BoardGameSearch = (): ReactNode => {
                     fullWidth
                     sx={{ mb: 3 }}
                 />
+                <WizardGameWeightSlider value={gameWeight} setValue={setGameWeight} />
 
                 {
                     loading ?
