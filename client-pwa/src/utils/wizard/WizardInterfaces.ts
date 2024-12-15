@@ -15,6 +15,7 @@ export interface IWizardParams {
 
 export interface IWizardGameInputStats {
     average: {"@_value": string}
+    averageweight: {"@_value": string}
 }
 
 export interface IWizardGameInput {
@@ -53,6 +54,7 @@ export interface IWizardWeights {
     playingTimeFit: number
     playersAgePoll: number
     numberPlayersPoll: number
+    gameWeight: number
     sum: number
 }
 

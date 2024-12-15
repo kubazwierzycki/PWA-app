@@ -12,6 +12,8 @@ import {wizardWeights} from "./WizardConfig.ts";
 const PI = Math.PI;
 const E = Math.E;
 
+const GAME_WEIGHT_SCALE = 5.0;
+
 const weightedAverage = (values: number[], weights: number[]): number => {
     if (values.length !== weights.length) {
         return -1;
@@ -154,6 +156,7 @@ const getBestGames = (input: IWizardGameInput[], params: IWizardParams): IWizard
             numberPlayersFit: 0,
             playersAgePoll: 0,
             numberPlayersPoll: 0,
+            gameWeight: 0,
             sum: 0
         } as IWizardWeights;
 
@@ -186,9 +189,15 @@ const getBestGames = (input: IWizardGameInput[], params: IWizardParams): IWizard
         } as IWizardUserGameRank;
         const userGameRankingScore = userGameRanking.rating / 10.0 * itemWeights.userRating;
 
+        // game weight ranking
+        const expectedGameWeight = params.gameWeight;
+        const itemWeight = parseFloat(item.game.statistics.ratings.averageweight["@_value"]);
+        const distance = Math.abs(expectedGameWeight - itemWeight);
+        const gameWeightScore = Math.pow((1.0 - distance / GAME_WEIGHT_SCALE), 2) * itemWeights.gameWeight;
+
         // calculate final score
         const score = avgPlayingTimeScore + playersAgeScore + numberOfPlayersScore +
-            communityRankingScore + userGameRankingScore;
+            communityRankingScore + userGameRankingScore + gameWeightScore;
         item.score = score * 100;
     }
 
