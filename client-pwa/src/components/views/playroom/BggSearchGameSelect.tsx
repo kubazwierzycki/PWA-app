@@ -92,21 +92,31 @@ const BggSearchGameSelect = ({name, setName, setChoice}: SearchSelectProps): Rea
         const fetchBggGamesByPattern = async() =>{
             try {
                 let XML = "";
+                let XMLExpansions = "";
                 let bggGamesFromXML : BggGameFromXML[] = [];
+                let bggGamesFromXMLExpansions : BggGameFromXML[] = [];
                 if(usePlayerCollection) {
                     if(playerCollection == null) {
-                        XML = await bggService.getPlayeCollectionXML(user.bggUsername, controller.signal);
+                        XML = await bggService.getPlayerCollectionXML(user.bggUsername, controller.signal);
                         bggGamesFromXML = await  bggService.getAllGamesFromCollectionXML(XML);
                         setPlayerCollection(bggGamesFromXML);
                     } else {
                         bggGamesFromXML = playerCollection;
                     }
                     
-                    const regexp = new RegExp(`.*${input}.*`, "ig");
+                    const regexp = new RegExp(`.*${input}.*`, "i");
                     bggGamesFromXML = bggGamesFromXML.filter(g => regexp.test(g.name));
                 } else {
                     XML = await bggService.getBggGamesXMLByPatten(input, controller.signal);
+                    XMLExpansions = await bggService.getBggGamesExpansionsByPattern(input, controller.signal);
+                    
                     bggGamesFromXML = await bggService.getAllGamesFromXML(XML);
+                    bggGamesFromXMLExpansions =  await bggService.getAllGamesFromXML(XMLExpansions);
+                    const bggExpansionsNames = new Set( bggGamesFromXMLExpansions.map(x => x.name));
+
+                    //remove expansions from board game list
+                    bggGamesFromXML = bggGamesFromXML.filter( x => !bggExpansionsNames.has(x.name) );
+                    
                 }
 
                 setBggGamesFromXML(bggGamesFromXML);

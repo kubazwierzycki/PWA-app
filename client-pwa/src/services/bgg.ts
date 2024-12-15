@@ -336,11 +336,22 @@ const getBggGamesXMLByPatten = async (pattern : string, signal: AbortSignal) => 
     return response.data;
 }
 
-const getPlayeCollectionXML = async (username : string, signal: AbortSignal) => {
+const getBggGamesExpansionsByPattern = async (pattern : string, signal: AbortSignal) => {
     const request = axios({
         method: "get",
         signal: signal, //signal from controller
-        url: `${baseUrl}/collection?username=${username}&subtype=boardgame`,
+        url: `${baseUrl}/search?query=${pattern}&type=boardgameexpansion`,
+    });
+
+    const response = await request;
+    return response.data;
+}
+
+const getPlayerCollectionXML = async (username : string, signal: AbortSignal) => {
+    const request = axios({
+        method: "get",
+        signal: signal, //signal from controller
+        url: `${baseUrl}/collection?username=${username}&subtype=boardgame&excludesubtype=boardgameexpansion`,
     });
 
     
@@ -400,10 +411,11 @@ const getGameImageSrcFromResponse = (res: string) : string =>{
 export default {
     getUserByUsername,
     getUserIdFromResponse,
-    getPlayeCollectionXML,
+    getPlayerCollectionXML,
     getBggGameById,
     getGameImageSrcFromResponse,
     getBggGamesXMLByPatten,
+    getBggGamesExpansionsByPattern,
     getAllGamesFromXML,
     getAllGamesFromCollectionXML,
     getGameDetails,
