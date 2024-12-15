@@ -9,7 +9,6 @@ import PlayroomCreate from "./pages/playroom/PlayroomCreate.tsx";
 import SignIn from "./pages/SignIn.tsx";
 import SignUp from "./pages/SignUp.tsx";
 import CollectionPage from "./pages/boardgame/CollectionPage.tsx";
-import RandomGamePage from "./pages/boardgame/RandomGamePage.tsx";
 import BoardGameSearch from "./pages/boardgame/BoardGameSearch.tsx";
 import { ReactNode, useEffect } from "react";
 import Cookies from "js-cookie";
@@ -80,7 +79,7 @@ function App(): ReactNode {
             Notification.requestPermission().then((permission) => {
                 console.log(permission);
             });
-          
+
     }, [])
 
 
@@ -104,7 +103,6 @@ function App(): ReactNode {
                 </Route>
                 <Route path="/boardgames/collection/:gameId" element={<BoardGameDetailsPage />} />
                 <Route path="/boardgames/compare" element={<ComparingGamesPage />}></Route>
-                <Route path="/boardgames/random" element={<RandomGamePage />}></Route>
                 <Route path="/boardgames/search" element={<BoardGameSearch />}></Route>
             </Route>
         </Routes>
