@@ -96,7 +96,8 @@ public class BggRankingManager {
     private Map<String, Double> getUserGamesWithRating(String username, String option) {
         Map<String, Double> result = new HashMap<>();
         try {
-            URL url = new URL(bggApiUrl + "/collection?username=" + username + "&" + option + "=1&stats=1");
+            URL url = new URL(bggApiUrl + "/collection?username=" + username + "&" +
+                    option + "=1&stats=1&subtype=boardgame&excludesubtype=boardgameexpansion");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
 

@@ -142,6 +142,9 @@ const CollectionPage = (): ReactNode => {
                 }
             }
 
+            parameters.push("subtype=boardgame")
+            parameters.push("excludesubtype=boardgameexpansion")
+
             urlParams += parameters.join("&");
 
             let gamesData = await getGames(user.bggUsername, urlParams);
