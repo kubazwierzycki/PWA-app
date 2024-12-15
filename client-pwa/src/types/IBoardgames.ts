@@ -46,6 +46,7 @@ export interface BoardGameStats {
     average: {"@_value": string}
     owned: string
     ranks: {rank: [{"@_value": string}]}
+    averageweight: {"@_value": string}
 }
 
 export interface BoardGameItem {

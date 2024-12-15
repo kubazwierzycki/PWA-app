@@ -95,6 +95,7 @@ const parseGame = (game: BoardGameDetails, ranking: BoardGameRank[]): IWizardGam
     // BGG community rating
     const ratings = game.statistics.ratings;
     const bggRating = parseFloat(ratings.average["@_value"]) || 0;
+    const averageWeight = parseFloat(ratings.averageweight["@_value"]) || 0;
 
     // user rating
     const userRating = ranking.find(rank => rank.gameId === gameId)?.rating || 0;
@@ -127,6 +128,7 @@ const parseGame = (game: BoardGameDetails, ranking: BoardGameRank[]): IWizardGam
     const statistics = {
         ratings: {
             average: { "@_value": ratings.average["@_value"] || "0" },
+            averageweight: { "@_value": ratings.averageweight["@_value"] || "0" }
         },
     };
 
@@ -146,6 +148,7 @@ const parseGame = (game: BoardGameDetails, ranking: BoardGameRank[]): IWizardGam
         suggestedNumPlayers: suggestedNumPlayers,
         suggestedPlayerAge: suggestedPlayerAge,
         statistics: statistics,
+        averageWeight: averageWeight
     };
 
 }

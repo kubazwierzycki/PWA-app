@@ -43,11 +43,6 @@ export const menu_structure: MenuItem[] = [
                 sub: [],
             },
             {
-                name: "Random game",
-                link: "/boardgames/random",
-                sub: [],
-            },
-            {
                 name: "Find game",
                 link: "/boardgames/search",
                 sub: [],

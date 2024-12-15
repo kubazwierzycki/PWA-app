@@ -11,11 +11,12 @@ import {IWizardWeights} from "./WizardInterfaces.ts";
  * Total: (0.7 -) 1.0
  */
 const weights: IWizardWeights = {
-    userRating: 0.25,
-    bggCommunityRating: 0.25,
-    playingTimeFit: 0.2,
+    userRating: 0.20,
+    bggCommunityRating: 0.20,
+    playingTimeFit: 0.15,
     playersAgePoll: 0.15,
     numberPlayersPoll: 0.15,
+    gameWeight: 0.15,
     sum: 0
 }
 
@@ -40,7 +41,7 @@ export const wizardWeights = (
     const playersAgeFitCredibility = playersAgeVotes / (playersAgeOptionsCount * EXPECTED_VOTES_PER_OPTION);
     const numberPlayersFitCredibility = numberPlayersVotes / (numberPlayersOptionsCount * EXPECTED_VOTES_PER_OPTION);
 
-    let sum = weights.userRating + weights.bggCommunityRating + weights.playingTimeFit +
+    let sum = weights.userRating + weights.bggCommunityRating + weights.playingTimeFit + weights.gameWeight +
         weights.playersAgePoll * playersAgeFitCredibility + weights.numberPlayersPoll * numberPlayersFitCredibility;
 
     return {
@@ -49,6 +50,7 @@ export const wizardWeights = (
         playingTimeFit: weights.playingTimeFit,
         playersAgePoll: weights.playersAgePoll * playersAgeFitCredibility,
         numberPlayersPoll: weights.numberPlayersPoll * numberPlayersFitCredibility,
+        gameWeight: weights.gameWeight,
         sum: sum
     }
 }

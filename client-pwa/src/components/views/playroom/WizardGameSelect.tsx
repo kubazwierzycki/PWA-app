@@ -6,6 +6,7 @@ import getBestGames from "../../../utils/wizard/WizardLogic.ts";
 import {IGameSuggestion, IWizardParams} from "../../../utils/wizard/WizardInterfaces.ts";
 import WizardSuggestions from "./WizardSuggestions.tsx";
 import ProgressBar from "../../ProgressBar.tsx";
+import WizardGameWeightSlider from "../../forms/WizardGameWeightSlider.tsx";
 
 
 interface SearchSelectProps {
@@ -37,6 +38,8 @@ const WizardGameSelect = ({setName, choice, setChoice, numPlayers, playersAge}: 
 
     const [minPlayTime, setMinPlayTime] = useState("0");
     const [maxPlayTime, setMaxPlayTime] = useState("60");
+
+    const [gameWeight, setGameWeight] = useState<number>(2.5);
 
     const [error, setError] = useState({ minPlayTime: false, maxPlayTime: false });
 
@@ -80,6 +83,7 @@ const WizardGameSelect = ({setName, choice, setChoice, numPlayers, playersAge}: 
             minPlayingTime: parseInt(minPlayTime),
             numPlayers: numPlayers,
             playersAge: playersAge,
+            gameWeight: gameWeight,
             ranking: ranking
         }
     }
@@ -111,7 +115,7 @@ const WizardGameSelect = ({setName, choice, setChoice, numPlayers, playersAge}: 
                         <Typography>
                             Number of players:
                         </Typography>
-                        <TextField value={numPlayers} disabled/>
+                        <TextField value={numPlayers} disabled size="small"/>
                     </Stack>
                 </div>
                 <div style={{flex: 1}}>
@@ -119,7 +123,7 @@ const WizardGameSelect = ({setName, choice, setChoice, numPlayers, playersAge}: 
                         <Typography>
                             Players age:
                         </Typography>
-                        <TextField value={playersAge} disabled/>
+                        <TextField value={playersAge} disabled size="small"/>
                     </Stack>
                 </div>
                 <div style={{flex: 1}}>
@@ -132,6 +136,7 @@ const WizardGameSelect = ({setName, choice, setChoice, numPlayers, playersAge}: 
                             onChange={handleMinPlayTimeChange}
                             error={error.minPlayTime}
                             helperText={error.minPlayTime ? "Please enter a valid integer" : ""}
+                            size="small"
                         />
                         <Typography>
                             Max play time:
@@ -141,13 +146,17 @@ const WizardGameSelect = ({setName, choice, setChoice, numPlayers, playersAge}: 
                             onChange={handleMaxPlayTimeChange}
                             error={error.maxPlayTime}
                             helperText={error.maxPlayTime ? "Please enter a valid integer" : ""}
+                            size="small"
                         />
                     </Stack>
+                </div>
+                <div style={{flex: 1}}>
+                    <WizardGameWeightSlider value={gameWeight} setValue={setGameWeight} />
                 </div>
                 {
                     loading ?
                         <div>
-                            <ProgressBar progress={progress} />
+                            <ProgressBar progress={progress}/>
                         </div>
                         :
                         <Button onClick={handleWizard}>
@@ -164,7 +173,7 @@ const WizardGameSelect = ({setName, choice, setChoice, numPlayers, playersAge}: 
             }}>
                 <div style={{width: "100%", textAlign: "center", padding: "10px 0"}}>
                     <Typography fontWeight="bold">
-                        HERE ARE YOUR TOP WIZARD SUGGESTIONS:
+                    HERE ARE YOUR TOP WIZARD SUGGESTIONS:
                     </Typography>
                 </div>
                 <WizardSuggestions

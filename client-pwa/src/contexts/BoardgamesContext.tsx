@@ -38,7 +38,7 @@ export const BoardgamesContextProvider = ({children}: {children: ReactElement}):
         if (uuid === "" || user.bggUsername === '') {
             return;
         }
-        getGames(user.bggUsername, "")
+        getGames(user.bggUsername, "&subtype=boardgame&excludesubtype=boardgameexpansion")
             .then(value => setGames(value));
         getRanking(uuid)
             .then(value => setRanking(value));
