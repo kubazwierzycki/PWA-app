@@ -11,11 +11,11 @@ services:
       PLAYROOMS_URL: "http://pwa-playrooms:8084"
       WS_PLAYROOMS_URL: "ws://pwa-playrooms:8084"
       EXPERIENCE_URL: "http://pwa-experience:8085"
-      SPRING_CLOUD_GATEWAY_GLOBALCORS_CORS_CONFIGURATIONS_[/**]_ALLOWED_ORIGINS: "http://pwa-client:5173"
+      GATEWAY_HOST: "*"
     ports:
-      - "8080:8080"
-    
-    
+      - "60003:8080"
+
+
   pwa-users:
     build:
       context: ./pwa-users
@@ -66,7 +66,7 @@ services:
       POSTGRES_PASSWORD: "games_password"
     volumes:
       - games_data:/var/lib/postgresql/data
-  
+
   pwa-experience:
     build:
       context: ./pwa-experience
@@ -78,7 +78,7 @@ services:
       SPRING_DATASOURCE_USERNAME: "experience_user"
       SPRING_DATASOURCE_PASSWORD: "experience_password"
       SPRING_JPA_DATABASE_PLATFORM: "org.hibernate.dialect.PostgreSQLDialect"
- 
+
 
   experience-db:
     image: postgres:16.3
@@ -139,7 +139,7 @@ services:
       POSTGRES_USER: "playrooms_user"
       POSTGRES_PASSWORD: "playrooms_password"
     volumes:
-      - type: tmpfs 
+      - type: tmpfs
         target: /var/lib/postgresql/data
 
 
@@ -149,12 +149,14 @@ services:
       dockerfile: Dockerfile
     restart: always
     environment:
+      VITE_API_BASE_URL: "http://153.19.51.139:60003/api"
+      VITE_API_WS_URL: "ws://153.19.51.139:60003/ws-playrooms"
       VITE_HOST: "pwa-client"
     ports:
-    - "5173:5173"
-    
-volumes: 
-  users_data: 
+      - "60002:5173"
+
+volumes:
+  users_data:
   games_data:
   experience_data:
   gameplays_data:
