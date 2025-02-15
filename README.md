@@ -35,6 +35,14 @@ The application consists of the fronted app and the backend services. <p>
   - `/pwa-playrooms/` - is responsible for the functionality of the playroom
   - `/pwa-users/` - stores data of registered users
 
+## Project branches
+
+The project repository contains:
+- a `main` branch for development purposes
+- a `deployemnt` branch for deployment purposes
+
+Each feature or bug fix should be developed on a dedicated feature branch.
+
 ## Authors
 
 The application is developed by:
